@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Text
+  - RedCube
+  - BlueCube
+  - GreenCube
+  - WhiteCube
+  - GrayCube
+  - ARCamera
+  - SceneAnchor
+  - Wrapper
+  - bottle-tree_2
+  - bottle-waterlily_1
+  - bottleCrushed-waterlily_2
+  - straw-bush_1
+  - Objects
+  - spoonTree2a
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - PostProcessing
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
