@@ -54,13 +54,11 @@ namespace com.arpoise.androidapp
     {
         private static readonly string _loadingText = "Loading data, please wait";
 #if DEVEL
-        private static readonly string _layerName = "unexpectedgrowth-dev";
-        private static readonly string _ugDynamicPoispUrl = "http://mission-base.de/cgi-bin/UgDynamicPois-dev";
-        private static readonly string _assetBundleUrl = "http://www.tamikothiel.com/unexpectedgrowth/AssetBundles/unexpectedgrowth-tt";
+        private static readonly string _layerName = "Arpoise-Directory";
+        private static readonly string _ugDynamicPoispUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
 #else
-        private static readonly string _layerName = "rel-unexpectedgrowth";
-        private static readonly string _ugDynamicPoispUrl = "http://mission-base.de/cgi-bin/UgDynamicPois-rel";
-        private static readonly string _assetBundleUrl = "http://www.tamikothiel.com/unexpectedgrowth/AssetBundles/rel-unexpectedgrowth";
+        private static readonly string _layerName = "Arpoise-Directory";
+        private static readonly string _ugDynamicPoispUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
 #endif
         private double _locationTimestamp = 0;
         private float _locationHorizontalAccuracy = 0;
@@ -155,15 +153,16 @@ namespace com.arpoise.androidapp
                     poiId = -1000000 * parentObject.Id - poiId;
                 }
 
-                string baseUrl = poi.BaseUrl;
-                if (IsEmpty(baseUrl))
+                string assetBundleUrl = poi.BaseUrl;
+                if (IsEmpty(assetBundleUrl))
                 {
-                    baseUrl = _assetBundleUrl;
+                    return "Poi with id " + poiId + ", empty asset bundle url'";
                 }
+
                 AssetBundle assetBundle = null;
-                if (!_assetBundles.TryGetValue(baseUrl, out assetBundle))
+                if (!_assetBundles.TryGetValue(assetBundleUrl, out assetBundle))
                 {
-                    return "Unknwon asset bundle: '" + baseUrl + "'";
+                    return "?: '" + assetBundleUrl + "'";
                 }
 
                 string objectName = poi.GameObjectName;
@@ -311,7 +310,7 @@ namespace com.arpoise.androidapp
                     var zOffset = (float)(parts.Length > 2 && double.TryParse(parts[2].Trim(), out value) ? value : 0);
 
                     var arObject = new ArObject(
-                        poiId, poi.title, objectName, baseUrl, wrapper, objectToAdd, poi.Latitude, poi.Longitude, poi.relativeAlt + yOffset, true);
+                        poiId, poi.title, objectName, assetBundleUrl, wrapper, objectToAdd, poi.Latitude, poi.Longitude, poi.relativeAlt + yOffset, true);
 
                     var result = LinkArObject(arObjectState, parentObject, parentTransform, arObject, objectToAdd, poi);
                     if (result != null)
@@ -336,7 +335,7 @@ namespace com.arpoise.androidapp
                     if (distance <= ((poi.ArLayer != null) ? poi.ArLayer.visibilityRange : 1500))
                     {
                         var arObject = new ArObject(
-                            poiId, poi.title, objectName, baseUrl, wrapper, objectToAdd, poi.Latitude, poi.Longitude, poi.relativeAlt, false);
+                            poiId, poi.title, objectName, assetBundleUrl, wrapper, objectToAdd, poi.Latitude, poi.Longitude, poi.relativeAlt, false);
 
                         var result = LinkArObject(arObjectState, parentObject, parentTransform, arObject, objectToAdd, poi);
                         if (result != null)
@@ -493,9 +492,12 @@ namespace com.arpoise.androidapp
                     }
 
                     string baseUrl = poi.BaseUrl;
-                    if (IsEmpty(baseUrl))
+                    if (!IsEmpty(baseUrl))
                     {
-                        baseUrl = _assetBundleUrl;
+                        while (baseUrl.Contains('\\'))
+                        {
+                            baseUrl = baseUrl.Replace("\\", string.Empty);
+                        }
                     }
 
                     if (existingArObjects.Any(
@@ -540,7 +542,7 @@ namespace com.arpoise.androidapp
                         + "&layerName=" + layerName
                         + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
-                        + "&client=UnexpectedGrowth&version=1&radius=1500&accuracy=100"
+                        + "&client=Arpoise&version=1&radius=1500&accuracy=100"
                         + "&os=" + os
                         + "&count=" + count
 #if DEVEL
@@ -647,7 +649,7 @@ namespace com.arpoise.androidapp
                         + "&layerName=" + innerLayer
                         + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
-                        + "&client=UnexpectedGrowth&version=1&radius=1500&accuracy=100"
+                        + "&client=Arpoise&version=1&radius=1500&accuracy=100"
                         + "&os=" + os
                         + "&innerLayer=true"
 #if DEVEL
@@ -727,32 +729,37 @@ namespace com.arpoise.androidapp
                     }
                 }
 
-                var baseUrls = new HashSet<string> { _assetBundleUrl };
+                var assetBundleUrls = new HashSet<string>();
 
                 foreach (var layer in layers.Where(x => x.hotspots != null))
                 {
-                    baseUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
+                    assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
                 }
 
                 foreach (var layerList in _innerLayers.Values)
                 {
                     foreach (var layer in layerList.Where(x => x.hotspots != null))
                     {
-                        baseUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
+                        assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
                     }
                 }
 
-                foreach (var baseUrl in baseUrls)
+                foreach (var url in assetBundleUrls)
                 {
-                    if (_assetBundles.ContainsKey(baseUrl))
+                    if (_assetBundles.ContainsKey(url))
                     {
                         continue;
                     }
-                    var assetBundleUrl = baseUrl;
+                    var assetBundleUrl = url;
 
 #if UNITY_IOS
                     assetBundleUrl += "i";
 #endif
+
+                    while (assetBundleUrl.Contains('\\'))
+                    {
+                        assetBundleUrl = assetBundleUrl.Replace("\\", string.Empty);
+                    }
 
                     UnityWebRequest request = UnityWebRequestAssetBundle.GetAssetBundle(assetBundleUrl, 0);
                     request.timeout = 60;
@@ -801,11 +808,11 @@ namespace com.arpoise.androidapp
                     {
                         if (setError)
                         {
-                            _error = "Failed to receive asset bundle.";
+                            _error = "Err '" + assetBundleUrl + "'";
                         }
                         yield break;
                     }
-                    _assetBundles[baseUrl] = assetBundle;
+                    _assetBundles[url] = assetBundle;
                 }
 
                 List<ArObject> existingArObjects = null;
@@ -1499,8 +1506,8 @@ namespace com.arpoise.androidapp
                     + " LO " + (_filteredLongitude).ToString("F6")
                     //+ " AS " + _areaSize
                     //+ " AV " + AnimationValue.ToString("F3")
-                    + " Z " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).z.ToString("F1")
-                    + " X " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).x.ToString("F1")
+                    //+ " Z " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).z.ToString("F1")
+                    //+ " X " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).x.ToString("F1")
                     //+ " Y " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).y.ToString("F1")
                     //+ " LA " + (LastObject != null ? LastObject.Latitude : 0).ToString("F6")
                     //+ " LO " + (LastObject != null ? LastObject.Longitude : 0).ToString("F6")
