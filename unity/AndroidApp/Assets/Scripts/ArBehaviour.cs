@@ -55,10 +55,10 @@ namespace com.arpoise.androidapp
         private static readonly string _loadingText = "Loading data, please wait";
 #if DEVEL
         private static readonly string _layerName = "Arpoise-Directory";
-        private static readonly string _ugDynamicPoispUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
+        private static readonly string _arpoiseDirectoryUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
 #else
         private static readonly string _layerName = "Arpoise-Directory";
-        private static readonly string _ugDynamicPoispUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
+        private static readonly string _arpoiseDirectoryUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
 #endif
         private double _locationTimestamp = 0;
         private float _locationHorizontalAccuracy = 0;
@@ -536,7 +536,7 @@ namespace com.arpoise.androidapp
                 var nextPageKey = string.Empty;
                 for (; ; )
                 {
-                    var url = _ugDynamicPoispUrl + "?lang=en"
+                    var url = _arpoiseDirectoryUrl + "?lang=en"
                         + "&lat=" + filteredLatitude.ToString("F6")
                         + "&lon=" + filteredLongitude.ToString("F6")
                         + "&layerName=" + layerName
@@ -643,7 +643,7 @@ namespace com.arpoise.androidapp
                     nextPageKey = string.Empty;
                     for (; ; )
                     {
-                        var url = _ugDynamicPoispUrl + "?lang=en"
+                        var url = _arpoiseDirectoryUrl + "?lang=en"
                         + "&lat=" + filteredLatitude.ToString("F6")
                         + "&lon=" + filteredLongitude.ToString("F6")
                         + "&layerName=" + innerLayer
@@ -1195,7 +1195,7 @@ namespace com.arpoise.androidapp
         {
 #if UNITY_ANDROID
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-            builder.AddProduct("com.tamikothiel.unexpectedgrowth", ProductType.Consumable);
+            builder.AddProduct("com.tamikothiel.arpoise", ProductType.Consumable);
             UnityPurchasing.Initialize(this, builder);
 #endif
 
