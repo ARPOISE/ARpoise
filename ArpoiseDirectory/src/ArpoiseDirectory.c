@@ -23,13 +23,6 @@ $Log: ArpoiseDirectory.c,v $
 Revision 1.3  2019/01/20 16:13:33  peter
 Cleanup of traces
 
-Revision 1.2  2019/01/19 15:50:38  peter
-Improved the user agent string
-
-Revision 1.1  2019/01/19 00:03:31  peter
-Working on arpoise directory service
-
-
 */
 
 /*
