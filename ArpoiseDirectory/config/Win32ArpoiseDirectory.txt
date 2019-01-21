@@ -1,0 +1,32 @@
+## Win32ArpoiseDirectory.txt - Configuration file for arpoise directory service
+#
+HostName				www.arpoise.com
+Port					80
+BaseUri					/php/dir/web/porpoise.php
+
+## Traces are only written if the file exists, the file needs to be writable by the cgi program
+#
+TraceFilePath           D:/Temp/ArpoiseDirectory.txt
+
+## Set fixed position of certain devices
+#
+# Unexpected Growth:
+# S7 - Tamiko           2ec8b480fec1b4c8aa0c558b265c6118
+# Lenovo tango - Peter  1dde3dcdbaccd19c1f972a174a717e84
+# Iphone - SE           2C6079C2-E257-4CD4-B8BA-B59A4FCC017D
+# Iphone - Peter        694B2C29-EDE5-4FFB-B825-213F48622466
+# IPad - Tamiko         CEEA1C1F-89C1-42A8-90F6-8AE56412AAC7
+##
+# Example               unique device id                 lat      lon
+# DevicePosition        9c82fc0b05d30fb39664df9513a286f7,48.158649,11.578720
+#
+# St. Ursula 48.161205, 11.580427
+# Habsburgerplatz 48.158511, 11.580224  - NE end by cars: 48.158814, 11.580656
+# TT Zimmer 48.158468, 11.578702
+# Whitney 40.739540, -74.008522
+# Wing Luke 47.598116,-122.322825
+#
+DevicePosition 2ec8b480fec1b4c8aa0c558b265c6118, 40.739540, -74.008522
+DevicePosition 694B2C29-EDE5-4FFB-B825-213F48622466, 40.739582, -74.008585,  
+
+
