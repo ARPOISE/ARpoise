@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LocalDebuggerCommandArguments>lang=en&amp;lat=48.158760&amp;lon=11.579120&amp;layerName=Arpoise-Directory&amp;userId=XXXX&amp;client=Arpoise&amp;version=1&amp;radius=1500&amp;accuracy=100&amp;os=Android</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerCommandArguments>lang=EN&amp;countryCode=DE&amp;userId=4ed67bd0624f2f7289961da09ab6217ff2af1456&amp;lon=-73.562309&amp;action=refresh&amp;version=8.5&amp;radius=1673&amp;lat=45.509552&amp;alt=567&amp;layerName=tamikotestx4ns&amp;accuracy=100</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+</Project>
