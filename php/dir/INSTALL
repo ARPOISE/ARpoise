@@ -29,6 +29,9 @@ this, PorPOISe works. If you get a 404 error, check your paths. If you get a
 You are now set up to create layers. The README file has more details on
 creating layers in the config file.
 
+In order to use the google maps functionality you need to store your own google
+maps key in "web/dashboard/mapskey.inc.php".
+
 If you plan to use the dashboard, generate a password for user "default" (or
 the username of your choice) and store it in "web/dashboard/users.inc.php". You
 can use the tool in web/dashboard/crypt.php to generate passwords.
@@ -44,6 +47,4 @@ Create and configure your layer on dev.layar.com (if you didn't already),
 use the web location of porpoise.php as your POI URL and see what it looks
 like!
 
-The dashboard is accessible as http://yourhost/yourdirectory/web/dashboard/  //original URL was incorrect http://yourhost/yourdirectory/dashboard/
-
-The file /etc/apache2/vhosts.d/aaa-default.conf: needs to be extended!
+The dashboard is accessible as http://yourhost/yourdirectory/web/dashboard/.
