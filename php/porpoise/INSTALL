@@ -1,7 +1,12 @@
+These instructions are for the arpoise version of porpoise!
+
 ===PorPOISe installation instructions===
 
-Unzip the release file somewhere on your system. Make the subdirectory "web/"
-accessible through the web server. If you have server administrator rights you
+Copy the contents of this directory to somewhere on your system. 
+
+Make the subdirectory "web/" accessible through the web server. 
+
+If you have server administrator rights you
 should be able to make a new virtual host or virtual directory for this. If you
 only have regular user rights and you are on a UNIX-like system you can make a
 symbolic link ('ln -s') to the "web/" directory from a place in your home
@@ -21,13 +26,16 @@ store database credentials in the config file, please make sure that the config
 file is not accessible through the web or you will expose your database
 password.
 
-Open "http://yourhost/yourdirectory/web/porpoise.php" and check that you get  //original URL was incorrect "http://yourhost/yourdirectory/porpoise.php"
+Open "http://yourhost/yourdirectory/web/porpoise.php" and check that you get
 JSON output telling you that the parameter "userId" is missing. If you see
 this, PorPOISe works. If you get a 404 error, check your paths. If you get a
 403 error, check your file permissions.
 
 You are now set up to create layers. The README file has more details on
 creating layers in the config file.
+
+In order to use the google maps functionality you need to store your own google
+maps key in "web/dashboard/mapskey.inc.php".
 
 If you plan to use the dashboard, generate a password for user "default" (or
 the username of your choice) and store it in "web/dashboard/users.inc.php". You
@@ -40,10 +48,8 @@ have to come up with a more restrictive setup (such as granting only rights to
 the web server user through ACLs or assigning the files to the web server's
 group and granting group write permissions).
 
-Create and configure your layer on dev.layar.com (if you didn't already),
+Contact arpoise.com and request to configure your layer in the arpoise directory service,
 use the web location of porpoise.php as your POI URL and see what it looks
 like!
 
-The dashboard is accessible as http://yourhost/yourdirectory/web/dashboard/  //original URL was incorrect http://yourhost/yourdirectory/dashboard/
-
-The file /etc/apache2/vhosts.d/aaa-default.conf: needs to be extended!
+The dashboard is accessible as http://yourhost/yourdirectory/web/dashboard/
