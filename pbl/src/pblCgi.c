@@ -24,11 +24,11 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblCgi.c,v $
- Revision 1.1  2019/01/19 00:03:55  peter
- PBL for arpoise directory service
+ Revision 1.2  2019/01/26 15:13:28  peter
+ Multiple lines are comma separated in pblCgiFileToMap
 
- Revision 1.1  2018/07/20 15:25:27  peter
- *** empty log message ***
+ Revision 1.50  2019/01/26 15:11:14  peter
+ Multiple lines are comma separated in pblCgiFileToMap
 
  Revision 1.49  2018/04/30 16:10:03  peter
  Linux port
@@ -73,7 +73,7 @@
  /*
   * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
   */
-char* pblCgi_c_id = "$Id: pblCgi.c,v 1.1 2019/01/19 00:03:55 peter Exp $";
+char* pblCgi_c_id = "$Id: pblCgi.c,v 1.2 2019/01/26 15:13:28 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
