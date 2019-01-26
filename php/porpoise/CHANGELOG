@@ -1,0 +1,119 @@
+
+MODS in dashboard interface TT May 2016
+- gui.class.php
+	createPOIScreen - change size of fields
+- scripts.js
+	formatted
+	map.setTilt(0); to prevent auto tilt when zooming in
+	google.maps.Marker draggable code added
+
+= Release 1.1 =
+- Layar 5.0 support (animations)
+- proper UTF-8 handling (hopefully finally fixed). UTF-8 is now properly
+  enforced by the dashboard and the default database. If you manually edit XML,
+  make sure your editor saves it as UTF-8.
+
+= Release 1.0a =
+- small bugfixes
+
+= Release 1.0 =
+- whatever you do, (re-)read INSTALL and/or UPGRADING. Some things have changed
+- general summary of upgrade: Layar 4.0 support, better organization of files
+  and some tweaks and enhancements
+
+Details:
+- added layer copying functionality to Dashboard. You can use this to migrate
+  between data formats or create a copy for testing
+- added Google Maps widget to Dashboard to help pinpoint POIs
+- added UTF-8 encoding/decoding to XMLPOIConnector to help with diacritics
+- added getLayarResponse hook to POIConnector abstract class. This allows you
+  to override response defaults, i.e. change refresh interval or set layer
+  actions
+- added support for new request parameters:
+  - requestedPoiId
+  - version
+  - userAgent
+  - action
+- added support new response parameters:
+  - refreshInterval
+  - refreshDistance
+  - fullRefresh
+  - showMessage
+  - actions
+  - deletedHotspots
+
+  - hotspot.doNotIndex
+  - hotspot.inFocus
+  - hotspot.showSmallBiw
+  - hotspot.showBiwOnClick
+
+  - action.contentType
+  - action.method
+  - action.activityType
+  - action.uri
+  - action.params
+  - action.closeBiw
+  - action.showActivity
+  - action.activityMessage
+- added logic to always try to return requestedPoiId, even when not in range
+- if requestedPoiId is set, the corresponding POI gets flagged with "inFocus:
+  true"
+- trim out optional response parameters to save bandwidth
+- changes to log handler
+- added ordering by distance to XMLPOIConnector and FlatPOIConnector
+  (SQLPOIConnector already had it)
+- deprecated FlatPOIConnector. FlatPOIConnector does not support the full v4.0
+  API and will not be updated in the future
+- new file config.php contains a PORPOISE_CONFIG_PATH definition. Change this
+  constant to point to the directory of your config.xml, custom POIConnectors
+  and layer data files. By default, these files now reside in the subdirectory
+  "config" of the PorPOISe root directory
+- added bounding boxing to POI selection in XMLPOIConnector. Need larger data
+  sets to test actual performance gain
+- fix in webApp oAuth handler, now supports lazy loading of user credentials
+  and deferred oAuth initialization
+- added caching to layer server so subsequent page requests are served from
+  cache rather than calculated all over again
+- added webApiPoiconnector for making authenticated API calls to 3rd party
+  services for POI requests
+- added web-app subclass settings to PorPOISe config
+
+= Release 0.71 =
+- added support for the "lang" parameter in the Filter class
+- changed the precision of lat/lon in the default database from FLOAT to
+  DOUBLE PRECISION to prevent severe rounding errors
+- fixed a bug where the accuracy parameter was deemed mandatory while it is
+  optional
+
+= Release 0.7a =
+- Fixed a bug in the dashboard
+
+= Release 0.7 =
+- Support for filter hooks (see Wiki for instructions)
+- Support for authenticated layers
+- All POICollectors are renamed to POIConnectors, it describes their function
+  better
+
+= Release 0.51a =
+- Fixed a bug in SQLPOICollector
+
+= Release 0.51 =
+- Support for actions in the dashboard
+
+= Release 0.5 =
+- Dashboard for managing POIs through web interface
+- Support for v3 Layars with 3D-objects
+
+= Release 0.3 =
+- Added support for XSL style sheets
+- Added better UTF-8 handling for databases
+
+= Release 0.2a =
+- Bug fix: "type" was formatted as a string in the JSON response, but should
+  have been int. Fixed now
+
+= Release 0.2 =
+- Added XML support
+
+= Release 0.1 =
+- Initial release

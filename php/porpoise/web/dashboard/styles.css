@@ -1,0 +1,50 @@
+* {
+	font-family: Arial, Helvetica, Sans serif;
+	color: black;
+}
+
+body {
+	background-color: white;
+}
+
+table {
+	border-collapse: collapse;
+	empty-cells: show;
+}
+
+th, td {
+	padding: 2pt;
+	border: 1px solid black;
+}
+
+.error {
+	color: red;
+}
+
+a, a:visited, a:active, a:hover {
+	color: blue;
+}
+
+div.menu {
+	padding: 2pt;
+	margin-bottom: 4pt;
+}
+
+div.menu a, div.menu a:visited, div.menu a:hover, div.menu a:active {
+	border: 2px outset blue;
+	color: blue;
+	text-decoration: none;
+	padding: 1pt;
+}
+
+div.menu a:hover, div.menu a:active {
+	background: #AACCFF;
+}
+
+div.menu a:active {
+	border: 2px inset;
+}
+
+form table caption {
+	caption-side: bottom;
+}

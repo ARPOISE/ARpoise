@@ -1,0 +1,15 @@
+scratch sheet for ToDo's
+
+x.y (a.k.a. The Backlog)
+/ implement bounding boxing and test performance (and function)
+ \-> don't forget wraparound at (-)180 degrees
+- multiple layers in one database
+  - POIConnector::getLayerProperties() method
+- adopt schema language for loading and default administration
+  - do not store NULL values in XML
+  - type safe checking of defaults
+  - generalize default filtering
+- pick a database migration tool
+- administration of config through dashboard
+- publishing API support
+- JSON support as backend
