@@ -1,0 +1,42 @@
+===PorPOISe upgrading instructions===
+
+= Upgrading from 1.0 to 1.1 =
+- back up your config/ directory
+- unzip the new distribution
+- move your old config directory back in place
+- if you use a database, either create a new database from database.sql and
+  copy the old database over it or take the definition for the Animation table
+  from database.sql and run that against your database
+
+= Upgrading from 0.7x to 1.0 =
+
+- backup all your customized files: config.xml, .tab/.xml data files, custom
+  POIConnectors, your own XSL files and the users file for the Dashboard.
+  Alternatively, just backup your entire PorPOISe directory
+- Unpack the 1.0 release
+- move your config.xml, layer data files and custom POIConnectors into the new
+  "config/" subdirectory
+- move your XSL files into the new "config/xsl" subdirectory
+- move the Dashboard users file into its old location, "web/dashboard"
+- open config.xml and remove the <connector> definitions for the
+  FlatPOIConnector, XMLPOIConnector and SQLPOIConnector. These have now been
+  built in by default and do not need to be in the configuration file anymore
+- open your custom POIConnectors and adjust or remove the references to
+  flatpoiconnector.class.php, xmlpoiconnector.class.php and
+  sqlpoiconnector.class.php. These files are now included by default and do not
+  need explicit inclusion anymore.
+- if you need to or want to, follow the instructions in INSTALL to move the
+  "config/" directory to a place of your liking. If PorPOISe is in a
+  web-accessible directory this enhances security and, in any case, makes for
+  easier upgrading
+- if you are using the SQLPOIConnector you will want to upgrade to the new
+  database schema. Create a new, empty database and run the database.sql
+  script to create a new database. Then, use a MySQL tool or the copying
+  functionality in the PorPOISe Dashboard to copy from the old database to
+  the new database.
+
+N.B. as of release 1.0 the FlatPOIConnector is deprecated and will no longer be
+supported. If you're using the FlatPOIConnector for your layers, you can use
+the new copying functionality in the dashboard to copy your data to a new layer
+that uses a different POIConnector such as XMLPOIConnector.
+

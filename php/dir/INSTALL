@@ -1,0 +1,49 @@
+===PorPOISe installation instructions===
+
+Unzip the release file somewhere on your system. Make the subdirectory "web/"
+accessible through the web server. If you have server administrator rights you
+should be able to make a new virtual host or virtual directory for this. If you
+only have regular user rights and you are on a UNIX-like system you can make a
+symbolic link ('ln -s') to the "web/" directory from a place in your home
+directory that is accessible through the web server. If you have only have FTP
+access or are not on a UNIX-like system you must put PorPOISe into a
+web-accessible directory but then you MUST change some settings to avoid
+security issues (see next step). You may also want to take this step to make
+future upgrades easier.
+
+After unzipping/uploading/copying the release files, take the config/ directory
+and move it someplace where it is not reachable through the web. Remember where
+you put it and open the file config.php. Change the constant
+PORPOISE_CONFIG_PATH to where you put the config directory and you should be
+good to go. From here on we shall refer to this path as "yourconfig". For
+experimentation, you can leave the config location alone. However, if you
+store database credentials in the config file, please make sure that the config
+file is not accessible through the web or you will expose your database
+password.
+
+Open "http://yourhost/yourdirectory/web/porpoise.php" and check that you get  //original URL was incorrect "http://yourhost/yourdirectory/porpoise.php"
+JSON output telling you that the parameter "userId" is missing. If you see
+this, PorPOISe works. If you get a 404 error, check your paths. If you get a
+403 error, check your file permissions.
+
+You are now set up to create layers. The README file has more details on
+creating layers in the config file.
+
+If you plan to use the dashboard, generate a password for user "default" (or
+the username of your choice) and store it in "web/dashboard/users.inc.php". You
+can use the tool in web/dashboard/crypt.php to generate passwords.
+
+If you plan to use the dashboard in conjunction with XML files, you have
+to make your XML files writable for the web server. You can make the files
+writable by all if you trust all users on your system to behave, othwerwise you
+have to come up with a more restrictive setup (such as granting only rights to
+the web server user through ACLs or assigning the files to the web server's
+group and granting group write permissions).
+
+Create and configure your layer on dev.layar.com (if you didn't already),
+use the web location of porpoise.php as your POI URL and see what it looks
+like!
+
+The dashboard is accessible as http://yourhost/yourdirectory/web/dashboard/  //original URL was incorrect http://yourhost/yourdirectory/dashboard/
+
+The file /etc/apache2/vhosts.d/aaa-default.conf: needs to be extended!
