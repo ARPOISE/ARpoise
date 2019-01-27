@@ -4,12 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Text
-  - RedCube
-  - BlueCube
-  - GreenCube
-  - WhiteCube
-  - GrayCube
   - ARCamera
   - SceneAnchor
   - Wrapper
@@ -17,8 +11,10 @@ TagManager:
   - bottle-waterlily_1
   - bottleCrushed-waterlily_2
   - straw-bush_1
-  - Objects
   - spoonTree2a
+  - InfoText
+  - HeaderText
+  - HeaderButton
   layers:
   - Default
   - TransparentFX
