@@ -83,6 +83,8 @@ namespace com.arpoise.androidapp
         private GameObject _sceneAnchor = null;
         private GameObject _infoText = null;
         private GameObject _wrapper = null;
+        private GameObject _headerText = null;
+        private GameObject _headerButton = null;
 
         private string _informationMessage = null;
         private bool _showInfo = false;
@@ -729,6 +731,18 @@ namespace com.arpoise.androidapp
                     }
                 }
 
+                var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !IsEmpty(x));
+                if (!IsEmpty(layerTitle))
+                {
+                    _headerText.GetComponent<Text>().text = layerTitle;
+                    _headerButton.SetActive(true);
+                }
+                else
+                {
+                    _headerText.GetComponent<Text>().text = string.Empty;
+                    _headerButton.SetActive(false);
+                }
+
                 var assetBundleUrls = new HashSet<string>();
 
                 foreach (var layer in layers.Where(x => x.hotspots != null))
@@ -1199,7 +1213,7 @@ namespace com.arpoise.androidapp
             UnityPurchasing.Initialize(this, builder);
 #endif
 
-            _infoText = GameObject.FindGameObjectWithTag("Text");
+            _infoText = FindGameObjectWithTag("InfoText");
             _infoText.GetComponent<Text>().text = _loadingText;
 
             _sceneAnchor = FindGameObjectWithTag("SceneAnchor");
@@ -1213,6 +1227,20 @@ namespace com.arpoise.androidapp
             if (_wrapper == null)
             {
                 _error = "Cannot find object with tag Wrapper";
+                return;
+            }
+
+            _headerText = FindGameObjectWithTag("HeaderText");
+            if (_headerText == null)
+            {
+                _error = "Cannot find object with tag HeaderText";
+                return;
+            }
+
+            _headerButton = FindGameObjectWithTag("HeaderButton");
+            if (_headerButton == null)
+            {
+                _error = "Cannot find object with tag HeaderButton";
                 return;
             }
 

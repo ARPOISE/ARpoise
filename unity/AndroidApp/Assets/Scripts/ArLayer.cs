@@ -180,6 +180,7 @@ namespace com.arpoise.androidapp
         public float refreshDistance = 0;
         public string redirectionLayer = string.Empty;
         public string noPoisMessage = string.Empty;
+        public string layerTitle = string.Empty;
         public string showMessage = string.Empty;
         public bool morePages = false;
         public string nextPageKey = string.Empty;
