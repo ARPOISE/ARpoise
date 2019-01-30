@@ -20,15 +20,25 @@ For more information on Tamiko Thiel or Peter Graf,
 please see: http://www.mission-base.com/.
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.4  2019/01/30 23:45:24  peter
+Fixed a bug with longer responses
+
 Revision 1.3  2019/01/20 16:13:33  peter
 Cleanup of traces
+
+Revision 1.2  2019/01/19 15:50:38  peter
+Improved the user agent string
+
+Revision 1.1  2019/01/19 00:03:31  peter
+Working on arpoise directory service
+
 
 */
 
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.3 2019/01/20 16:13:33 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.4 2019/01/30 23:45:24 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -177,7 +187,7 @@ static char * receiveStringFromTcp(int socket, int timeoutSeconds)
 
 		if (stringBuilder == NULL)
 		{
-			PblStringBuilder * stringBuilder = pblStringBuilderNew();
+			stringBuilder = pblStringBuilderNew();
 			if (!stringBuilder)
 			{
 				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -196,7 +206,7 @@ static char * receiveStringFromTcp(int socket, int timeoutSeconds)
 			pblCgiExitOnError("%s: socket %d received 0 bytes as response\n", tag, socket);
 		}
 
-		char * result = pblStringBuilderToString(stringBuilder);
+		result = pblStringBuilderToString(stringBuilder);
 		if (!result)
 		{
 			pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
