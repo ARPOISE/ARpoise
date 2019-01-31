@@ -1,5 +1,6 @@
 # Makefile for the cgi programm, you must copy the pbl src directory *.c and *.h files into this directory before you can make
 #
+STRIP=   /usr/bin/strip
 AR=      /usr/bin/ar
 RANLIB=  /usr/bin/ar ts
 IPATH=   -I.
@@ -21,8 +22,9 @@ $(THELIB):  $(LIB_OBJS)
 	$(RANLIB) $(THELIB)
 
 $(THEEXE1):  $(EXE_OBJS1) $(THELIB)
-	$(CC) -O2 -o $(THEEXE1) $(EXE_OBJS1) $(THELIB) $(INCLIB)
-
+	$(CC) -O3 -o $(THEEXE1) $(EXE_OBJS1) $(THELIB) $(INCLIB)
+	$(STRIP) $(THEEXE1)
+	
 clean:
 	rm -f ${THELIB}  ${LIB_OBJS} core
 	rm -f ${THEEXE1} ${EXE_OBJS1}
