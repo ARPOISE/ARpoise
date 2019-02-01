@@ -790,7 +790,7 @@ namespace com.arpoise.androidapp
                     {
                         if (setError)
                         {
-                            _error = "Asset bundle didn't download in 60 seconds.";
+                            _error = "Bundle '" + assetBundleUrl + "' download timeout.";
                         }
                         yield break;
                     }
@@ -799,7 +799,7 @@ namespace com.arpoise.androidapp
                     {
                         if (setError)
                         {
-                            _error = "Asset bundle download error: " + request.error;
+                            _error = "Bundle '" + assetBundleUrl + "' error: " + request.error;
                         }
                         yield break;
                     }
@@ -813,7 +813,7 @@ namespace com.arpoise.androidapp
                     {
                         if (setError)
                         {
-                            _error = "Asset bundle download exception: " + e.Message;
+                            _error = "Bundle '" + assetBundleUrl + "' exception: " + e.Message;
                         }
                         yield break;
                     }
@@ -822,7 +822,7 @@ namespace com.arpoise.androidapp
                     {
                         if (setError)
                         {
-                            _error = "Err '" + assetBundleUrl + "'";
+                            _error = "Bundle '" + assetBundleUrl + "' download is null.";
                         }
                         yield break;
                     }
