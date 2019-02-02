@@ -527,7 +527,7 @@ class XMLPOIConnector extends POIConnector {
 				}
 			} else if ($key == "object") {
 				$objectElement = $poiElement->addChild("object");
-				foreach(array("baseURL"/*, "full", "poiLayerName", "reduced", "icon", "size"*/) as $elementName) {
+				foreach(array("baseURL") as $elementName) {
 					$objectElement->addChild($elementName, str_replace("&", "&amp;", $poi->object->$elementName));
 				}
 			} else {

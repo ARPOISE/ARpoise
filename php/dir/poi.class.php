@@ -251,16 +251,6 @@ class POITransform extends Arrayable {
 class POIObject extends Arrayable {
 	/** @var string Base URL to resolve all the other references */
 	public $baseURL;
-	/** @var string Filename of the full object, in UG used as prefab name */
-	//public $full;
-	/** @var string Name of layar to include in poi */
-	//public $poiLayerName = NULL;
-	/** @var string Filename of the reduced object, in UG used as relative location (x,y,z) */
-	//public $reduced = NULL;
-	/** @var string Filename of an icon of the object for viewing from afar */
-	//public $icon = NULL;
-	/** @var float Size of the object in meters, i.e. the length of the smallest cube that can contain the object */
-	//public $size;
 
 	/**
 	 * Constructor
@@ -272,31 +262,15 @@ class POIObject extends Arrayable {
 
 		if (is_array($source)) {
 			$this->baseURL = $source["baseURL"];
-			//$this->full = $source["full"];
-			//$this->poiLayerName = $source["poiLayerName"];
-			//if (!empty($source["reduced"])) {
-			//	$this->reduced = $source["reduced"];
-			//}
-			//if (!empty($source["icon"])) {
-			//	$this->icon = $source["icon"];
-			//}
-			//$this->size = (float)$source["size"];
 		} else {
-			foreach (array("baseURL", /* "full", "poiLayerName", "reduced", "icon", "size"*/) as $fieldName) {
+			foreach (array("baseURL") as $fieldName) {
 				switch ($fieldName) {
 				case "baseURL":
-				//case "full":
-				//case "poiLayerName":
-				//case "reduced":
-				//case "icon":
 					if (empty($source->$fieldName)) {
 						break;
 					}
 					$this->$fieldName = (string)$source->$fieldName;
 					break;
-				//case "size":
-				//	$this->size = (float)$source->size;
-				//	break;
 				}
 			}
 		}
@@ -311,9 +285,9 @@ class POIObject extends Arrayable {
 class Animation extends Arrayable {
 	/** @var string type of animation */
 	public $type;
-	/** @var int length of the animation in milliseconds */
+	/** @var float length of the animation in seconds */
 	public $length;
-	/** @var int delay in milliseconds before the animation starts */
+	/** @var float delay in seconds before the animation starts */
 	public $delay = NULL;
 	/** @var string interpolation to apply */
 	public $interpolation = NULL;
@@ -359,7 +333,7 @@ class Animation extends Arrayable {
 			break;
 		case "length":
 		case "delay":
-			$this->$key = (int)$value;
+			$this->$key = (float)$value;
 			break;
 		case "interpolationParam":
 		case "from":

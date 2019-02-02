@@ -255,8 +255,8 @@ class POIObject extends Arrayable {
 	public $full;
 	/** @var string Name of layar to include in poi */
 	public $poiLayerName = NULL;
-	/** @var string Filename of the reduced object, in UG used as relative location (x,y,z) */
-	public $reduced = NULL;
+	/** @var relative location (x,y,z) */
+	public $relativeLocation = NULL;
 	/** @var string Filename of an icon of the object for viewing from afar */
 	public $icon = NULL;
 	/** @var float Size of the object in meters, i.e. the length of the smallest cube that can contain the object */
@@ -274,20 +274,20 @@ class POIObject extends Arrayable {
 			$this->baseURL = $source["baseURL"];
 			$this->full = $source["full"];
 			$this->poiLayerName = $source["poiLayerName"];
-			if (!empty($source["reduced"])) {
-				$this->reduced = $source["reduced"];
+			if (!empty($source["relativeLocation"])) {
+				$this->relativeLocation = $source["relativeLocation"];
 			}
 			if (!empty($source["icon"])) {
 				$this->icon = $source["icon"];
 			}
 			$this->size = (float)$source["size"];
 		} else {
-			foreach (array("baseURL", "full", "poiLayerName", "reduced", "icon", "size") as $fieldName) {
+			foreach (array("baseURL", "full", "poiLayerName", "relativeLocation", "icon", "size") as $fieldName) {
 				switch ($fieldName) {
 				case "baseURL":
 				case "full":
 				case "poiLayerName":
-				case "reduced":
+				case "relativeLocation":
 				case "icon":
 					if (empty($source->$fieldName)) {
 						break;
@@ -311,9 +311,9 @@ class POIObject extends Arrayable {
 class Animation extends Arrayable {
 	/** @var string type of animation */
 	public $type;
-	/** @var int length of the animation in milliseconds */
+	/** @var float length of the animation in seconds */
 	public $length;
-	/** @var int delay in milliseconds before the animation starts */
+	/** @var float delay in seconds before the animation starts */
 	public $delay = NULL;
 	/** @var string interpolation to apply */
 	public $interpolation = NULL;
@@ -359,7 +359,7 @@ class Animation extends Arrayable {
 			break;
 		case "length":
 		case "delay":
-			$this->$key = (int)$value;
+			$this->$key = (float)$value;
 			break;
 		case "interpolationParam":
 		case "from":
