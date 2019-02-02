@@ -67,8 +67,8 @@ namespace com.arpoise.androidapp
             GameObject = gameObject;
             if (poiAnimation != null)
             {
-                _lengthTicks = (long)(10000000L * poiAnimation.length);
-                _delayTicks = (long)(10000000L * poiAnimation.delay);
+                _lengthTicks = (long)(10000000.0 * poiAnimation.length);
+                _delayTicks = (long)(10000000.0 * poiAnimation.delay);
                 if (poiAnimation.type != null)
                 {
                     _type = poiAnimation.type.ToLower().Contains(Rotate) ? Rotate

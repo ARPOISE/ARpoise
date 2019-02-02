@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 94938927}
   - component: {fileID: 94938926}
   m_Layer: 0
-  m_Name: Directional Light SSW
+  m_Name: Directional Light SWW
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -383,7 +383,7 @@ GameObject:
   - component: {fileID: 904486259}
   - component: {fileID: 904486258}
   m_Layer: 0
-  m_Name: Directional Light SSE
+  m_Name: Directional Light SEE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

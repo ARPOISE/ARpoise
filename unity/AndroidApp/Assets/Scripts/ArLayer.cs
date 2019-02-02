@@ -96,7 +96,7 @@ namespace com.arpoise.androidapp
         public string baseURL = string.Empty;
         public string full = string.Empty;
         public string poiLayerName = string.Empty;
-        public string reduced = string.Empty;
+        public string relativeLocation = string.Empty;
         public string icon = string.Empty;
         public float size = 0;
     }

@@ -295,7 +295,7 @@ namespace com.arpoise.androidapp
                 }
 
                 // Relative to user, parent or with absolute coordinates
-                var relativePosition = poi.poiObject.reduced;
+                var relativePosition = poi.poiObject.relativeLocation;
 
                 if (parentObject != null || !IsEmpty(relativePosition))
                 {
@@ -765,11 +765,16 @@ namespace com.arpoise.androidapp
                         continue;
                     }
                     var assetBundleUrl = url;
-
 #if UNITY_IOS
-                    assetBundleUrl += "i";
+                    if (assetBundleUrl.EndsWith(".ace"))
+                    {
+                        assetBundleUrl = assetBundleUrl.Replace(".ace", "i.ace");
+                    }
+                    else
+                    {
+                        assetBundleUrl += "i";
+                    }
 #endif
-
                     while (assetBundleUrl.Contains('\\'))
                     {
                         assetBundleUrl = assetBundleUrl.Replace("\\", string.Empty);
