@@ -20,6 +20,21 @@ For more information on Tamiko Thiel or Peter Graf,
 please see: http://www.mission-base.com/.
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.10  2019/02/03 13:05:47  peter
+Improved bundle handling
+
+Revision 1.9  2019/02/03 12:52:47  peter
+Fixed the count handling
+
+Revision 1.8  2019/02/03 12:47:08  peter
+Do not create statistics hits for refreshes
+
+Revision 1.7  2019/02/03 12:03:06  peter
+Creating the versions and layer names files for the hits
+
+Revision 1.6  2019/02/03 01:30:41  peter
+Versions file handling
+
 Revision 1.5  2019/02/02 16:53:49  peter
 Default layer is reign of gold
 
@@ -41,7 +56,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.5 2019/02/02 16:53:49 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.10 2019/02/03 13:05:47 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -515,8 +530,6 @@ static char * changeLayerName(char * string, char * layerName)
 	return replacedString;
 }
 
-static PblList * devicePositionList = NULL;
-
 static char * changeLatAndLon(char * queryString, char * lat, char * lon, int * latDifference, int * lonDifference)
 {
 	if (!pblCgiStrIsNullOrWhiteSpace(lat) && !pblCgiStrIsNullOrWhiteSpace(lon))
@@ -567,6 +580,8 @@ static char * changeLatAndLon(char * queryString, char * lat, char * lon, int * 
 	}
 	return NULL;
 }
+
+static PblList * devicePositionList = NULL;
 
 static char * handleDevicePosition(char * deviceId, char * queryString, int * latDifference, int * lonDifference)
 {
@@ -680,7 +695,13 @@ static int arpoiseDirectory(int argc, char * argv[])
 	//
 	int latDifference = 0;
 	int lonDifference = 0;
+
 	char * userId = pblCgiQueryValue("userId");
+	if (!userId || !*userId)
+	{
+		userId = "UnknownUserId";
+	}
+
 	char * deviceQueryString = handleDevicePosition(userId, queryString, &latDifference, &lonDifference);
 	if (deviceQueryString != NULL)
 	{
@@ -703,7 +724,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 	char * uri = pblCgiSprintf("%s?%s", baseUri, queryString);
 	//PBL_CGI_TRACE("Uri=%s", uri);
 
-	char * response = getHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId ? userId : "Unknown"));
+	char * response = getHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId));
 	//PBL_CGI_TRACE("Response=%s", response);
 
 	char * cookie = NULL;
@@ -864,7 +885,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 
 	//PBL_CGI_TRACE("Layer Uri=%s", uri);
 
-	response = getHttpResponse(layerHost, layerPort, uri, 16, "ArpoiseDirectory/1.5");
+	response = getHttpResponse(layerHost, layerPort, uri, 16, "ArpoiseDirectory/1.10");
 	//PBL_CGI_TRACE("Response=%s", response);
 
 	cookie = NULL;
@@ -996,10 +1017,9 @@ static int arpoiseDirectory(int argc, char * argv[])
 		{
 			char * replacedLat = changeLat(hotspot, 1, -1 * latDifference);
 			ptr = changeLon(replacedLat, 5, -1 * lonDifference);
+			PBL_CGI_TRACE("Applied latDifference=%d and lonDifference=%d", latDifference, lonDifference);
 		}
 		putString(ptr, stringBuilder);
-		PBL_CGI_TRACE("Applied latDifference=%d and lonDifference=%d", latDifference, lonDifference);
-
 		putString("}", stringBuilder);
 	}
 
@@ -1008,6 +1028,96 @@ static int arpoiseDirectory(int argc, char * argv[])
 	putString(rest, stringBuilder);
 	PBL_CGI_TRACE("output=%s", pblStringBuilderToString(stringBuilder));
 	pblStringBuilderFree(stringBuilder);
+
+	char * count = pblCgiQueryValue("count");
+	if (count && !strcmp("1", count))
+	{
+		PBL_CGI_TRACE("-------> Statistics Request\n");
+
+		// Create a web hit for the os and bundle, so that web stats can be used to count hits
+		//
+		char * versionsDirectory = pblCgiConfigValue("VersionsDirectory", "");
+		if (versionsDirectory && *versionsDirectory)
+		{
+			char * os = pblCgiQueryValue("os");
+			if (!os || !*os || strstr(os, ".."))
+			{
+				os = "UnknownOperatingSystem";
+			}
+
+			char * bundle = pblCgiQueryValue("bundle");
+			if (!bundle || !*bundle || strstr(bundle, ".."))
+			{
+				bundle = "UnknownBundle";
+			}
+
+			char * fileName = pblCgiSprintf("%s_%s.htm", os, bundle);
+			char * filePath = pblCgiSprintf("%s/%s", versionsDirectory, fileName);
+
+			FILE * stream = NULL;
+
+#ifdef WIN32
+			errno_t err = fopen_s(&stream, filePath, "r");
+			if (err != 0)
+			{
+				stream = NULL;
+			}
+#else
+			stream = fopen(filePath, "r");
+#endif
+			if (!stream)
+			{
+				stream = pblCgiFopen(filePath, "a");
+				if (stream)
+				{
+					fputs("<title>Arpoise</title>\n<body>copyright © 2019, Tamiko Thiel and Peter Graf</body>\n", stream);
+				}
+			}
+			if (stream)
+			{
+				fclose(stream);
+			}
+
+			uri = pblCgiSprintf("/versions/%s", fileName);
+			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/versions");
+		}
+
+		// Create a web hit for the layer, so that web stats can be used to count hits
+		//
+		char * layerNamesDirectory = pblCgiConfigValue("LayerNamesDirectory", "");
+		if (layerNamesDirectory && *layerNamesDirectory && layerName && *layerName)
+		{
+			char * fileName = pblCgiSprintf("%s.htm", layerName);
+			char * filePath = pblCgiSprintf("%s/%s", layerNamesDirectory, fileName);
+
+			FILE * stream = NULL;
+
+#ifdef WIN32
+			errno_t err = fopen_s(&stream, filePath, "r");
+			if (err != 0)
+			{
+				stream = NULL;
+			}
+#else
+			stream = fopen(filePath, "r");
+#endif
+			if (!stream)
+			{
+				stream = pblCgiFopen(filePath, "a");
+				if (stream)
+				{
+					fputs("<title>Arpoise</title>\n<body>copyright © 2019, Tamiko Thiel and Peter Graf</body>\n", stream);
+				}
+			}
+			if (stream)
+			{
+				fclose(stream);
+			}
+
+			uri = pblCgiSprintf("/layernames/%s", fileName);
+			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/layernames");
+		}
+	}
 
 	return 0;
 }
