@@ -20,6 +20,18 @@ For more information on Tamiko Thiel or Peter Graf,
 please see: http://www.mission-base.com/.
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.14  2019/02/03 23:22:28  peter
+Some cleanup
+
+Revision 1.13  2019/02/03 23:19:02  peter
+Changed the directory structure of the hit count mechanism
+
+Revision 1.12  2019/02/03 17:00:02  peter
+Improved handling of redirections
+
+Revision 1.11  2019/02/03 15:20:53  peter
+Moved redirection to the client
+
 Revision 1.10  2019/02/03 13:05:47  peter
 Improved bundle handling
 
@@ -56,7 +68,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.10 2019/02/03 13:05:47 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.14 2019/02/03 23:22:28 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -509,27 +521,6 @@ static char * changeLon(char * string, int i, int difference)
 	return replacedLon;
 }
 
-static char * changeLayerName(char * string, char * layerName)
-{
-	if (!strstr(string, "layerName="))
-	{
-		return pblCgiStrDup(string);
-	}
-
-	char * oldLayerName = getStringBetween(string, "layerName=", "&");
-
-	char * oldLayerNameStr = pblCgiSprintf("layerName=%s", oldLayerName);
-	char * newLayerNameStr = pblCgiSprintf("layerName=%s", layerName);
-
-	char * replacedString = pblCgiStrReplace(string, oldLayerNameStr, newLayerNameStr);
-
-	PBL_FREE(oldLayerName);
-	PBL_FREE(oldLayerNameStr);
-	PBL_FREE(newLayerNameStr);
-
-	return replacedString;
-}
-
 static char * changeLatAndLon(char * queryString, char * lat, char * lon, int * latDifference, int * lonDifference)
 {
 	if (!pblCgiStrIsNullOrWhiteSpace(lat) && !pblCgiStrIsNullOrWhiteSpace(lon))
@@ -579,6 +570,69 @@ static char * changeLatAndLon(char * queryString, char * lat, char * lon, int * 
 		return queryString;
 	}
 	return NULL;
+}
+
+static char * changeRedirectionUrl(char * string, char * redirectionUrl)
+{
+	if (!strstr(string, "\"redirectionUrl\":"))
+	{
+		return pblCgiStrDup(string);
+	}
+
+	char * oldValue = getStringBetween(string, "\"redirectionUrl\":", ",\"");
+
+	char * oldValueStr = pblCgiSprintf("\"redirectionUrl\":%s", oldValue);
+	char * newValueStr = pblCgiSprintf("\"redirectionUrl\":\"%s\"", redirectionUrl);
+
+	char * replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
+
+	PBL_FREE(oldValue);
+	PBL_FREE(oldValueStr);
+	PBL_FREE(newValueStr);
+
+	return replacedString;
+}
+
+static char * changeRedirectionLayer(char * string, char * redirectionLayer)
+{
+	if (!strstr(string, "\"redirectionLayer\":"))
+	{
+		return pblCgiStrDup(string);
+	}
+
+	char * oldValue = getStringBetween(string, "\"redirectionLayer\":", ",\"");
+
+	char * oldValueStr = pblCgiSprintf("\"redirectionLayer\":%s", oldValue);
+	char * newValueStr = pblCgiSprintf("\"redirectionLayer\":\"%s\"", redirectionLayer);
+
+	char * replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
+
+	PBL_FREE(oldValue);
+	PBL_FREE(oldValueStr);
+	PBL_FREE(newValueStr);
+
+	return replacedString;
+}
+
+static char * changeLayerName(char * string, char * layerName)
+{
+	if (!strstr(string, "layerName="))
+	{
+		return pblCgiStrDup(string);
+	}
+
+	char * oldLayerName = getStringBetween(string, "layerName=", "&");
+
+	char * oldLayerNameStr = pblCgiSprintf("layerName=%s", oldLayerName);
+	char * newLayerNameStr = pblCgiSprintf("layerName=%s", layerName);
+
+	char * replacedString = pblCgiStrReplace(string, oldLayerNameStr, newLayerNameStr);
+
+	PBL_FREE(oldLayerName);
+	PBL_FREE(oldLayerNameStr);
+	PBL_FREE(newLayerNameStr);
+
+	return replacedString;
 }
 
 static PblList * devicePositionList = NULL;
@@ -635,98 +689,9 @@ static void traceDuration()
 	PBL_CGI_TRACE("Duration=%s microseconds", string);
 }
 
-extern int showDefaultLayer = 1;
-
-static int arpoiseDirectory(int argc, char * argv[])
+static void handleResponse(char * response, int latDifference, int lonDifference)
 {
-	char * tag = "ArpoiseDirectory";
-
-	struct timeval startTime;
-	gettimeofday(&startTime, NULL);
-
-#ifdef _WIN32
-
-	pblCgiConfigMap = pblCgiFileToMap(NULL, "../config/Win32ArpoiseDirectory.txt");
-
-#else
-
-	pblCgiConfigMap = pblCgiFileToMap(NULL, "../config/ArpoiseDirectory.txt");
-
-#endif
-
-	char * traceFile = pblCgiConfigValue(PBL_CGI_TRACE_FILE, "/tmp/ArpoiseDirectory.txt");
-	pblCgiInitTrace(&startTime, traceFile);
-	PBL_CGI_TRACE("argc %d argv[0] = %s", argc, argv[0]);
-
-	pblCgiParseQuery(argc, argv);
-
-	PBL_CGI_TRACE("-------> Directory Request\n");
-
-	char * hostName = pblCgiConfigValue("HostName", "www.arpoise.com");
-	if (pblCgiStrIsNullOrWhiteSpace(hostName))
-	{
-		pblCgiExitOnError("%s: HostName must be given.\n", tag);
-	}
-	PBL_CGI_TRACE("HostName=%s", hostName);
-
-	int port = 80;
-	char * portString = pblCgiConfigValue("Port", "80");
-	if (!pblCgiStrIsNullOrWhiteSpace(portString))
-	{
-		int givenPort = atoi(portString);
-		if (givenPort < 1)
-		{
-			pblCgiExitOnError("%s: Bad port %d.\n", tag, givenPort);
-		}
-		port = givenPort;
-	}
-	PBL_CGI_TRACE("Port=%d", port);
-
-	char * baseUri = pblCgiConfigValue("BaseUri", "/php/dir/web/porpoise.php");
-	if (pblCgiStrIsNullOrWhiteSpace(baseUri))
-	{
-		pblCgiExitOnError("%s: BaseUri must be given.\n", tag);
-	}
-	//PBL_CGI_TRACE("BaseUri=%s", baseUri);
-
-	char * queryString = pblCgiQueryString;
-
-	// handle fixed device positions
-	//
-	int latDifference = 0;
-	int lonDifference = 0;
-
-	char * userId = pblCgiQueryValue("userId");
-	if (!userId || !*userId)
-	{
-		userId = "UnknownUserId";
-	}
-
-	char * deviceQueryString = handleDevicePosition(userId, queryString, &latDifference, &lonDifference);
-	if (deviceQueryString != NULL)
-	{
-		queryString = deviceQueryString;
-	}
-
-#ifdef _WIN32
-
-	// Initialize Winsock
-	WSADATA wsaData;
-	int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (result != 0)
-	{
-		pblCgiExitOnError("%s: WSAStartup failed: %d\n", tag, result);
-	}
-	//PBL_CGI_TRACE("WSAStartup=ok");
-
-#endif
-
-	char * uri = pblCgiSprintf("%s?%s", baseUri, queryString);
-	//PBL_CGI_TRACE("Uri=%s", uri);
-
-	char * response = getHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId));
-	//PBL_CGI_TRACE("Response=%s", response);
-
+	static char * tag = "handleResponse";
 	char * cookie = NULL;
 	if (strstr(response, "Set-Cookie: "))
 	{
@@ -774,169 +739,8 @@ static int arpoiseDirectory(int argc, char * argv[])
 	}
 	response = ptr;
 
-	char * baseUrlStart = "\"baseURL\":\"";
-	char * layerHost = NULL;
-	int    layerPort = 80;
-	char * layerUrl = NULL;
-	char * layerName = NULL;
-
 	char * start = "{\"hotspots\":";
 	int length = strlen(start);
-
-	int doChangeLatAndLon = 0;
-
-	if (strncmp(start, response, length))
-	{
-		if (!showDefaultLayer)
-		{
-			fputs("Content-Type: application/json\r\n", stdout);
-			if (cookie)
-			{
-				fputs("Set-Cookie: ", stdout);
-				fputs(cookie, stdout);
-				fputs("\r\n", stdout);
-			}
-			fputs("\r\n", stdout);
-			fputs(response, stdout);
-			PBL_CGI_TRACE("Response does not start with %s, no handling", start);
-			return 0;
-		}
-
-		doChangeLatAndLon = 1;
-		layerHost = "www.arpoise.com";
-		layerUrl = "/php/porpoise/web/porpoise.php";
-		layerName = "Reign-of-Gold";
-	}
-	else
-	{
-		ptr = strstr(response, baseUrlStart);
-		if (ptr)
-		{
-			layerUrl = getStringBetween(ptr, baseUrlStart, "\"");
-			while (strchr(layerUrl, '\\'))
-			{
-				layerUrl = pblCgiStrReplace(layerUrl, "\\", "");
-			}
-			ptr = strchr(layerUrl, '/');
-			if (ptr)
-			{
-				layerHost = getStringBetween(layerUrl, "", "/");
-				layerUrl = ptr;
-
-				char * colon = strchr(layerHost, ':');
-				if (colon)
-				{
-					*colon = '\0';
-					layerPort = atoi(colon + 1);
-				}
-			}
-		}
-
-		if (!layerHost || !*layerHost || layerPort < 0 || layerPort > 0xffff || !layerUrl || !*layerUrl)
-		{
-			fputs("Content-Type: application/json\r\n", stdout);
-			if (cookie)
-			{
-				fputs("Set-Cookie: ", stdout);
-				fputs(cookie, stdout);
-				fputs("\r\n", stdout);
-			}
-			fputs("\r\n", stdout);
-			fputs(response, stdout);
-			PBL_CGI_TRACE("Response does not contain proper 'baseURL' value, no handling");
-			return 0;
-		}
-		PBL_CGI_TRACE("LayerUrl=%s", layerUrl);
-
-		char * titleStart = "\"title\":\"";
-
-		ptr = strstr(response, titleStart);
-		if (ptr)
-		{
-			layerName = getStringBetween(ptr, titleStart, "\"");
-		}
-
-		if (!layerName || !*layerName)
-		{
-			fputs("Content-Type: application/json\r\n", stdout);
-			if (cookie)
-			{
-				fputs("Set-Cookie: ", stdout);
-				fputs(cookie, stdout);
-				fputs("\r\n", stdout);
-			}
-			fputs("\r\n", stdout);
-			fputs(response, stdout);
-			PBL_CGI_TRACE("Response does not contain proper 'title' value, no handling");
-			return 0;
-		}
-	}
-
-	PBL_CGI_TRACE("LayerName=%s", layerName);
-	PBL_CGI_TRACE("HostName=%s", layerHost);
-	PBL_CGI_TRACE("Port=%d", layerPort);
-
-	ptr = changeLayerName(queryString, layerName);
-	if (doChangeLatAndLon)
-	{
-		ptr = changeLatAndLon(ptr, "48.158809", "11.580103", NULL, NULL);
-	}
-	uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
-
-	//PBL_CGI_TRACE("Layer Uri=%s", uri);
-
-	response = getHttpResponse(layerHost, layerPort, uri, 16, "ArpoiseDirectory/1.10");
-	//PBL_CGI_TRACE("Response=%s", response);
-
-	cookie = NULL;
-	if (strstr(response, "Set-Cookie: "))
-	{
-		cookie = getStringBetween(response, "Set-Cookie: ", "\r\n");
-	}
-
-	/*
-	* check for HTTP error code like HTTP/1.1 500 Server Error
-	*/
-	ptr = strstr(response, "HTTP/");
-	if (ptr)
-	{
-		ptr = strstr(ptr, " ");
-		if (ptr)
-		{
-			ptr++;
-			if (strncmp(ptr, "200", 3))
-			{
-				pblCgiExitOnError("%s: Bad HTTP response\n%s\n", tag, response);
-			}
-		}
-	}
-
-	if (!ptr)
-	{
-		pblCgiExitOnError("%s: Expecting HTTP response\n%s\n", tag, response);
-	}
-
-	ptr = strstr(ptr, "\r\n\r\n");
-	if (!ptr)
-	{
-		ptr = strstr(ptr, "\n\n");
-		if (!ptr)
-		{
-			pblCgiExitOnError("%s: Illegal HTTP response, no separator.\n%s\n", tag, response);
-		}
-		else
-		{
-			ptr += 2;
-		}
-	}
-	else
-	{
-		ptr += 4;
-	}
-	response = ptr;
-
-	start = "{\"hotspots\":";
-	length = strlen(start);
 
 	if (strncmp(start, response, length))
 	{
@@ -961,9 +765,6 @@ static int arpoiseDirectory(int argc, char * argv[])
 
 	char * rest = NULL;
 	char * hotspotsString = getMatchingString(response + length, '[', ']', &rest);
-
-	//PBL_CGI_TRACE("hotspotsString=%s", hotspotsString);
-	//PBL_CGI_TRACE("rest=%s", rest);
 
 	PblList * list = pblListNewArrayList();
 	if (!list)
@@ -1028,6 +829,274 @@ static int arpoiseDirectory(int argc, char * argv[])
 	putString(rest, stringBuilder);
 	PBL_CGI_TRACE("output=%s", pblStringBuilderToString(stringBuilder));
 	pblStringBuilderFree(stringBuilder);
+}
+
+extern int showDefaultLayer = 1;
+
+static int layerServed = 0;
+static int layer = 0;
+
+static int arpoiseDirectory(int argc, char * argv[])
+{
+	char * tag = "ArpoiseDirectory";
+
+	struct timeval startTime;
+	gettimeofday(&startTime, NULL);
+
+#ifdef _WIN32
+
+	pblCgiConfigMap = pblCgiFileToMap(NULL, "../config/Win32ArpoiseDirectory.txt");
+
+#else
+
+	pblCgiConfigMap = pblCgiFileToMap(NULL, "../config/ArpoiseDirectory.txt");
+
+#endif
+
+	char * traceFile = pblCgiConfigValue(PBL_CGI_TRACE_FILE, "/tmp/ArpoiseDirectory.txt");
+	pblCgiInitTrace(&startTime, traceFile);
+	PBL_CGI_TRACE("argc %d argv[0] = %s", argc, argv[0]);
+
+	pblCgiParseQuery(argc, argv);
+
+	PBL_CGI_TRACE("-------> Directory Request\n");
+
+	char * hostName = pblCgiConfigValue("HostName", "www.arpoise.com");
+	if (pblCgiStrIsNullOrWhiteSpace(hostName))
+	{
+		pblCgiExitOnError("%s: HostName must be given.\n", tag);
+	}
+	PBL_CGI_TRACE("HostName=%s", hostName);
+
+	int port = 80;
+	char * portString = pblCgiConfigValue("Port", "80");
+	if (!pblCgiStrIsNullOrWhiteSpace(portString))
+	{
+		int givenPort = atoi(portString);
+		if (givenPort < 1)
+		{
+			pblCgiExitOnError("%s: Bad port %d.\n", tag, givenPort);
+		}
+		port = givenPort;
+	}
+	PBL_CGI_TRACE("Port=%d", port);
+
+	char * directoryUri = pblCgiConfigValue("DirectoryUri", "/php/dir/web/porpoise.php");
+	if (pblCgiStrIsNullOrWhiteSpace(directoryUri))
+	{
+		pblCgiExitOnError("%s: DirectoryUri must be given.\n", tag);
+	}
+	char * porpoiseUri = pblCgiConfigValue("PorpoiseUri", "/php/porpoise/web/porpoise.php");
+	if (pblCgiStrIsNullOrWhiteSpace(porpoiseUri))
+	{
+		pblCgiExitOnError("%s: PorpoiseUri must be given.\n", tag);
+	}
+
+	char * queryString = pblCgiQueryString;
+
+	// handle fixed device positions
+	//
+	int latDifference = 0;
+	int lonDifference = 0;
+
+	char * userId = pblCgiQueryValue("userId");
+	if (!userId || !*userId)
+	{
+		userId = "UnknownUserId";
+	}
+
+	char * deviceQueryString = handleDevicePosition(userId, queryString, &latDifference, &lonDifference);
+	if (deviceQueryString != NULL)
+	{
+		queryString = deviceQueryString;
+	}
+
+#ifdef _WIN32
+
+	// Initialize Winsock
+	WSADATA wsaData;
+	int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (result != 0)
+	{
+		pblCgiExitOnError("%s: WSAStartup failed: %d\n", tag, result);
+	}
+	//PBL_CGI_TRACE("WSAStartup=ok");
+
+#endif
+
+	char * layerName = pblCgiQueryValue("layerName");
+	int isDirectoryRequest = !pblCgiStrCmp(layerName, "Arpoise-Directory");
+	char * uri = pblCgiSprintf("%s?%s", isDirectoryRequest ? directoryUri : porpoiseUri, queryString);
+
+	char * response = NULL;
+	char * cookie = NULL;
+	char * ptr = NULL;
+	char * layerUrl = NULL;
+
+	int doChangeLatAndLon = 0;
+
+	if (isDirectoryRequest)
+	{
+		response = getHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId));
+		if (strstr(response, "Set-Cookie: "))
+		{
+			cookie = getStringBetween(response, "Set-Cookie: ", "\r\n");
+		}
+
+		/*
+		* check for HTTP error code like HTTP/1.1 500 Server Error
+		*/
+		ptr = strstr(response, "HTTP/");
+		if (ptr)
+		{
+			ptr = strstr(ptr, " ");
+			if (ptr)
+			{
+				ptr++;
+				if (strncmp(ptr, "200", 3))
+				{
+					pblCgiExitOnError("%s: Bad HTTP response\n%s\n", tag, response);
+				}
+			}
+		}
+
+		if (!ptr)
+		{
+			pblCgiExitOnError("%s: Expecting HTTP response\n%s\n", tag, response);
+		}
+
+		ptr = strstr(ptr, "\r\n\r\n");
+		if (!ptr)
+		{
+			ptr = strstr(ptr, "\n\n");
+			if (!ptr)
+			{
+				pblCgiExitOnError("%s: Illegal HTTP response, no separator.\n%s\n", tag, response);
+			}
+			else
+			{
+				ptr += 2;
+			}
+		}
+		else
+		{
+			ptr += 4;
+		}
+		response = ptr;
+
+		char * baseUrlStart = "\"baseURL\":\"";
+		char * start = "{\"hotspots\":";
+		int length = strlen(start);
+
+		if (strncmp(start, response, length))
+		{
+			if (!showDefaultLayer)
+			{
+				fputs("Content-Type: application/json\r\n", stdout);
+				if (cookie)
+				{
+					fputs("Set-Cookie: ", stdout);
+					fputs(cookie, stdout);
+					fputs("\r\n", stdout);
+				}
+				fputs("\r\n", stdout);
+				fputs(response, stdout);
+				PBL_CGI_TRACE("Response does not start with %s, no handling", start);
+				return 0;
+			}
+
+			doChangeLatAndLon = 1;
+			layerUrl = "/php/porpoise/web/porpoise.php";
+			layerName = "Reign-of-Gold";
+		}
+		else
+		{
+			ptr = strstr(response, baseUrlStart);
+			if (ptr)
+			{
+				layerUrl = getStringBetween(ptr, baseUrlStart, "\"");
+				while (strchr(layerUrl, '\\'))
+				{
+					layerUrl = pblCgiStrReplace(layerUrl, "\\", "");
+				}
+			}
+
+			if (!layerUrl || !*layerUrl)
+			{
+				fputs("Content-Type: application/json\r\n", stdout);
+				if (cookie)
+				{
+					fputs("Set-Cookie: ", stdout);
+					fputs(cookie, stdout);
+					fputs("\r\n", stdout);
+				}
+				fputs("\r\n", stdout);
+				fputs(response, stdout);
+				PBL_CGI_TRACE("Response does not contain proper 'baseURL' value, no handling");
+				return 0;
+			}
+
+			char * titleStart = "\"title\":\"";
+
+			ptr = strstr(response, titleStart);
+			if (ptr)
+			{
+				layerName = getStringBetween(ptr, titleStart, "\"");
+			}
+
+			if (!layerName || !*layerName)
+			{
+				fputs("Content-Type: application/json\r\n", stdout);
+				if (cookie)
+				{
+					fputs("Set-Cookie: ", stdout);
+					fputs(cookie, stdout);
+					fputs("\r\n", stdout);
+				}
+				fputs("\r\n", stdout);
+				fputs(response, stdout);
+				PBL_CGI_TRACE("Response does not contain proper 'title' value, no handling");
+				return 0;
+			}
+		}
+		PBL_CGI_TRACE("LayerUrl=%s", layerUrl);
+		PBL_CGI_TRACE("LayerName=%s", layerName);
+
+		if (doChangeLatAndLon)
+		{
+			PBL_CGI_TRACE("-------> Default Layer Request\n");
+
+			ptr = changeLayerName(queryString, layerName);
+			ptr = changeLatAndLon(ptr, "48.158809", "11.580103", NULL, NULL);
+
+			uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
+
+			layerServed = 1;
+			handleResponse(getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/1.14"), latDifference, lonDifference);
+		}
+		else
+		{
+			layer = 1;
+			ptr = changeRedirectionUrl(response, layerUrl);
+			ptr = changeRedirectionLayer(ptr, layerName);
+
+			fputs("Content-Type: application/json\r\n", stdout);
+			if (cookie)
+			{
+				fputs("Set-Cookie: ", stdout);
+				fputs(cookie, stdout);
+				fputs("\r\n", stdout);
+			}
+			fputs("\r\n", stdout);
+			fputs(ptr, stdout);
+			PBL_CGI_TRACE("Redirected client to the url '%s' layer '%s'", layerUrl, layerName);
+		}
+	}
+	else
+	{
+		layerServed = 1;
+		handleResponse(getHttpResponse(hostName, port, uri, 16, "ArpoiseFilter/1.14"), latDifference, lonDifference);
+	}
 
 	char * count = pblCgiQueryValue("count");
 	if (count && !strcmp("1", count))
@@ -1078,17 +1147,17 @@ static int arpoiseDirectory(int argc, char * argv[])
 				fclose(stream);
 			}
 
-			uri = pblCgiSprintf("/versions/%s", fileName);
-			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/versions");
+			uri = pblCgiSprintf("/ArpoiseDirectory/AppVersions/%s", fileName);
+			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/AppVersions");
 		}
 
 		// Create a web hit for the layer, so that web stats can be used to count hits
 		//
-		char * layerNamesDirectory = pblCgiConfigValue("LayerNamesDirectory", "");
-		if (layerNamesDirectory && *layerNamesDirectory && layerName && *layerName)
+		char * layersDirectory = pblCgiConfigValue("LayersDirectory", "");
+		if (layer && layersDirectory && *layersDirectory && layerName && *layerName)
 		{
 			char * fileName = pblCgiSprintf("%s.htm", layerName);
-			char * filePath = pblCgiSprintf("%s/%s", layerNamesDirectory, fileName);
+			char * filePath = pblCgiSprintf("%s/%s", layersDirectory, fileName);
 
 			FILE * stream = NULL;
 
@@ -1114,8 +1183,44 @@ static int arpoiseDirectory(int argc, char * argv[])
 				fclose(stream);
 			}
 
-			uri = pblCgiSprintf("/layernames/%s", fileName);
-			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/layernames");
+			uri = pblCgiSprintf("/ArpoiseDirectory/Layers/%s", fileName);
+			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/Layers");
+		}
+
+		// Create a web hit for the layer served, so that web stats can be used to count hits
+		//
+		char * layersServedDirectory = pblCgiConfigValue("LayersServedDirectory", "");
+		if (layerServed && layersServedDirectory && *layersServedDirectory && layerName && *layerName)
+		{
+			char * fileName = pblCgiSprintf("%s.htm", layerName);
+			char * filePath = pblCgiSprintf("%s/%s", layersServedDirectory, fileName);
+
+			FILE * stream = NULL;
+
+#ifdef WIN32
+			errno_t err = fopen_s(&stream, filePath, "r");
+			if (err != 0)
+			{
+				stream = NULL;
+			}
+#else
+			stream = fopen(filePath, "r");
+#endif
+			if (!stream)
+			{
+				stream = pblCgiFopen(filePath, "a");
+				if (stream)
+				{
+					fputs("<title>Arpoise</title>\n<body>copyright © 2019, Tamiko Thiel and Peter Graf</body>\n", stream);
+				}
+			}
+			if (stream)
+			{
+				fclose(stream);
+			}
+
+			uri = pblCgiSprintf("/ArpoiseDirectory/LayersServed/%s", fileName);
+			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/LayersServed");
 		}
 	}
 
