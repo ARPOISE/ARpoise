@@ -1,2 +1,2 @@
-# Arpoise
-Arpoise - Augmented reality point of interest software environment.
+# ARpoise
+ARpoise - Augmented Reality point of interest software environment.
