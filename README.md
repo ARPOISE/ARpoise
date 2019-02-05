@@ -2,14 +2,15 @@
 # ARpoise - *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
 
 ## Overview
-ARpoise is an open-source Augmented Reality service environment allowing to view location based AR content created in
+ARpoise is an open-source Augmented Reality service environment allowing
+to distribute and view location based AR content created in
 [Unity](http://unity3d.com). Client applications for Android, 
-[see the Google Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise),
+see the [Google Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise),
 and iOS,
-[see the Apple App Store](https://www.apple.com/lae/ios/app-store/),
+see the [Apple App Store](https://www.apple.com/lae/ios/app-store/),
 have been implemented.
 
-The goal of ARpoise is to provide an open-source community based replacement for the 
+The goal of ARpoise is to provide an open-source community-based replacement for the 
 [layar app](https://www.layar.com/).
 
 ## Functionality
@@ -38,6 +39,15 @@ The Arpoise version of PorPOISe converts your data sets of **POI**s into respons
 Things like JSON formatting and distance calculation are all done for you. Arpoise supports XML as data stores.
 
 ## Components
+### IOS and Adroid client application
+See [unity/AndroidApp](unity/AndroidApp/).
+The two applications do not differ in script code or assets. Therefore only one version is kept here on GitHub.
+### Arpoise Directory FrontEnd
+See [ArpoiseDirectory](ArpoiseDirectory/).
+### Arpoise Directory Backend
+See [/php/dir](php/dir/).
+### Arpoise PorPOISe Backend
+See [/php/porpoise](php/porpoise/).
 
 ## Restrictions
 - The current client implementations do not have any user interface. The client simply shows the content served by the back-end.
