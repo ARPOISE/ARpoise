@@ -1,1 +1,1 @@
-This directory contains a clone of the pbl library used for the arpoise directory service.
+This directory contains a clone of the pbl library used for the ARpoise directory cgi-service.
