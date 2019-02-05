@@ -1,4 +1,4 @@
-# ARpoise Directory Backend.
+# ARpoise Porpoise Backend.
 
 ## Overview
 This is a version of porpoise used for the placing of the pois of your layers.
