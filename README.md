@@ -39,7 +39,7 @@ The Arpoise version of PorPOISe converts your data sets of **POI**s into respons
 Things like JSON formatting and distance calculation are all done for you. Arpoise supports XML as data stores.
 
 ## Components
-### IOS and Adroid client application
+### IOS and Android client application
 See [unity/AndroidApp](unity/AndroidApp/).
 The two applications do not differ in script code or assets. Therefore only one version is kept here on GitHub.
 ### Arpoise Directory FrontEnd
