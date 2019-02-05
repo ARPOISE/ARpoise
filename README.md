@@ -16,7 +16,7 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 ## Functionality
 - Location-based, Unity-created AR-content can be shown on Android and iOS devices at any location in the world.
 
-- The 3D content visible in ARpoise is independent of the ARpoise app download from the
+- The 3D content visible in ARpoise is independent of the ARpoise app downloaded from the
 [Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise)
 or the
 [App Store](https://www.apple.com/lae/ios/app-store/).
