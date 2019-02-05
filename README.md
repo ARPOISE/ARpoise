@@ -35,26 +35,26 @@ so they will always be around the user.
 - **POI**s can be added to and removed from an ARpoise layer via a PHP based web interface similar to the
 [PorPOISe for Layar](https://code.google.com/archive/p/porpoise/) web service.
 The placement of individual **POI**s can be performed through a Google-maps-based click-and-drag map interface.
-The Arpoise version of PorPOISe converts your data sets of **POI**s into responses to the ARpoise client.
-Things like JSON formatting and distance calculation are all done for you. Arpoise supports XML as data stores.
+The ARpoise version of PorPOISe converts your data sets of **POI**s into responses to the ARpoise client.
+Things like JSON formatting and distance calculation are all done for you. ARpoise supports XML as data stores.
 
 ## Components
 ### IOS and Android client application
 See [unity/AndroidApp](unity/AndroidApp/).
 The two applications do not differ in script code or assets. Therefore only one version is kept here on GitHub.
-### Arpoise Directory FrontEnd
-See [ArpoiseDirectory](ArpoiseDirectory/).
-### Arpoise Directory Backend
+### ARpoise Directory FrontEnd
+See [ARpoiseDirectory](ArpoiseDirectory/).
+### ARpoise Directory Backend
 See [/php/dir](php/dir/).
-### Arpoise PorPOISe Backend
+### ARpoise PorPOISe Backend
 See [/php/porpoise](php/porpoise/).
 
 ## Restrictions
-- The current client implementations do not have any user interface. The client simply shows the content served by the back-end.
+- The current client implementations do not have any user interface. The ARpoise application clients simply show the content served by the back-end.
 
-- Only one ARpoise layer is show at any location in the world.
-If there is at least one ARpoise layer placed within 1500 meters of the client location, the nearest one of those is shown.
-if there is no layer within 1500 meters of the client location, a default layer is shown.
+- Only one ARpoise layer is shown at any location in the world.
+If there is one or more ARpoise layers placed within 1500 meters of the client location, the nearest one of them is shown.
+if there is no layer within 1500 meters of the client location, the default layer is shown.
 Currently
 [Tamiko Thiel's *Reign of Gold*](http://tamikothiel.com/AR/reign-of-gold.html).
 
