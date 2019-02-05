@@ -10,7 +10,7 @@ and iOS,
 see the [Apple App Store](https://www.apple.com/lae/ios/app-store/),
 have been implemented.
 
-The goal of ARpoise is to provide an open-source community-based replacement for the 
+The goal of ARpoise is to provide an open-source, community-based replacement for the 
 [layar app](https://www.layar.com/).
 
 ## Functionality
