@@ -30,7 +30,7 @@ ARpoise level animations like scale, rotation, and transformation to be started
 - **POI**s can have an absolute world location defined by their longitude and latitude
 or they can have a position relative to the user defined in meters of distance in the X, Y, and Z directions.
 **POI**s with an absolute location can additionally be confined into an area around the user,
-they will always be around the user.
+so they will always be around the user.
 
 - **POI**s can be added to and removed from an ARpoise layer via a PHP based web interface similar to the
 [PorPOISe for Layar](https://code.google.com/archive/p/porpoise/) web service.
