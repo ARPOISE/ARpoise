@@ -14,6 +14,8 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 [layar app](https://www.layar.com/).
 
 ## Functionality
+- Location based, Unity created AR-content can be shown on Android and iOS devices at any location in the world.
+
 - The 3D content shown in the ARpoise app is independent of the app download from the
 [Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise)
 or the
