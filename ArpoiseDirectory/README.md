@@ -1,7 +1,7 @@
 # ARpoiseDirectory
 
 ARpoiseDirectory is a cgi-bin program written in C. It acts as a cgi filter between the ARpoise client app and the 
-[/php/dir](php/dir/) ARpoise directory backend.
+[/php/dir](../php/dir/) ARpoise directory backend.
 
 ## Functionality
 After receiving a request from the ARpoise client app,
