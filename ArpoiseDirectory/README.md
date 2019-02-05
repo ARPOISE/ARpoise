@@ -1,7 +1,13 @@
-# ArpoiseDirectory
+# ARpoiseDirectory
 
-ArpoiseDirectory is a cgi-bin program written in C. It acts as a cgi filter between the Arpoise app and the dir.php arpoise directory backend.
+ARpoiseDirectory is a cgi-bin program written in C. It acts as a cgi filter between the ARpoise client app and the dir.php ARpoise directory backend.
 
-After receiving a request from the Arpoise app, it connects to the arpoise directory backend and queries whether there is content at the user's location. If so it contacts the layer's porpoise.php point of interest provider and returns the pois found.
+## Functionality
+After receiving a request from the ARpoise client app,
+it connects to the ARpoise directory PHP backend and queries whether there are any layers within 1500 meters of the user's location.
+If so, it redirects the client to the url and layer name of the layer closest to the client.
+If no so, it returns the information of the default layer to the client.
 
-For compiling it you also need to clone the repository peterGraf/pbl.
+## Note
+For compiling it, you also need the clone the pbl repository
+[repository(../pbl/src/).
