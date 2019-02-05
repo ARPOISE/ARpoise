@@ -20,7 +20,7 @@ In order to build the app you should
 
 - get a version of Unity, we tested it on 2018.2.2 and 2018.3.3.
 - start with a new Unity project and replace the main camera in the scene with a Vuforia ArCamera.
-- make the app work, so you can see the camery image when running on your test device.
+- make the app work, so you can see the camera image when running on your test device.
 - close Unity.
 - copy the assets from here to your assets folder.
 - start Unity again.
