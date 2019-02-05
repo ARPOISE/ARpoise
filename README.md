@@ -30,7 +30,7 @@ ARpoise level animations like scale, rotation, and transformation to be started
 'on load', 'on focus', or 'on click' of a **POI**.
 
 - **POI**s can have an absolute world location defined by their longitude and latitude
-or they can have a position relative to the user' device defined in meters of distance in the X, Y, and Z directions.
+or they can have a position relative to the user's device defined in meters of distance in the X, Y, and Z directions.
 **POI**s with an absolute location can additionally be confined into an area around the user,
 so they will always be around the user.
 
