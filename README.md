@@ -10,7 +10,7 @@ and iOS,
 see the [Apple App Store](https://www.apple.com/lae/ios/app-store/),
 have been implemented.
 
-The goal of ARpoise is to provide an open-source, community-based location-based AR App as a replacement for the 
+The goal of ARpoise is to provide an open-source, community-supported, location-based AR App as a replacement for the 
 [layar app](https://www.layar.com/).
 
 ## Functionality
