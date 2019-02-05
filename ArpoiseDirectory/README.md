@@ -10,4 +10,4 @@ If no so, it returns the information of the default layer to the client.
 
 ## Note
 For compiling it, you also need the clone the pbl repository
-[repository(../pbl/src/).
+[repository](../pbl/src/).
