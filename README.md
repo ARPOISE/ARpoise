@@ -17,12 +17,20 @@ The goal of ARpoise is to provide an open-source community based replacement for
 [Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise)
 or the
 [App Store](https://www.apple.com/lae/ios/app-store/).
-The point of interrests (**POIS**) specified in an ARpoise layer definitions contain the URL of an
+The point of interrests (**POI**)s specified in an ARpoise layer definitions contain the URL of an
 Unity AssetBundle.
 When showing the **POI** the ARpoise app downloads this asset bundle
 and loads the 3D Unity prefab of the **POI** from it.
 
-- Unity created 3D content can include scripts and animations. Furthermore **POI**s allow also ARpoise level anymations like scale, rotation, and transformation to be started on load, on focus, or on click of a **POI**.
+- Unity created 3D content can include scripts and animations. Furthermore **POI**s can also have
+ARpoise level animations like scale, rotation, and transformation to be started
+'on load', 'on focus', or 'on click' of a **POI**.
+
+- **POI**s can be added to and removed from an ARpoise layer via a PHP based web interface similar to the
+[PorPOISe for Layar](https://code.google.com/archive/p/porpoise/) web service.
+The placement of individual **POI**s can be performed through a Google maps based click and drag map interface.
+The Arpoise version of PorPOISe converts your data sets of **POI**s into responses to the ARpoise client.
+Things like JSON formatting and distance calculation are all done for you. Arpoise supports XML as data stores.
 
 ## Components
 
