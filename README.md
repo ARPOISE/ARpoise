@@ -14,7 +14,7 @@ The goal of ARpoise is to provide an open-source, community-based replacement fo
 [layar app](https://www.layar.com/).
 
 ## Functionality
-- The 3D content shown in the ARpoise app is not included in the app download from the
+- The 3D content shown in the ARpoise app is independent of the app download from the
 [Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise)
 or the
 [App Store](https://www.apple.com/lae/ios/app-store/).
