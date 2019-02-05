@@ -22,13 +22,18 @@ Unity AssetBundle.
 When showing the **POI** the ARpoise app downloads this asset bundle
 and loads the 3D Unity prefab of the **POI** from it.
 
-- Unity created 3D content can include scripts and animations. Furthermore **POI**s can also have
+- Unity created 3D content can include scripts and animations. Furthermore **POI**s can have
 ARpoise level animations like scale, rotation, and transformation to be started
 'on load', 'on focus', or 'on click' of a **POI**.
 
+- **POI**s can have an absolute world location defined by their longitude and latitude
+or they can have a position relative to the user defined as meters of distande in the X, Y, and Z directions.
+**POI**s with an absolute location can additionally be confined into an area around the user,
+they will always be around the user.
+
 - **POI**s can be added to and removed from an ARpoise layer via a PHP based web interface similar to the
 [PorPOISe for Layar](https://code.google.com/archive/p/porpoise/) web service.
-The placement of individual **POI**s can be performed through a Google maps based click and drag map interface.
+The placement of individual **POI**s can be performed through a Google-maps-based click-and-drag map interface.
 The Arpoise version of PorPOISe converts your data sets of **POI**s into responses to the ARpoise client.
 Things like JSON formatting and distance calculation are all done for you. Arpoise supports XML as data stores.
 
