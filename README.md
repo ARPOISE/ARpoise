@@ -25,7 +25,7 @@ Unity AssetBundle.
 When showing the **POI** the ARpoise app downloads this asset bundle
 and loads the 3D Unity prefab of the **POI** from it.
 
-- Unity created 3D content of ARpoise can include all your scripts and animations. Furthermore **POI**s can have
+- Unity-created 3D content of ARpoise can include all your scripts and animations. Furthermore **POI**s can have
 ARpoise level animations like scale, rotation, and transformation to be started
 'on load', 'on focus', or 'on click' of a **POI**.
 
