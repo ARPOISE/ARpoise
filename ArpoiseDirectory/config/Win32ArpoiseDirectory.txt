@@ -2,7 +2,7 @@
 #
 HostName				www.arpoise.com
 Port					80
-BaseUri					/php/dir/web/porpoise.php
+BaseUri					/dir/web/porpoise.php
 
 ## Traces are only written if the file exists, the file needs to be writable by the cgi program
 #
