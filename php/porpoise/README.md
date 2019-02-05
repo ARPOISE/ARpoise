@@ -3,17 +3,14 @@
 ## Overview
 This is a version of porpoise used for the placing of the pois of your layers.
 
-The ARpoise directory has to be maintaned on www.arpoise.com. It contains a single meta layer, the Arpoise-Directory.
-The "**POI**s" of this layer define the name, url and location of layers visible in ARpoise.
+In order to add layers to ARpoise you need to download and install this package onto YOUR web server!
 
 ## Functionality
-The ARpoise directory frontend contacts this web service with the client location as parameter.
+The ARpoise client contacts this web service with the client location and the layer name as parameter.
 
-The service returns all definitions of layers that are within 1500 meters of the client location.
+The service returns the definitions of of the **POI**s of the layer.
 
-If there are no layers within range of the client location, an empty list of layer definitions is returned.
-
-The placing of the layers can be performed in a Google-maps-based click-and-drag interface.
+The placing of the **POI**s of the layer can be performed in a Google-maps-based click-and-drag interface.
 
 ## Original Documentation
 ===PorPOISe for Layar===
