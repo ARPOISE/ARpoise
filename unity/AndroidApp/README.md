@@ -5,7 +5,7 @@ This app has been submitted to the Google Play Store and the Apple App Store.
 You do not need to build it yourself.
 
 ## Functionality
-- Connects to the ARpoise Directory Front end and supplies the users location.
+- Connects to the ARpoise Directory Front end and supplies the user's location.
 
 - Receives back the porpoise url and name of the closest layer or the default layer.
 
