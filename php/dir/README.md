@@ -8,9 +8,9 @@ The ARpoise directory has to be maintaned on www.arpoise.com. It contains a sing
 The "**POI**s" of this layer define the name, url and location of layers visible in ARpoise.
 
 ## Functionality
-The ARpoise directory frontend contacts this web service with the client location as parameter.
+The ARpoise directory frontend contacts this web service with the client's location as parameter.
 
-The service returns all definitions of layers that are within 1500 meters of the client location.
+The service returns all definitions of layers that are within the range of the client's location.
 
 If there are no layers within range of the client location, an empty list of layer definitions is returned.
 
