@@ -58,7 +58,7 @@ See [/php/porpoise](php/porpoise/).
 - The current client implementations do not have any user interface. The ARpoise application clients simply show the content served by the back-end.
 
 - Only one ARpoise layer is shown at any location in the world.
-If there is one or more ARpoise layers located within a range of 1500 meters of the client's location, the nearest one of them is shown.
+If there is one or more ARpoise layers located within the range of the client's location, the nearest one of them is shown.
 if there is no layer within the range of the client's location, the default layer is shown.
 Currently
 [Tamiko Thiel's *Reign of Gold*](http://tamikothiel.com/AR/reign-of-gold.html).
