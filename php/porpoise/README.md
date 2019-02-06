@@ -8,6 +8,7 @@ In order to add your layers to ARpoise you need to download and install this pac
 
 For using the Google-maps-based click-and-drag interface interface you need to use **YOUR** own Google-maps id.
 
+## Application
 In order for any of your layers to be visible in ARpoise
 you need to supply the **url** of your PorPOISe installation that is serving the layer's content,
 and the **name**, and the **longitude** and **latitude** coordinates of the layer.
