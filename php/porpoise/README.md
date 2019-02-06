@@ -12,7 +12,7 @@ In order for any of your layers to be visible in ARpoise
 you need to supply the url of your PorPOISe installation that is serving the layer's content,
 and the name, and the longitude and latitude coordinates of the layer.
 
-The 3D content of all of the **POI**s of your layer needs to be put as a prefab into an Unity asset bundle
+The 3D content of all of the **POI**s of your layer needs to be put as an Unity prefab into an Unity asset bundle
 made available on the net and referenced by the **POI** definition in your layer.
 
 ## Functionality
