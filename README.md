@@ -22,7 +22,7 @@ or the
 [App Store](https://www.apple.com/lae/ios/app-store/).
 The points of interest, (**POI**)s, specified in an ARpoise layer definition contain the URL of an
 Unity AssetBundle.
-When showing the **POI** the ARpoise app downloads this asset bundle
+When showing a **POI**, the ARpoise app downloads this asset bundle
 and loads the 3D Unity prefab of the **POI** from it.
 
 - Unity-created 3D content of ARpoise can include all your scripts and animations. Furthermore **POI**s can have
