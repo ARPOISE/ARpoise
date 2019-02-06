@@ -47,11 +47,11 @@ Things like JSON formatting and distance calculation are all done for you. ARpoi
 ### IOS and Android client application
 See [unity/AndroidApp](unity/AndroidApp/).
 The two applications do not differ in script code or assets. Therefore only one version is kept here on GitHub.
-### ARpoise Directory FrontEnd
+### ARpoise-Directory FrontEnd
 See [ARpoiseDirectory](ArpoiseDirectory/).
-### ARpoise Directory Backend
+### ARpoise-Directory Backend
 See [/php/dir](php/dir/).
-### ARpoise PorPOISe Backend
+### ARpoise-PorPOISe Backend
 See [/php/porpoise](php/porpoise/).
 
 ## Restrictions
