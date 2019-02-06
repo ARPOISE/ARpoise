@@ -18,7 +18,7 @@ made available on the net and referenced by the **POI** definition in your layer
 
 Creation of asset bundles in Unity is beyond this documentation. One thing we found is,
 asset bundles created for either Android or iOS do not work on the "other" platform.
-Therefore you need to **two** asset bundles one for Android and one for iOS.
+Therefore you need to provide **two** asset bundles, one for Android and one for iOS.
 
 As you can only enter one asset bundle url in the ARpoise PorPOISe configuration, 
 ARpoise assumes that the asset bundle name given is the one of the Android asset bundle.
