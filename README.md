@@ -16,11 +16,14 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 ## Functionality
 - Location-based, Unity-created AR-content can be shown on Android and iOS devices at any location in the world.
 
+- Layers of points of interest, (**POI**)s, can be added to,
+removed from, or placed within the world coordinates of ARpoise dynamically.
+
 - The 3D content visible in ARpoise is independent of the ARpoise app downloaded from the
 [Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise)
 or the
 [App Store](https://www.apple.com/lae/ios/app-store/).
-The points of interest, (**POI**)s, specified in an ARpoise layer definition contain the URL of an
+The (**POI**)s specified in an ARpoise layer definition contain the URL of an
 Unity AssetBundle.
 When showing a **POI**, the ARpoise app downloads this asset bundle
 and loads the 3D Unity prefab of the **POI** from it.
