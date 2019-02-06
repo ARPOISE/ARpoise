@@ -1,5 +1,5 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# ARpoise - *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
+# *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
 
 ## Overview
 ARpoise is an open-source Augmented Reality service environment allowing
