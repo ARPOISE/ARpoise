@@ -2,7 +2,7 @@
 # ARpoise Mobile Client App
 
 ## Overview
-ARpoise Client App has been submitted to the Google Play Store and the Apple App Store. 
+The ARpoise Client App has been submitted to the Google Play Store and the Apple App Store. 
 You do not need to build it yourself.
 
 ## Functionality
