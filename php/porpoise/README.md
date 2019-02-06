@@ -2,7 +2,7 @@
 # ARpoise-PorPOISe Backend
 
 ## Overview
-This is a version of porpoise used for the placing of the pois of YOUR layers.
+This is the version of PorPOISe used for the placing of the pois of YOUR layers.
 
 In order to add layers to ARpoise you need to download and install this package onto YOUR web server!
 
@@ -13,7 +13,7 @@ The ARpoise client contacts this web service with the client location and the la
 
 The service returns the definitions of of the **POI**s of the layer.
 
-The placing of the **POI**s of the layer can be performed in a Google-maps-based click-and-drag interface.
+The placing of the **POI**s of the layer into world coordinates can be performed in a Google-maps-based click-and-drag interface.
 
 ## Original Documentation
 ===PorPOISe for Layar===
