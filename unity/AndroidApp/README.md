@@ -8,7 +8,7 @@ You do not need to build it yourself.
 ## Functionality
 - Connects to the ARpoise-Directory Frontend and supplies the location of the user's device.
 
-- Receives back the porpoise url and name of the layer closest to the user or the default layer.
+- Receives back the porpoise url and name of the layer closest to the user or of the default layer.
 
 - Connects to the porpoise of the layer and downloads the list of **POI**s of the layer.
 
