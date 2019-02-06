@@ -12,7 +12,7 @@ The ARpoise directory frontend contacts this web service with the client's locat
 
 The service returns all definitions of layers that are within the range of the client's location.
 
-If there are no layers within range of the client location, an empty list of layer definitions is returned.
+If there are no layers within range of the client's location, an empty list of layer definitions is returned.
 
 The placing of the layers can be performed in a Google-maps-based click-and-drag web interface.
 
