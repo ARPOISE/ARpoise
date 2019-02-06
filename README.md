@@ -14,7 +14,7 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 [layar app](https://www.layar.com/).
 
 ## Functionality
-- Your location-based, Unity-created AR-content can be shown on Android and iOS devices at any location in the world.
+- Your location-based, unity-created AR-content can be shown on Android and iOS devices at any location in the world.
 
 - Artist definded layers of points of interest, (**POI**)s, can be added to,
 removed from, or placed within the world coordinates of ARpoise dynamically.
