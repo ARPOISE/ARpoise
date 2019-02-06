@@ -2,7 +2,7 @@
 # ARpoise-PorPOISe Backend
 
 ## Overview
-This is the version of PorPOISe used for the placing of the pois of YOUR layers.
+This is the version of PorPOISe used for the placing of the pois of **YOUR** layers.
 
 In order to add layers to ARpoise you need to download and install this package onto YOUR web server!
 
