@@ -9,11 +9,23 @@ In order to add your layers to ARpoise you need to download and install this pac
 For using the Google-maps-based click-and-drag interface interface you need to use **YOUR** own Google-maps id.
 
 In order for any of your layers to be visible in ARpoise
-you need to supply the url of your PorPOISe installation that is serving the layer's content,
-and the name, and the longitude and latitude coordinates of the layer.
+you need to supply the **url** of your PorPOISe installation that is serving the layer's content,
+and the **name**, and the **longitude** and **latitude** coordinates of the layer.
 
 The 3D content of all of the **POI**s of your layer needs to be put as an Unity prefab into an Unity asset bundle
 made available on the net and referenced by the **POI** definition in your layer.
+
+Creation of asset bundles in Unity is beyond this documentation. One thing we found is,
+asset bundles created for either Android or iOS do not work on the "other" platform.
+Therefore you need to **two** asset bundles one for Android and one for iOS.
+
+As you can only enter one asset bundle url in the ARpoise PorPOISe configuration, 
+ARpoise assumes that the asset bundle name given is the one of the Android asset bundle.
+The name of the iOS asset bundle has to be the Android name followed by 'i'.
+
+Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle_",
+you also need to avail the iOS asset bundle with the url ".../MyAssetBundle_i". 
+
 
 ## Functionality
 The ARpoise client contacts this web service with the client location and the layer name as parameter.
