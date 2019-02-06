@@ -1,5 +1,5 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# ARpoise PorPOISe Backend
+# ARpoise-PorPOISe Backend
 
 ## Overview
 This is a version of porpoise used for the placing of the pois of your layers.
