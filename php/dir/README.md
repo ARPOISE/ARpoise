@@ -2,7 +2,7 @@
 # ARpoise-Directory Backend
 
 ## Overview
-This is an ARpoise-internal version of porpoise used for the placing of the layers in the ARpoise directory.
+This is an ARpoise-internal version of PorPOISe used for the placing of the layers in the ARpoise directory.
 
 The ARpoise directory has to be maintaned on www.arpoise.com. It contains a single "meta" layer, the Arpoise-Directory.
 The "**POI**s" of this layer define the name, url and location of layers visible in ARpoise.
@@ -14,7 +14,7 @@ The service returns all definitions of layers that are within the range of the c
 
 If there are no layers within range of the client's location, an empty list of layer definitions is returned.
 
-The placing of the layers can be performed in a Google-maps-based click-and-drag web interface.
+Within the ARpoise-Directory backend the placing of the layers can be performed in a Google-maps-based click-and-drag web interface.
 
 ## Original Documentation
 
@@ -28,21 +28,16 @@ Jens de Smit, jens@layar.com
 PorPOISe is a server for Layar clients. It converts your data sets of POIs
 (Points of Interest) into responses to the Layar client. Things like JSON
 formatting and distance calculation are all done for you. PorPOISe supports
-XML files and SQL databases as data stores.
+XML files as data stores.
 
 ===Getting started===
 Read INSTALL for installation instructions. Once properly installed, you can
 use the dashboard to create your first POIs. The interface is pretty spartan
 but this will generate correct output format. Study the format if you intend to
-generate your own XML files or database.
+generate your own XML files.
 
 From here on you're on your own. Build a better interface for the dashboard or
 expand PorPOISe to have more features if you need more.
-
-===A note on tab-delimited files===
-From version 1.0 tab-delimited files are deprecated and their use is
-discouraged if you plan to use advanced Layar features. Your old files will
-work but the newest layer features are not supported.
 
 ===History===
 PorPOISe originated at SURFnet in 2009 as a spin-off from a small layer-
