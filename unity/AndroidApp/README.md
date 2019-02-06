@@ -8,11 +8,11 @@ You do not need to build it yourself.
 ## Functionality
 - Connects to the ARpoise-Directory Frontend and supplies the location of the user's device.
 
-- Receives back the porpoise url and name of the layer closest to the user or of the default layer.
+- Receives back the porpoise-service url and name of the layer closest to the user or of the default layer.
 
-- Connects to the porpoise of the layer and downloads the list of **POI**s of the layer.
+- Connects to the porpoise service of the layer and downloads the list of **POI**s of the layer.
 
-- Downloads the Unity AssetBundle of each **POI** and loads the **POI**'s Unity prefab from the asset bundle.
+- Downloads the Unity AssetBundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
 
 - Places the **POI**s into the 3D scene and shows the camera image as the background of the scene.
 
