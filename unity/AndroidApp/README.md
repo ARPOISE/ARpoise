@@ -23,7 +23,7 @@ If you really need to, in order to build the app you should,
 - start a new Unity project and replace the main camera in the default scene with a Vuforia ArCamera.
 - make the app work! So you can see the camera image when running on your test device. Note, emulators will not work!
 - close Unity.
-- copy the Assets from this repository to your assets folder.
+- copy the Assets from this repository to your local assets folder.
 - start Unity again.
 - replace your scene with the ArScene from the assets.
 - once more, make the app work! So you can see the camera image and some artifacts or messages from ARpoise.
