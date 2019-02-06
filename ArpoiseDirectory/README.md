@@ -7,9 +7,9 @@ ARpoiseDirectory is a cgi-bin program written in C. It acts as a cgi filter betw
 
 ## Functionality
 After receiving a request from the ARpoise client app,
-it connects to the ARpoise directory PHP backend and queries whether there are any layers within 1500 meters of the user's location.
+it connects to the ARpoise directory backend and queries whether there are any layers within the user's range.
 
-If so, it redirects the client to the url and layer name of the layer closest to the client.
+If so, it redirects the user's client ARpoise app to the url and layer name of the layer closest to the client.
 
 If not so, it returns the information of the default layer to the client.
 
