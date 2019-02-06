@@ -1,5 +1,5 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# ARpoise-Directory Backend.
+# ARpoise-Directory Backend
 
 ## Overview
 This is an ARpoise-internal version of porpoise used for the placing of the layers in the ARpoise directory.
