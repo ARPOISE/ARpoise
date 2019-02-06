@@ -6,7 +6,7 @@ This is the version of PorPOISe used for the placing of the pois of **YOUR** lay
 
 In order to add your layers to ARpoise you need to download and install this package onto **YOUR** web server!
 
-For using the Google-maps-based click-and-drag interface interface you need to use your **own** Google-maps id.
+For using the Google-maps-based click-and-drag interface interface you need to use **your** own Google-maps id.
 
 In order for any of your layers to be visible in ARpoise
 you need to supply the url of your PorPOISe installation that is serving the layer's content,
