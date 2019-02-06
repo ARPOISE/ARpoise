@@ -23,7 +23,7 @@ removed from, or placed within the world coordinates of ARpoise dynamically.
 [Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise)
 or the
 [App Store](https://www.apple.com/lae/ios/app-store/).
-The (**POI**)s specified in an ARpoise layer definition contain the URL of an
+The **POI**s specified in an ARpoise layer definition contain the URL of an
 Unity AssetBundle.
 When showing a **POI**, the ARpoise app downloads this asset bundle
 and loads the 3D Unity prefab of the **POI** from it.
