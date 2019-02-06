@@ -2,7 +2,7 @@
 # ARpoise-Directory Backend
 
 ## Overview
-This is an ARpoise internal version of PorPOISe used for the placing of the layers in the ARpoise directory.
+This is an ARpoise internal version of PorPOISe used for the placing of artist's layers in the ARpoise directory.
 
 The ARpoise directory has to be maintaned on www.arpoise.com. It contains a single "meta" layer, the Arpoise-Directory.
 The "**POI**s" of this layer define the name, url and location of layers visible in ARpoise.
