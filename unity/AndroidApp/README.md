@@ -17,7 +17,7 @@ You do not need to build it yourself.
 - Places the **POI**s into the 3D scene and shows the camera image as the background of the scene.
 
 ## Building the App
-In order to build the app you should 
+In order to build the app you should, 
 
 - get a version of Unity, including Android and iOS build capabilities and Vuforia. We tested it on 2018.2.2 and 2018.3.3.
 - start with a new Unity project and replace the main camera in the default scene with a Vuforia ArCamera.
