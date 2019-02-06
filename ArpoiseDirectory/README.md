@@ -14,5 +14,5 @@ If so, it redirects the user's client ARpoise app to the url and layer name of t
 If not so, it returns the information of the default layer to the client.
 
 ## Note
-For compiling, you also need the pbl
+For compiling you also need the pbl
 [repository](../pbl/src/).
