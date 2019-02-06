@@ -1,5 +1,5 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# ARpoiseDirectory
+# ARpoise-Directory Frontend
 
 ## Overview
 ARpoiseDirectory is a cgi-bin program written in C.
