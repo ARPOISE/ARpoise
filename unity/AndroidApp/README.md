@@ -20,7 +20,7 @@ You do not need to build it yourself.
 In order to build the app you should, 
 
 - get a version of Unity, including Android and iOS build capabilities and Vuforia. We tested it on 2018.2.2 and 2018.3.3.
-- start with a new Unity project and replace the main camera in the default scene with a Vuforia ArCamera.
+- start a new Unity project and replace the main camera in the default scene with a Vuforia ArCamera.
 - make the app work! So you can see the camera image when running on your test device, note that emulators will not work!
 - close Unity.
 - copy the assets from this repository to your assets folder.
