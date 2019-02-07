@@ -14,7 +14,7 @@ You do not need to build it yourself.
 
 - Downloads the Unity AssetBundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
 
-- Places the **POI**s into the 3D scene and shows the camera image as the background of the scene.
+- Places the **POI**s' Unity prefabs into the 3D scene and shows the camera image as the background of the scene.
 
 ## Building the App
 If you really need to, in order to build the app you should, 
