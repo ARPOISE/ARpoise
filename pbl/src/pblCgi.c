@@ -24,8 +24,11 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblCgi.c,v $
- Revision 1.2  2019/01/26 15:13:28  peter
- Multiple lines are comma separated in pblCgiFileToMap
+ Revision 1.3  2019/02/07 21:15:35  peter
+ Cleaning up after tests of ARpoise
+
+ Revision 1.51  2019/02/07 21:11:57  peter
+ Cleaning up after tests of ARpoise
 
  Revision 1.50  2019/01/26 15:11:14  peter
  Multiple lines are comma separated in pblCgiFileToMap
@@ -73,7 +76,7 @@
  /*
   * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
   */
-char* pblCgi_c_id = "$Id: pblCgi.c,v 1.2 2019/01/26 15:13:28 peter Exp $";
+char* pblCgi_c_id = "$Id: pblCgi.c,v 1.3 2019/02/07 21:15:35 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -91,8 +94,8 @@ char* pblCgi_c_id = "$Id: pblCgi.c,v 1.2 2019/01/26 15:13:28 peter Exp $";
 /* #defines                                                                  */
 /*****************************************************************************/
 #define PBL_CGI_MAX_SIZE_OF_BUFFER_ON_STACK		(64 * 1024)
-#define PBL_CGI_MAX_QUERY_PARAMETERS_COUNT	    128
-#define PBL_CGI_MAX_POST_INPUT_LEN              (1024 * 1024)
+#define PBL_CGI_MAX_QUERY_PARAMETERS_COUNT		128
+#define PBL_CGI_MAX_POST_INPUT_LEN				(1024 * 1024)
 
 /*****************************************************************************/
 /* Variables                                                                 */
@@ -108,6 +111,16 @@ char * pblCgiQueryString = NULL;
 char * pblCgiCookieKey = PBL_CGI_COOKIE;
 char * pblCgiCookieTag = PBL_CGI_COOKIE "=";
 
+static char * pblCgiMalloc(char * tag, size_t size)
+{
+	char * result = pbl_malloc(tag, size);
+	if (!result)
+	{
+		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+	}
+	return result;
+}
+
 static char * contentType = NULL;
 static void pblCgiSetContentType(char * type)
 {
@@ -121,12 +134,13 @@ static void pblCgiSetContentType(char * type)
 
 		if (cookie && cookiePath && cookieDomain)
 		{
-			printf("Content-Type: %s\n", contentType);
-			PBL_CGI_TRACE("Content-Type: %s\n", contentType);
+			char * format = "Content-Type: %s\n";
+			printf(format, contentType);
+			PBL_CGI_TRACE(format, contentType);
 
-			printf("Set-Cookie: %s%s; Path=%s; DOMAIN=%s; HttpOnly\n\n", pblCgiCookieTag, cookie, cookiePath, cookieDomain);
-			PBL_CGI_TRACE("Set-Cookie: %s%s; Path=%s; DOMAIN=%s; HttpOnly\n\n", pblCgiCookieTag, cookie, cookiePath,
-				cookieDomain);
+			format = "Set-Cookie: %s%s; Path=%s; DOMAIN=%s; HttpOnly\n\n";
+			printf(format, pblCgiCookieTag, cookie, cookiePath, cookieDomain);
+			PBL_CGI_TRACE(format, pblCgiCookieTag, cookie, cookiePath, cookieDomain);
 		}
 		else
 		{
@@ -145,20 +159,16 @@ static char pblCgiCheckChar(char c)
 	return c;
 }
 
-static char * pblCgiDecode(char * source)
+static char * pblCgiDecodeQueryString(char * source)
 {
-	static char * tag = "pblCgiDecode";
+	static char * tag = "pblCgiDecodeQueryString";
 	char * sourcePtr = source;
 	char * destinationPtr;
 	char * destination;
 	char buffer[3];
 	int i;
 
-	destinationPtr = destination = pbl_malloc(tag, strlen(source) + 1);
-	if (!destinationPtr)
-	{
-		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
-	}
+	destinationPtr = destination = pblCgiMalloc(tag, strlen(source) + 1);
 
 	while (*sourcePtr)
 	{
@@ -166,10 +176,8 @@ static char * pblCgiDecode(char * source)
 		{
 			*destinationPtr++ = ' ';
 			sourcePtr++;
-			continue;
 		}
-
-		if ((*sourcePtr == '%') && *(sourcePtr + 1) && *(sourcePtr + 2)
+		else if ((*sourcePtr == '%') && *(sourcePtr + 1) && *(sourcePtr + 2)
 			&& isxdigit((int)(*(sourcePtr + 1))) && isxdigit((int)(*(sourcePtr + 2))))
 		{
 			pblCgiStrNCpy(buffer, sourcePtr + 1, 3);
@@ -179,13 +187,12 @@ static char * pblCgiDecode(char * source)
 #else
 			sscanf(buffer, "%x", &i);
 #endif
-			*destinationPtr++ = (char)pblCgiCheckChar(i);
+			*destinationPtr++ = pblCgiCheckChar(i);
 			sourcePtr += 3;
 		}
 		else
 		{
 			*destinationPtr++ = pblCgiCheckChar(*sourcePtr++);
-			continue;
 		}
 	}
 	*destinationPtr = '\0';
@@ -213,14 +220,14 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 	{
 		if (!(map = pblMapNewHashMap()))
 		{
-			pblCgiExitOnError("Failed to create a map, pbl_errno = %d\n", pbl_errno);
+			pblCgiExitOnError("%s: Failed to create a map, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
 	}
 
 	FILE * stream = pblCgiFopen(filePath, "r");
 	char line[PBL_CGI_MAX_LINE_LENGTH + 1];
 
-	while ((fgets(line, sizeof(line) - 1, stream)))
+	while (fgets(line, sizeof(line) - 1, stream))
 	{
 		char * ptr = line;
 
@@ -235,7 +242,7 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 		}
 
 		char * key = ptr;
-		while (*ptr && (!isspace(*ptr)))
+		while (*ptr && !isspace(*ptr))
 		{
 			ptr++;
 		}
@@ -252,12 +259,12 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 			// Multiple lines are comma separated
 			if (pblMapAppendStrStr(map, key, ", ") < 0)
 			{
-				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+				pblCgiExitOnError("%s: Failed to append a comma, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 			}
 		}
 		if (pblMapAppendStrStr(map, key, value) < 0)
 		{
-			pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+			pblCgiExitOnError("%s: Failed to append a string, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
 	}
 	fclose(stream);
@@ -270,13 +277,15 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 */
 char * pblCgiConfigValue(char * key, char * defaultValue)
 {
+	static char * tag = "pblCgiConfigValue";
+
 	if (!pblCgiConfigMap)
 	{
-		pblCgiExitOnError("The configuration file was never read!\n");
+		pblCgiExitOnError("%s: The cgi-configuration file was never read!\n", tag);
 	}
 	if (!key || !*key)
 	{
-		pblCgiExitOnError("Empty key not allowed!\n");
+		pblCgiExitOnError("%s: Empty key not allowed in cgi-configuration file!\n", tag);
 	}
 	char * value = pblMapGetStr(pblCgiConfigMap, key);
 	if (!value)
@@ -333,7 +342,7 @@ static void pblCgiSetQueryValue(char * key, char * value)
 	{
 		if (!(queryMap = pblMapNewHashMap()))
 		{
-			pblCgiExitOnError("Failed to create a map, pbl_errno = %d\n", pbl_errno);
+			pblCgiExitOnError("%s: Failed to create a map, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
 	}
 	if (!key || !*key)
@@ -347,7 +356,7 @@ static void pblCgiSetQueryValue(char * key, char * value)
 
 	if (pblMapAddStrStr(queryMap, key, value) < 0)
 	{
-		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+		pblCgiExitOnError("%s: Failed to append a value, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 	}
 	PBL_CGI_TRACE("In %s=%s", key, value);
 }
@@ -391,6 +400,8 @@ char * pblCgiQueryValue(char * key)
 */
 void pblCgiTrace(const char * format, ...)
 {
+	static char * tag = "pblCgiTrace";
+
 	if (!pblCgiTraceFile)
 	{
 		return;
@@ -405,8 +416,8 @@ void pblCgiTrace(const char * format, ...)
 
 	if (rc < 0)
 	{
-		pblCgiExitOnError("Printing of format '%s' and size %lu failed with errno=%d\n", format, sizeof(buffer) - 1,
-			errno);
+		pblCgiExitOnError("%s: Printing of format '%s' and size %lu failed with errno=%d\n",
+		 tag, format, sizeof(buffer) - 1, errno);
 	}
 	buffer[sizeof(buffer) - 1] = '\0';
 
@@ -434,14 +445,10 @@ void pblCgiExitOnError(const char * format, ...)
 	printf(
 		"<!DOCTYPE html>\n"
 		"<html>\n"
-		"<head>\n"
-		"<title>Mission-Base PBL CGI Error</title>\n"
-		"</head>\n"
+		"<head>\n<title>Mission-Base PBL CGI Error</title>\n</head>\n"
 		"<body>\n"
-		"<h1>\n"
-		"PBL CGI\n"
-		"</h1>\n"
-		"<p><hr> <p>\n"
+		"<h1>PBL CGI\n</h1>\n"
+		"<p><hr><p>\n"
 		"<h1>An error occurred</h1>\n");
 
 	char * scriptName = pblCgiGetEnv("SCRIPT_NAME");
@@ -462,8 +469,7 @@ void pblCgiExitOnError(const char * format, ...)
 
 	if (rc < 0)
 	{
-		printf("Printing of format '%s' and size %lu failed with errno=%d\n",
-			format, sizeof(buffer) - 1, errno);
+		printf("Printing of format '%s' and size %lu failed with errno=%d\n", format, sizeof(buffer) - 1, errno);
 	}
 	else
 	{
@@ -474,9 +480,8 @@ void pblCgiExitOnError(const char * format, ...)
 
 	printf("</b>\n");
 	printf("<p>Please click your browser's back button to continue.\n");
-	printf("<p><hr> <p>\n");
-	printf(
-		"<small>Copyright &copy; 2018 - Tamiko Thiel and Peter Graf</small>\n");
+	printf("<p><hr><p>\n");
+	printf("<small>Copyright &copy; 2018 - Tamiko Thiel and Peter Graf</small>\n");
 	printf("</body></HTML>\n");
 
 	PBL_CGI_TRACE("%s exit(-1)", scriptName);
@@ -602,7 +607,7 @@ int pblCgiStrIsNullOrWhiteSpace(char * string)
 
 char * pblCgiStrRangeDup(char * start, char * end)
 {
-	static char * tag = "pblCgiRangedup";
+	static char * tag = "pblCgiStrRangeDup";
 
 	start = pblCgiStrTrimStart(start);
 	int length = end - start;
@@ -697,11 +702,7 @@ char * pblCgiStrCat(char * s1, char * s2)
 
 	len1 = strlen(s1);
 	len2 = strlen(s2);
-	result = pbl_malloc(tag, len1 + len2 + 1);
-	if (!result)
-	{
-		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
-	}
+	result = pblCgiMalloc(tag, len1 + len2 + 1);
 
 	memcpy(result, s1, len1);
 	memcpy(result + len1, s2, len2 + 1);
@@ -894,11 +895,7 @@ static const char *pblCgiHexDigits = "0123456789abcdef";
 char * pblCgiStrToHexFromBuffer(unsigned char * buffer, size_t length)
 {
 	static char * tag = "pblCgiStrToHexFromBuffer";
-	char * hexString = pbl_malloc(tag, 2 * length + 1);
-	if (!hexString)
-	{
-		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
-	}
+	char * hexString = pblCgiMalloc(tag, 2 * length + 1);
 
 	unsigned char c;
 	int stringIndex = 0;
@@ -1132,13 +1129,13 @@ void pblCgiParseQuery(int argc, char * argv[])
 		pblCgiStrSplit(keyValuePairs[i], "=", 2, keyValuePair);
 		if (keyValuePair[0])
 		{
-			char * key = pblCgiDecode(keyValuePair[0]);
+			char * key = pblCgiDecodeQueryString(keyValuePair[0]);
 
 			if (keyValuePair[1])
 			{
-			    char * value = pblCgiDecode(keyValuePair[1]);
-			    pblCgiSetQueryValue(pblCgiStrTrim(key), pblCgiStrTrim(value));
-			    PBL_FREE(value);
+				char * value = pblCgiDecodeQueryString(keyValuePair[1]);
+				pblCgiSetQueryValue(pblCgiStrTrim(key), pblCgiStrTrim(value));
+				PBL_FREE(value);
 			}
 			else
 			{

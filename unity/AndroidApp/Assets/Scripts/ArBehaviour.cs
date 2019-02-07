@@ -38,6 +38,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using Vuforia;
+using UnityEditor;
 
 #if UNITY_ANDROID
 using UnityEngine.Purchasing;
@@ -519,10 +520,13 @@ namespace com.arpoise.androidapp
         private IEnumerator GetData()
         {
             var os = "Android";
+            var bundle = "190207";
 #if UNITY_IOS
             os = "iOS";
+            bundle = "20190207";
 #endif
 
+            var uri = _arpoiseDirectoryUrl;
             var layerName = _layerName;
             int count = 0;
             bool setError = true;
@@ -538,13 +542,14 @@ namespace com.arpoise.androidapp
                 var nextPageKey = string.Empty;
                 for (; ; )
                 {
-                    var url = _arpoiseDirectoryUrl + "?lang=en"
+                    var url = uri + "?lang=en"
                         + "&lat=" + filteredLatitude.ToString("F6")
                         + "&lon=" + filteredLongitude.ToString("F6")
                         + "&layerName=" + layerName
                         + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
                         + "&client=Arpoise&version=1&radius=1500&accuracy=100"
+                        + "&bundle=" + bundle
                         + "&os=" + os
                         + "&count=" + count
 #if DEVEL
@@ -596,9 +601,16 @@ namespace com.arpoise.androidapp
                     try
                     {
                         var layer = ArLayer.Create(text);
+                        if (!IsEmpty(layer.redirectionUrl))
+                        {
+                            uri = layer.redirectionUrl.Trim();
+                        }
                         if (!IsEmpty(layer.redirectionLayer))
                         {
                             layerName = layer.redirectionLayer.Trim();
+                        }
+                        if (!IsEmpty(layer.redirectionUrl) || !IsEmpty(layer.redirectionLayer))
+                        {
                             layers.Clear();
                             nextPageKey = string.Empty;
                             continue;
@@ -645,13 +657,14 @@ namespace com.arpoise.androidapp
                     nextPageKey = string.Empty;
                     for (; ; )
                     {
-                        var url = _arpoiseDirectoryUrl + "?lang=en"
+                        var url = uri + "?lang=en"
                         + "&lat=" + filteredLatitude.ToString("F6")
                         + "&lon=" + filteredLongitude.ToString("F6")
                         + "&layerName=" + innerLayer
                         + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
                         + "&client=Arpoise&version=1&radius=1500&accuracy=100"
+                        + "&bundle=" + bundle
                         + "&os=" + os
                         + "&innerLayer=true"
 #if DEVEL
@@ -1530,7 +1543,7 @@ namespace com.arpoise.androidapp
 
                 _infoText.GetComponent<Text>().text =
                     ""
-                    + "B " + _bleachingValue
+                    //+ "B " + _bleachingValue
                     //+ "CLT " + (_locationTimestamp).ToString("F3")
                     //+ " CA " + (_locationLatitude).ToString("F6")
                     //+ " A " + (_locationHorizontalAccuracy).ToString("F6")

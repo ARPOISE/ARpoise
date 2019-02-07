@@ -178,6 +178,7 @@ namespace com.arpoise.androidapp
         public float radius = 0;
         public float refreshInterval = 0;
         public float refreshDistance = 0;
+        public string redirectionUrl = string.Empty;
         public string redirectionLayer = string.Empty;
         public string noPoisMessage = string.Empty;
         public string layerTitle = string.Empty;
