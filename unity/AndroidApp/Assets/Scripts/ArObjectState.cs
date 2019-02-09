@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace com.arpoise.androidapp
+namespace com.arpoise.arpoiseapp
 {
     public class ArObjectState
     {

@@ -31,7 +31,7 @@ Arpoise, see www.Arpoise.com/
 using System;
 using UnityEngine;
 
-namespace com.arpoise.androidapp
+namespace com.arpoise.arpoiseapp
 {
     public class ArAnimation
     {

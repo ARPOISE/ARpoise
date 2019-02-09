@@ -30,28 +30,19 @@ Arpoise, see www.Arpoise.com/
 
 //#define DEVEL
 
-using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
-using UnityEngine.Networking;
-using System.Collections.Generic;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 using Vuforia;
-using UnityEditor;
 
-#if UNITY_ANDROID
-using UnityEngine.Purchasing;
-#endif
 
-namespace com.arpoise.androidapp
+namespace com.arpoise.arpoiseapp
 {
     public class ArBehaviour : MonoBehaviour
-
-#if  UNITY_ANDROID
-        , IStoreListener
-#endif
-
     {
         private static readonly string _loadingText = "Loading data, please wait";
 #if DEVEL
@@ -81,11 +72,6 @@ namespace com.arpoise.androidapp
 
         protected DeviceOrientation InitialDeviceOrientation = DeviceOrientation.LandscapeLeft;
         private Transform _cameraTransform = null;
-        private GameObject _sceneAnchor = null;
-        private GameObject _infoText = null;
-        private GameObject _wrapper = null;
-        private GameObject _headerText = null;
-        private GameObject _headerButton = null;
 
         private string _informationMessage = null;
         private bool _showInfo = false;
@@ -112,6 +98,79 @@ namespace com.arpoise.androidapp
         {
             return s == null || string.IsNullOrEmpty(s.Trim());
         }
+
+        private bool _headerButtonActivated = false;
+
+        #region Globals
+
+        public GameObject SceneAnchor = null;
+        public GameObject InfoText = null;
+        public GameObject Wrapper = null;
+        public GameObject HeaderText = null;
+        public GameObject LayerPanel = null;
+        public GameObject HeaderButton = null;
+        public GameObject MenuButton = null;
+        public GameObject PanelHeaderButton = null;
+        public Transform ContentPanel;
+        public SimpleObjectPool ButtonObjectPool;
+
+        #endregion
+
+        protected bool MenuEnabled = true;
+        private ArLayerScrollList _layerScrollList = null;
+
+        #region Buttons
+
+        public void HandleMenuButtonClick()
+        {
+            if (MenuEnabled)
+            {
+                if (_layerScrollList != null)
+                {
+                    _layerScrollList.RemoveButtons();
+                }
+
+                _layerScrollList = new ArLayerScrollList(ContentPanel, ButtonObjectPool);
+                List<Item> itemList = new List<Item>();
+                itemList.Add(new Item { itemName = "Layer 1", line2 = "Author 1", line3 = "Description 1" });
+                itemList.Add(new Item { itemName = "Layer 2", line2 = "Author 1", line3 = "Description 1" });
+                itemList.Add(new Item { itemName = "Layer 3", line2 = "Author 1", line3 = "Description 1" });
+                itemList.Add(new Item { itemName = "Layer 4", line2 = "Author 1", line3 = "Description 1" });
+                itemList.Add(new Item { itemName = "Layer 5", line2 = "Author 1", line3 = "Description 1" });
+                itemList.Add(new Item { itemName = "Layer 6", line2 = "Author 1", line3 = "Description 1" });
+                //itemList.Add(new Item { itemName = "Layer 7", line2 = "Author 1", line3 = "Description 1" });
+                //itemList.Add(new Item { itemName = "Layer 8", line2 = "Author 1", line3 = "Description 1" });
+                //itemList.Add(new Item { itemName = "Layer 8", line2 = "Author 1", line3 = "Description 1" });
+                //itemList.Add(new Item { itemName = "Layer 10", line2 = "Author 1", line3 = "Description 1" });
+                //itemList.Add(new Item { itemName = "Layer 11", line2 = "Author 1", line3 = "Description 1" });
+                _layerScrollList.AddButtons(itemList, this);
+
+                HeaderButton.SetActive(false);
+                MenuButton.SetActive(false);
+                LayerPanel.SetActive(true);
+            }
+        }
+
+        public void HandlePanelHeaderButtonClick()
+        {
+            if (MenuEnabled)
+            {
+                HeaderButton.SetActive(_headerButtonActivated);
+                MenuButton.SetActive(true);
+                LayerPanel.SetActive(false);
+                if (_layerScrollList != null)
+                {
+                    _layerScrollList.RemoveButtons();
+                }
+            }
+        }
+
+        public void HandleLayerButtonClick(Item item)
+        {
+            Debug.Log("HandleLayerButtonClick " + item.itemName);
+        }
+
+        #endregion
 
         #region GetData
 
@@ -191,7 +250,7 @@ namespace com.arpoise.androidapp
                 }
 
                 // Wrap the object into a wrapper, so it can be moved around when the device moves
-                var wrapper = Instantiate(_wrapper);
+                var wrapper = Instantiate(Wrapper);
                 if (wrapper == null)
                 {
                     return "Instantiate(_wrapper) failed";
@@ -200,7 +259,7 @@ namespace com.arpoise.androidapp
                 parentTransform = wrapper.transform;
 
                 // Add a wrapper for scaling
-                var scaleWrapper = Instantiate(_wrapper);
+                var scaleWrapper = Instantiate(Wrapper);
                 if (scaleWrapper == null)
                 {
                     return "Instantiate(_wrapper) failed";
@@ -211,7 +270,7 @@ namespace com.arpoise.androidapp
                 // Prepare the relative rotation of the object - billboard handling
                 if (poi.transform != null && poi.transform.rel)
                 {
-                    var billboardWrapper = Instantiate(_wrapper);
+                    var billboardWrapper = Instantiate(Wrapper);
                     if (billboardWrapper == null)
                     {
                         return "Instantiate(_wrapper) failed";
@@ -225,7 +284,7 @@ namespace com.arpoise.androidapp
                 GameObject rotationWrapper = null;
                 if (poi.transform != null && poi.transform.angle != 0)
                 {
-                    rotationWrapper = Instantiate(_wrapper);
+                    rotationWrapper = Instantiate(Wrapper);
                     if (rotationWrapper == null)
                     {
                         return "Instantiate(_wrapper) failed";
@@ -242,7 +301,7 @@ namespace com.arpoise.androidapp
                         foreach (var poiAnimation in poi.animations.onCreate)
                         {
                             // Put the animation into a wrapper
-                            var animationWrapper = Instantiate(_wrapper);
+                            var animationWrapper = Instantiate(Wrapper);
                             if (animationWrapper == null)
                             {
                                 return "Instantiate(_wrapper) failed";
@@ -261,7 +320,7 @@ namespace com.arpoise.androidapp
                             sc.radius = .71f; // 2 ** -2 / 2
 
                             // Put the animation into a wrapper
-                            var animationWrapper = Instantiate(_wrapper);
+                            var animationWrapper = Instantiate(Wrapper);
                             if (animationWrapper == null)
                             {
                                 return "Instantiate(_wrapper) failed";
@@ -520,10 +579,10 @@ namespace com.arpoise.androidapp
         private IEnumerator GetData()
         {
             var os = "Android";
-            var bundle = "190207";
+            var bundle = "190208";
 #if UNITY_IOS
             os = "iOS";
-            bundle = "20190207";
+            bundle = "20190208";
 #endif
 
             var uri = _arpoiseDirectoryUrl;
@@ -747,13 +806,15 @@ namespace com.arpoise.androidapp
                 var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !IsEmpty(x));
                 if (!IsEmpty(layerTitle))
                 {
-                    _headerText.GetComponent<Text>().text = layerTitle;
-                    _headerButton.SetActive(true);
+                    HeaderText.GetComponent<Text>().text = layerTitle;
+                    _headerButtonActivated = true;
+                    HeaderButton.SetActive(_headerButtonActivated);
                 }
                 else
                 {
-                    _headerText.GetComponent<Text>().text = string.Empty;
-                    _headerButton.SetActive(false);
+                    HeaderText.GetComponent<Text>().text = string.Empty;
+                    _headerButtonActivated = false;
+                    HeaderButton.SetActive(_headerButtonActivated);
                 }
 
                 var assetBundleUrls = new HashSet<string>();
@@ -861,7 +922,7 @@ namespace com.arpoise.androidapp
 
                 if (_arObjectState == null)
                 {
-                    _error = CreateArObjects(arObjectState, null, _sceneAnchor.transform, arObjectState.ArPois);
+                    _error = CreateArObjects(arObjectState, null, SceneAnchor.transform, arObjectState.ArPois);
                     arObjectState.ArPois.Clear();
 
                     if (!IsEmpty(_error))
@@ -1106,6 +1167,8 @@ namespace com.arpoise.androidapp
             }
         }
 
+        private LocationService _locationService = null;
+
         // A Coroutine retrieving the current location and heading
         private IEnumerator GetPosition()
         {
@@ -1117,10 +1180,14 @@ namespace com.arpoise.androidapp
                     doInitialize = false;
                     Input.compass.enabled = true;
 
-                    if (!Input.location.isEnabledByUser)
+                    if (_locationService == null)
                     {
-                        _error = "Please enable the location service.";
-                        yield break;
+                        _locationService = new LocationService();
+                        if (!_locationService.isEnabledByUser)
+                        {
+                            _error = "Please enable the location service for the ARpoise application.";
+                            yield break;
+                        }
                     }
 
                     Input.location.Start(.1f, .1f);
@@ -1151,7 +1218,7 @@ namespace com.arpoise.androidapp
                     }
                     else
                     {
-                        _filteredLatitude = OriginalLatitude = Input.location.lastData.latitude;
+                        _filteredLatitude = OriginalLatitude = 1 + Input.location.lastData.latitude;
                         _filteredLongitude = OriginalLongitude = Input.location.lastData.longitude;
                     }
 
@@ -1194,13 +1261,13 @@ namespace com.arpoise.androidapp
                 }
                 else
                 {
-                    if (_locationLatitude != Input.location.lastData.latitude
+                    if (_locationLatitude != 1 + Input.location.lastData.latitude
                         || _locationLongitude != Input.location.lastData.longitude
                         || _locationTimestamp != Input.location.lastData.timestamp
                         || _locationHorizontalAccuracy != Input.location.lastData.horizontalAccuracy
                     )
                     {
-                        _locationLatitude = Input.location.lastData.latitude;
+                        _locationLatitude = 1 + Input.location.lastData.latitude;
                         _locationLongitude = Input.location.lastData.longitude;
                         _locationTimestamp = Input.location.lastData.timestamp;
                         _locationHorizontalAccuracy = Input.location.lastData.horizontalAccuracy;
@@ -1225,47 +1292,10 @@ namespace com.arpoise.androidapp
 
         private void Start()
         {
-#if UNITY_ANDROID
-            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-            builder.AddProduct("com.tamikothiel.arpoise", ProductType.Consumable);
-            UnityPurchasing.Initialize(this, builder);
-#endif
-
-            _infoText = FindGameObjectWithTag("InfoText");
-            _infoText.GetComponent<Text>().text = _loadingText;
-
-            _sceneAnchor = FindGameObjectWithTag("SceneAnchor");
-            if (_sceneAnchor == null)
-            {
-                _error = "Cannot find object with tag SceneAnchor";
-                return;
-            }
-
-            _wrapper = FindGameObjectWithTag("Wrapper");
-            if (_wrapper == null)
-            {
-                _error = "Cannot find object with tag Wrapper";
-                return;
-            }
-
-            _headerText = FindGameObjectWithTag("HeaderText");
-            if (_headerText == null)
-            {
-                _error = "Cannot find object with tag HeaderText";
-                return;
-            }
-
-            _headerButton = FindGameObjectWithTag("HeaderButton");
-            if (_headerButton == null)
-            {
-                _error = "Cannot find object with tag HeaderButton";
-                return;
-            }
-
             // Placing the wrapper in the hierarchy under the ARCamera,
             // is a work-around because FindGameObjectWithTag
             // does not find the ARCamera game object
-            _cameraTransform = _wrapper.transform.parent;
+            _cameraTransform = Wrapper.transform.parent;
 
             // Start GetPosition() coroutine 
             StartCoroutine("GetPosition");
@@ -1315,9 +1345,9 @@ namespace com.arpoise.androidapp
         private void Update()
         {
             // Set any error text onto the canvas
-            if (!IsEmpty(_error) && _infoText != null)
+            if (!IsEmpty(_error) && InfoText != null)
             {
-                _infoText.GetComponent<Text>().text = _error;
+                InfoText.GetComponent<Text>().text = _error;
                 return;
             }
 
@@ -1331,7 +1361,7 @@ namespace com.arpoise.androidapp
                 {
                     progress += ".";
                 }
-                _infoText.GetComponent<Text>().text = _loadingText + progress;
+                InfoText.GetComponent<Text>().text = _loadingText + progress;
                 return;
             }
 
@@ -1342,7 +1372,7 @@ namespace com.arpoise.androidapp
                 {
                     lock (arObjectState)
                     {
-                        _sceneAnchor.transform.eulerAngles = Vector3.zero;
+                        SceneAnchor.transform.eulerAngles = Vector3.zero;
 
                         if (arObjectState.ArObjectsToDelete.Any())
                         {
@@ -1350,7 +1380,7 @@ namespace com.arpoise.androidapp
                         }
                         if (arObjectState.ArPois.Any())
                         {
-                            CreateArObjects(arObjectState, null, _sceneAnchor.transform, arObjectState.ArPois);
+                            CreateArObjects(arObjectState, null, SceneAnchor.transform, arObjectState.ArPois);
                             arObjectState.ArPois.Clear();
                         }
                         arObjectState.ArObjectsToPlace = arObjectState.ArObjects.Where(x => !x.IsRelative).ToList();
@@ -1359,7 +1389,7 @@ namespace com.arpoise.androidapp
                 }
                 finally
                 {
-                    _sceneAnchor.transform.eulerAngles = new Vector3(0, DeviceAngle - InitialHeading, 0);
+                    SceneAnchor.transform.eulerAngles = new Vector3(0, DeviceAngle - InitialHeading, 0);
                 }
             }
 
@@ -1430,9 +1460,9 @@ namespace com.arpoise.androidapp
             }
 
             // Set any error text onto the canvas
-            if (!IsEmpty(_error) && _infoText != null)
+            if (!IsEmpty(_error) && InfoText != null)
             {
-                _infoText.GetComponent<Text>().text = _error;
+                InfoText.GetComponent<Text>().text = _error;
                 return;
             }
 
@@ -1458,7 +1488,7 @@ namespace com.arpoise.androidapp
             // Place the ar objects
             try
             {
-                _sceneAnchor.transform.eulerAngles = Vector3.zero;
+                SceneAnchor.transform.eulerAngles = Vector3.zero;
 
                 var arObjectsToPlace = arObjectState.ArObjectsToPlace;
                 if (arObjectsToPlace != null)
@@ -1513,7 +1543,7 @@ namespace com.arpoise.androidapp
             }
             finally
             {
-                _sceneAnchor.transform.eulerAngles = new Vector3(0, DeviceAngle - InitialHeading, 0);
+                SceneAnchor.transform.eulerAngles = new Vector3(0, DeviceAngle - InitialHeading, 0);
             }
 
             // Turn the ar objects
@@ -1527,21 +1557,21 @@ namespace com.arpoise.androidapp
                 }
             }
 
-            if (_infoText != null)
+            if (InfoText != null)
             {
                 // Set info text
                 if (!_showInfo)
                 {
-                    _infoText.GetComponent<Text>().text = string.Empty;
+                    InfoText.GetComponent<Text>().text = string.Empty;
                     return;
                 }
                 if (!IsEmpty(_informationMessage))
                 {
-                    _infoText.GetComponent<Text>().text = _informationMessage;
+                    InfoText.GetComponent<Text>().text = _informationMessage;
                     return;
                 }
 
-                _infoText.GetComponent<Text>().text =
+                InfoText.GetComponent<Text>().text =
                     ""
                     //+ "B " + _bleachingValue
                     //+ "CLT " + (_locationTimestamp).ToString("F3")
@@ -1574,28 +1604,5 @@ namespace com.arpoise.androidapp
         }
 
         #endregion
-
-#if UNITY_ANDROID
-        #region IStoreListener
-
-        public void OnInitializeFailed(InitializationFailureReason error)
-        {
-        }
-
-        public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs e)
-        {
-            return PurchaseProcessingResult.Complete;
-        }
-
-        public void OnPurchaseFailed(Product i, PurchaseFailureReason p)
-        {
-        }
-
-        public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
-        {
-        }
-
-        #endregion
-#endif
     }
 }
