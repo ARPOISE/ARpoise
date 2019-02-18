@@ -1,25 +1,38 @@
 /*
-ArpoiseDirectory.c - main for Arpoise Directory service.
+ArpoiseDirectory.c - main for Arpoise Directory front end service.
 
-Copyright (C) 2018   Tamiko Thiel and Peter Graf
+Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+ARPOISE - Augmented Reality Point Of Interest Service
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+This file is part of Arpoise.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	Arpoise is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-For more information on Tamiko Thiel or Peter Graf,
-please see: http://www.mission-base.com/.
+	Arpoise is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Arpoise.  If not, see <https://www.gnu.org/licenses/>.
+
+For more information on
+
+Tamiko Thiel, see www.TamikoThiel.com/
+Peter Graf, see www.mission-base.com/peter/
+Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.21  2019/02/18 20:22:18  peter
+Directory requests with one hotspot as result are not sent to the client as list anymore
+
+Revision 1.20  2019/02/17 17:07:12  peter
+Handling of clients that can handle arpoise directory responses
+
 Revision 1.19  2019/02/05 13:29:21  peter
 Code simplyfication and refactoring
 
@@ -83,7 +96,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.19 2019/02/05 13:29:21 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.21 2019/02/18 20:22:18 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -888,7 +901,7 @@ static char * getVersion()
 static void createStatisticsHits(int layer, char * layerName, int layerServed)
 {
 	char * count = pblCgiQueryValue("count");
-	if (count && !strcmp("1", count))
+	if (pblCgiStrEquals("1", count))
 	{
 		PBL_CGI_TRACE("-------> Statistics Request\n");
 
@@ -1071,19 +1084,33 @@ static int arpoiseDirectory(int argc, char * argv[])
 	}
 
 	char * layerName = pblCgiQueryValue("layerName");
-	int isDirectoryRequest = !pblCgiStrCmp(layerName, "Arpoise-Directory");
+	int isDirectoryRequest = pblCgiStrEquals(layerName, "Arpoise-Directory");
 	if (isDirectoryRequest)
 	{
 		// This is a request for the Arpoise-Directory layer
 
 		PBL_CGI_TRACE("-------> Directory Request\n");
 
+		// See what client it is
+		char * os = pblCgiQueryValue("os");
+		if (!os || !*os)
+		{
+			os = "UnknownOperatingSystem";
+		}
+
+		int bundleInteger = 0;
+		char * bundle = pblCgiQueryValue("bundle");
+		if (bundle && isdigit(*bundle))
+		{
+			bundleInteger = atoi(bundle);
+		}
+
 		char * uri = pblCgiSprintf("%s?%s", directoryUri, queryString);
 		char * cookie = NULL;
 		char * layerUrl = NULL;
 
-		char * response = getHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId));
-		response = getHttpResponseBody(response, &cookie);
+		char * httpResponse = getHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId));
+		char * response = getHttpResponseBody(httpResponse, &cookie);
 
 		char * start = "{\"hotspots\":";
 		int length = strlen(start);
@@ -1123,51 +1150,77 @@ static int arpoiseDirectory(int argc, char * argv[])
 		}
 		else
 		{
-			// There is a layer at the location the client is at
+			// There is at least one layer at the location the client is at
 
-			char * baseUrlStart = "\"baseURL\":\"";
-			char * ptr = strstr(response, baseUrlStart);
-			if (ptr)
+			// If there is more than one layer,
+			// and the client can handle the response of the directory request,
+			// send the response back to the client
+
+			int numberOfHotspots = 0;
+			char * numberOfHotspotsString = getStringBetween(response, "\"numberOfHotspots\":", ",\"");
+			if (numberOfHotspotsString && isdigit(*numberOfHotspotsString))
 			{
-				layerUrl = getStringBetween(ptr, baseUrlStart, "\"");
-				while (strchr(layerUrl, '\\'))
+				numberOfHotspots = atoi(numberOfHotspotsString);
+			}
+
+			if (numberOfHotspots > 1
+				&& (
+				(
+					pblCgiStrEquals("Android", os) && bundleInteger >= 190208)
+					|| (pblCgiStrEquals("iOS", os) && bundleInteger >= 20190208)
+					)
+				)
+			{
+				PBL_CGI_TRACE("-------> Client response");
+
+				handleResponse(httpResponse, latDifference, lonDifference);
+			}
+			else
+			{
+				char * baseUrlStart = "\"baseURL\":\"";
+				char * ptr = strstr(response, baseUrlStart);
+				if (ptr)
 				{
-					layerUrl = pblCgiStrReplace(layerUrl, "\\", "");
+					layerUrl = getStringBetween(ptr, baseUrlStart, "\"");
+					while (strchr(layerUrl, '\\'))
+					{
+						layerUrl = pblCgiStrReplace(layerUrl, "\\", "");
+					}
 				}
-			}
 
-			if (!layerUrl || !*layerUrl)
-			{
+				if (!layerUrl || !*layerUrl)
+				{
+					printHeader(cookie);
+					fputs(response, stdout);
+					PBL_CGI_TRACE("Response does not contain proper 'baseURL' value, no handling");
+					return 0;
+				}
+
+				char * titleStart = "\"title\":\"";
+				ptr = strstr(response, titleStart);
+				if (ptr)
+				{
+					layerName = getStringBetween(ptr, titleStart, "\"");
+				}
+
+				if (!layerName || !*layerName)
+				{
+					printHeader(cookie);
+					fputs(response, stdout);
+					PBL_CGI_TRACE("Response does not contain proper 'title' value, no handling");
+					return 0;
+				}
+
+				// Redirect the client to the url and layer specified
+
+				layer = 1;
+				ptr = changeRedirectionUrl(response, layerUrl);
+				ptr = changeRedirectionLayer(ptr, layerName);
+
 				printHeader(cookie);
-				fputs(response, stdout);
-				PBL_CGI_TRACE("Response does not contain proper 'baseURL' value, no handling");
-				return 0;
+				fputs(ptr, stdout);
+				PBL_CGI_TRACE("-------> Client redirect: '%s' '%s'", layerUrl, layerName);
 			}
-
-			char * titleStart = "\"title\":\"";
-			ptr = strstr(response, titleStart);
-			if (ptr)
-			{
-				layerName = getStringBetween(ptr, titleStart, "\"");
-			}
-
-			if (!layerName || !*layerName)
-			{
-				printHeader(cookie);
-				fputs(response, stdout);
-				PBL_CGI_TRACE("Response does not contain proper 'title' value, no handling");
-				return 0;
-			}
-
-			// Redirect the client to the url and layer specified
-
-			layer = 1;
-			ptr = changeRedirectionUrl(response, layerUrl);
-			ptr = changeRedirectionLayer(ptr, layerName);
-
-			printHeader(cookie);
-			fputs(ptr, stdout);
-			PBL_CGI_TRACE("-------> Client redirect: '%s' '%s'", layerUrl, layerName);
 		}
 	}
 	else
