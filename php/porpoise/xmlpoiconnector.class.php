@@ -103,6 +103,7 @@ class XMLPOIConnector extends POIConnector
                     case "refreshDistance":
                         $result->$name = (int) $childNode;
                         break;
+                    case "showMenuButton":
                     case "fullRefresh":
                     case "applyKalmanFilter":
                         $result->$name = (bool) ((string) $childNode);
@@ -460,6 +461,7 @@ class XMLPOIConnector extends POIConnector
             "areaWidth",
             "visibilityRange",
             "refreshDistance",
+            "showMenuButton",
             "fullRefresh",
             "applyKalmanFilter",
             "showMessage",

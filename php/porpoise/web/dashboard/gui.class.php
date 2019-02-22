@@ -264,6 +264,7 @@ HTML;
         $result .= sprintf("<tr><td>Visiblity in meters</td><td><input type=\"text\" name=\"visibilityRange\" value=\"%s\"></td></tr>\n", $layerProperties->visibilityRange);
         $result .= sprintf("<tr><td>Area size in meters</td><td><input type=\"text\" name=\"areaSize\" value=\"%s\"></td></tr>\n", $layerProperties->areaSize);
         $result .= sprintf("<tr><td>Area width in meters</td><td><input type=\"text\" name=\"areaWidth\" value=\"%s\"></td></tr>\n", $layerProperties->areaWidth);
+        $result .= sprintf("<tr><td>Show menu button</td><td>%s</td></tr>\n", self::createCheckbox("showMenuButton", $layerProperties->showMenuButton));
         $result .= sprintf("<tr><td>Apply Kalman filter</td><td>%s</td></tr>\n", self::createCheckbox("applyKalmanFilter", $layerProperties->applyKalmanFilter));
         $result .= sprintf("<tr><td>No pois message</td><td><input type=\"text\" name=\"noPoisMessage\" value=\"%s\"></td></tr>\n", $layerProperties->noPoisMessage);
 
@@ -860,6 +861,7 @@ HTML;
                 case "visibilityRange":
                     $result->$name = (int) $value;
                     break;
+                case "showMenuButton":
                 case "fullRefresh":
                 case "applyKalmanFilter":
                     $result->$name = (bool) (string) $value;

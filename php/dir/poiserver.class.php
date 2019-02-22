@@ -61,6 +61,7 @@ class LayarPOIServer {
 		"areaSize" => 0,
 		"areaWidth" => 0,
 		"refreshDistance" => 100,
+	    "showMenuButton" => TRUE,
 		"fullRefresh" => TRUE,
 		"applyKalmanFilter" => TRUE,
 		"actions" => array(),
