@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.22  2019/02/22 15:04:21  peter
+Handling of showMenuButton for default layer
+
 Revision 1.21  2019/02/18 20:22:18  peter
 Directory requests with one hotspot as result are not sent to the client as list anymore
 
@@ -96,7 +99,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.21 2019/02/18 20:22:18 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.22 2019/02/22 15:04:21 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -713,6 +716,27 @@ static char * changeLayerName(char * string, char * layerName)
 	return replacedString;
 }
 
+static char * changeShowMenuOption(char * string, char * value)
+{
+	if (!strstr(string, "\"showMenuButton\":"))
+	{
+		return pblCgiStrDup(string);
+	}
+
+	char * oldValue = getStringBetween(string, "\"showMenuButton\":", ",\"");
+
+	char * oldValueStr = pblCgiSprintf("\"showMenuButton\":%s", oldValue);
+	char * newValueStr = pblCgiSprintf("\"showMenuButton\":\"%s\"", value);
+
+	char * replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
+
+	PBL_FREE(oldValue);
+	PBL_FREE(oldValueStr);
+	PBL_FREE(newValueStr);
+
+	return replacedString;
+}
+
 static PblList * devicePositionList = NULL;
 
 static char * handleDevicePosition(char * deviceId, char * queryString, int * latDifference, int * lonDifference)
@@ -1145,7 +1169,9 @@ static int arpoiseDirectory(int argc, char * argv[])
 
 				uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
 				char * agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-				handleResponse(getHttpResponse("www.arpoise.com", 80, uri, 16, agent), latDifference, lonDifference);
+				char * response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
+				response = changeShowMenuOption(response, "false");
+				handleResponse(response, latDifference, lonDifference);
 			}
 		}
 		else
