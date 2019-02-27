@@ -5,9 +5,10 @@
 ARpoise is an open-source Augmented Reality service environment allowing
 to distribute and view location based AR content created in
 [Unity](http://unity3d.com). Client applications for Android, 
-see the [Google Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise),
-and iOS,
-see the [Apple App Store](https://itunes.apple.com/de/app/arpoise/id1451460843),
+see the 
+[Google Play](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store,
+and iOS, see the 
+Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843),
 have been implemented.
 
 The goal of ARpoise is to provide an open-source, community-supported, location-based AR App as a replacement for the 
@@ -20,9 +21,9 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 removed from, or placed within the world coordinates of ARpoise dynamically.
 
 - The 3D content visible in ARpoise is independent of the ARpoise app downloaded from the
-[Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise)
+[Google Play](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store
 or the
-[App Store](https://www.apple.com/lae/ios/app-store/).
+Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843).
 The **POI**s specified in an ARpoise layer definition contain the URL of an
 Unity AssetBundle.
 When showing a **POI**, the ARpoise app downloads this asset bundle
