@@ -44,7 +44,7 @@ The placement of individual **POI**s can be performed through a Google-maps-base
 The ARpoise version of PorPOISe converts your data sets of **POI**s into responses to the ARpoise client.
 Things like JSON formatting and distance calculation are all done for you. ARpoise supports XML as data stores.
 
-- One or more ARpoise layers can be shown shown at any location in the world.
+- One or more ARpoise layers can be shown at any location in the world.
 If there are more than one ARpoise layers located within the range of the client's location,
 a list of all available layers is shown to the user for selecting a layer.
 If there is exactly one ARpoise layer located within the range, this layer is shown to the user.
