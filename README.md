@@ -7,7 +7,7 @@ to distribute and view location based AR content created in
 [Unity](http://unity3d.com). Client applications for Android, 
 see the [Google Play Store](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise),
 and iOS,
-see the [Apple App Store](https://www.apple.com/lae/ios/app-store/),
+see the [Apple App Store](https://itunes.apple.com/de/app/arpoise/id1451460843),
 have been implemented.
 
 The goal of ARpoise is to provide an open-source, community-supported, location-based AR App as a replacement for the 
