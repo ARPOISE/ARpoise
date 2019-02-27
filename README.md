@@ -46,14 +46,14 @@ Things like JSON formatting and distance calculation are all done for you. ARpoi
 
 ## Components
 ### iOS- and Android-Client Application
-See [unity/AndroidApp](unity/AndroidApp/).
+See [unity/AndroidApp](unity/AndroidApp/README.md).
 The two applications do not differ in script code or assets. Therefore only one version is kept here on GitHub.
 ### ARpoise-Directory Frontend
-See [ARpoiseDirectory](ArpoiseDirectory/).
+See [ARpoiseDirectory](ArpoiseDirectory/README.md).
 ### ARpoise-Directory Backend
-See [/php/dir](php/dir/).
+See [/php/dir](php/dir/README.md).
 ### ARpoise-PorPOISe Backend
-See [/php/porpoise](php/porpoise/).
+See [/php/porpoise](php/porpoise/README.md).
 
 ## Restrictions
 - The current client implementations do not have any user interface. The ARpoise application clients simply show the content served by the back-end.
