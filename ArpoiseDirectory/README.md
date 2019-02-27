@@ -9,9 +9,11 @@ It acts as a cgi-filter between the ARpoise client app and the ARpoise directory
 After receiving a request from the ARpoise client app,
 it connects to the ARpoise directory backend and queries whether there are any layers within the user's range.
 
-If so, it redirects the user's client ARpoise app to the url and layer name of the layer closest to the client.
+If there are more than one layer in the user's range, it returns the list of available layers to the client.
 
-If not so, it returns the information of the default layer to the client.
+If there is exactly one layer, it redirects the user's client ARpoise app to the that layer.
+
+If not so, redirects the user's client ARpoise app to the ARpoise default layer.
 
 ## Note
 For compiling you also need the pbl
