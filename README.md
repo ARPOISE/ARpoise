@@ -46,7 +46,7 @@ Things like JSON formatting and distance calculation are all done for you. ARpoi
 
 - One or more ARpoise layers can be shown shown at any location in the world.
 If there are more than one ARpoise layers located within the range of the client's location,
-a list of all available layers is shown to the user, for selecting a layer.
+a list of all available layers is shown to the user for selecting a layer.
 If there is exactly one ARpoise layer located within the range, this layer is shown to the user.
 If there is no layer within the range of the client's location, the default layer is shown.
 Currently Tamiko Thiel's
@@ -64,5 +64,6 @@ See [/php/porpoise](php/porpoise/README.md).
 
 ## Restrictions
 - Unity behaviour scripts written in C# cannot be included in Unity-created 3D content of ARpoise.
+
 - Adding, removing and placing layers within ARpoise is an email-based process involving the administrators of
 [www.arpoise.com](http://www.arpoise.com).
