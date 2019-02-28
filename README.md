@@ -45,7 +45,7 @@ The ARpoise version of PorPOISe converts your data sets of **POI**s into respons
 Things like JSON formatting and distance calculation are all done for you. ARpoise supports XML as data stores.
 
 - One or more ARpoise layers can be shown at any location in the world.
-If there are more than one ARpoise layers located within the range of the client's location,
+If there are two or more ARpoise layers located within the range of the client's location,
 a list of all available layers is shown to the user for selecting a layer.
 If there is exactly one ARpoise layer located within the range, this layer is shown to the user.
 If there is no layer within the range of the client's location, the default layer is shown.
