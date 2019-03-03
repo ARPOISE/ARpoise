@@ -37,7 +37,7 @@ The placing of the **POI**s of the layer into world coordinates can be performed
 
 ## Documentation
 ### Arpoise Back-End Layers List
-(/images/BackEnd1.png)
+![BackEndImg1](/images/BackEnd1.png)
 ### Arpoise Back-End Layer Configuration
 
 ### Arpoise Back-End POI Configuration
