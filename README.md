@@ -7,7 +7,7 @@ ARpoise is an open-source Augmented Reality service environment that allows AR c
 Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843).
 
 The goal of ARpoise is to provide an open-source, community-supported, location-based AR App as a replacement for the 
-[layar app](https://www.layar.com/).
+[Layar app](https://www.layar.com/) and other commercial geolocative AR platforms.
 
 ## Functionality
 - Your location-based, unity-created AR-content can be shown on Android and iOS devices at any location in the world.
