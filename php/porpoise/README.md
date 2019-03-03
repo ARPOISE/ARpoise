@@ -37,12 +37,12 @@ The placing of the **POI**s of the layer into world coordinates can be performed
 
 ## Documentation
 ### ARpoise Back-End Layers List
-#### Image:
+#### Screen Shot:
 ![BackEndImg1](/images/BackEnd1.png)
 #### Explanation:
 A list of all your layers is shown. In order to add a new layer you will have to edit the file **config.xml** in your configuration directory and also create an **.xml** file for your new layer in the configuration directory.
 ### ARpoise Back-End Layer Configuration
-#### Image:
+#### Screen Shot:
 ![BackEndImg2](/images/BackEnd2.png)
 #### Explanation:
 The following properties of a layer can be edited:
@@ -64,7 +64,7 @@ The following properties of a layer can be edited:
 * POI-list-**Save**: Save changes to the POI's location to the layer's xml file.
 * POI-list-**DEL**: Delete the POI from the layer.
 ### ARpoise Back-End POI Configuration
-#### Image:
+#### Screen Shot:
 ![BackEndImg3](/images/BackEnd3.png)
 #### Explanation:
 The following properties of a POI can be edited:
