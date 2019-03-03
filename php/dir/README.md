@@ -18,7 +18,7 @@ Within the ARpoise-Directory back end the placing of the layers can be performed
 
 ## Documentation
 ### ARpoise-Directory Back End Layer Configuration
-#### Image:
+#### Screen Shot:
 ![DirectoryImg1](/images/Directory1.png)
 #### Explanation:
 The following attributes of a layer can be edited.
