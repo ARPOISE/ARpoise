@@ -35,6 +35,13 @@ The service has to return the definitions of of the **POI**s of the layer.
 
 The placing of the **POI**s of the layer into world coordinates can be performed in a Google-maps-based click-and-drag interface.
 
+## Documentation
+### Arpoise Back-End Layers List
+(/images/BackEnd1.png)
+### Arpoise Back-End Layer Configuration
+
+### Arpoise Back-End POI Configuration
+
 ## Original Documentation
 ===PorPOISe for Layar===
 Portable Point-of-Interest Server for Layar
