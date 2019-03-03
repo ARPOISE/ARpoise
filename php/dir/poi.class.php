@@ -263,7 +263,7 @@ class POIObject extends Arrayable {
 		if (is_array($source)) {
 			$this->baseURL = $source["baseURL"];
 		} else {
-			foreach (array("baseURL") as $fieldName) {
+		    foreach (array("baseURL") as $fieldName) {
 				switch ($fieldName) {
 				case "baseURL":
 					if (empty($source->$fieldName)) {
@@ -301,7 +301,7 @@ class Animation extends Arrayable {
 	public $from = NULL;
 	/** @var float to modifier for end state */
 	public $to = NULL;
-	/** @var vector (x,y,z assoicative array) axis for the animation */
+	/** @var vector (x,y,z associative array) axis for the animation */
 	public $axis = array("x" => NULL, "y" => NULL, "z" => NULL);
 
 	public function axisString() {
@@ -391,14 +391,16 @@ abstract class POI extends Arrayable {
 	public $lat = NULL;
 	/** @var int Longitude of this POI in microdegrees */
 	public $lon = NULL;
+	/** @var string Layer Name */
+	public $title = NULL;
+	/** @var string First line of text */
+	public $line1 = NULL;
 	/** @var string Second line of text */
 	public $line2 = NULL;
 	/** @var string Third line of text */
 	public $line3 = NULL;
 	/** @var string Fourth line of text */
 	public $line4 = NULL;
-	/** @var string Title */
-	public $title = NULL;
 	/** @var int POI type (for custom icons) */
 	public $type = NULL;
 	/** @var bool doNotIndex */

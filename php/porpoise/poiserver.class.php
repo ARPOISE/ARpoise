@@ -123,6 +123,8 @@ class LayarPOIServer
     protected $optionalAnimationFieldsDefaults = array(
         "delay" => NULL,
         "interpolation" => NULL,
+        "name" => NULL,
+        "followedBy" => NULL,
         "interpolationParam" => NULL,
         "persist" => FALSE,
         "repeat" => FALSE,

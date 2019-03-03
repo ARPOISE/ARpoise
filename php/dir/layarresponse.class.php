@@ -27,7 +27,9 @@ class LayarResponse {
 	public $deletedHotspots = array();
 	/** @var int Radius containing the returned POI set */
 	public $radius = 0;
-	/** @var int Pleaching value, 0 - 100 */
+	/** @var int number of hotspots/pois in layer */
+	public $numberOfHotspots = 0;
+	/** @var int Bleaching value, 0 - 100 */
 	public $bleachingValue = 0;
 	/** @var int Refresh interval in seconds */
 	public $refreshInterval = 300;
@@ -45,6 +47,8 @@ class LayarResponse {
 	public $fullRefresh = TRUE;
 	/** @var bool Do apply the Kalman filter */
 	public $applyKalmanFilter = TRUE;
+	/** @var string Redirect the client to this url */
+	public $redirectionUrl = NULL;
 	/** @var string Redirect the client to this layer */
 	public $redirectionLayer = NULL;
 	/** @var string Response message to display */

@@ -110,6 +110,7 @@ class XMLPOIConnector extends POIConnector
                         break;
                     case "showMessage":
                     case "redirectionLayer":
+                    case "redirectionUrl":
                     case "noPoisMessage":
                         $result->$name = (string) $childNode;
                         break;
@@ -148,6 +149,7 @@ class XMLPOIConnector extends POIConnector
         }
 
         $result->hotspots = $this->getPOIs($filter);
+        $result->numberOfHotspots = count($result->hotspots);
 
         libxml_use_internal_errors($libxmlErrorHandlingState);
 
@@ -263,6 +265,7 @@ class XMLPOIConnector extends POIConnector
                     $poi->$nodeName = $value;
                 }
             }
+
             if (empty($filter)) {
                 $result[] = $poi;
             } else {
@@ -466,6 +469,7 @@ class XMLPOIConnector extends POIConnector
             "applyKalmanFilter",
             "showMessage",
             "redirectionLayer",
+            "redirectionUrl",
             "noPoisMessage"
         );
         foreach ($relevantFields as $fieldName) {
@@ -601,7 +605,11 @@ class XMLPOIConnector extends POIConnector
             } else if ($key == "object") {
                 $objectElement = $poiElement->addChild("object");
                 foreach (array(
-                    "baseURL"
+                    "baseURL",
+                    "line1",
+                    "line2",
+                    "line3",
+                    "line4"
                 ) as $elementName) {
                     $objectElement->addChild($elementName, str_replace("&", "&amp;", $poi->object->$elementName));
                 }

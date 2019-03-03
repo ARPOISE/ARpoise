@@ -106,7 +106,7 @@ class GUI
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-<title>Arpoise Porpoise Directory - POI Management Interface for Arpoise Directory</title>
+<title>ARpoise Directory - Directory Management Interface for ARpoise</title>
 <link rel="stylesheet" type="text/css" href="styles.css">
 <script type="text/javascript" src="prototype.js"></script>
 HTML1;
@@ -115,6 +115,9 @@ HTML1;
 <script type="text/javascript" src="scripts.js"></script>
 </head>
 <body>
+
+<h1><img src="http://www.arpoise.com/images/arpoise_logo_rgb-1024.png" width=64></img>
+ARpoise Directory Service</h1>
 
 <div class="menu">
  <a href="?logout=true">Log out</a>
@@ -185,8 +188,8 @@ HTML;
     public static function createMainScreen()
     {
         $result = "";
-        $result .= "<p>Welcome to Arpoise Directory</p>\n";
-        $result .= self::createMainConfigurationTable();
+        //$result .= "<p>Welcome to ARpoise Directory</p>\n";
+        //$result .= self::createMainConfigurationTable();
         $result .= "<p>Layers:</p>\n";
         $result .= self::createLayerList();
         return $result;
@@ -294,7 +297,7 @@ HTML;
         $result .= "<table class=\"pois\">\n";
         $result .= sprintf("<input type=\"hidden\" name=\"page\" value=\"layer\"> \n");
 
-        $result .= "<tr><th>Id</th><th>Title</th><th>Lat</th><th>Lon</th></tr>\n";
+        $result .= "<tr><th>Id</th><th>Layer Name</th><th>Lat</th><th>Lon</th></tr>\n";
 
         $index = 0;
 
@@ -315,7 +318,11 @@ HTML;
 
             $result .= sprintf("<input type=\"hidden\" name=\"id\" value=\"%s\"> \n", $poi->id);
             $result .= sprintf("<input type=\"hidden\" name=\"title\" value=\"%s\" > \n", $poi->title);
-
+            $result .= sprintf("<input type=\"hidden\" name=\"line1\" value=\"%s\" > \n", $poi->line1);
+            $result .= sprintf("<input type=\"hidden\" name=\"line2\" value=\"%s\" > \n", $poi->line2);
+            $result .= sprintf("<input type=\"hidden\" name=\"line3\" value=\"%s\" > \n", $poi->line3);
+            $result .= sprintf("<input type=\"hidden\" name=\"line4\" value=\"%s\" > \n", $poi->line4);
+            
             $result .= sprintf("<input type=\"hidden\" name=\"isVisible\" value=\"%s\" > \n", $poi->isVisible);
 
             $result .= sprintf("<input type=\"hidden\" name=\"baseURL\" value=\"%s\" > \n", $poi->object->baseURL);
@@ -411,14 +418,19 @@ HTML;
         }
 
         $result .= sprintf("<tr><td>ID</td><td><input type=\"hidden\" name=\"id\" value=\"%s\">%s</td></tr>\n", $poi->id, $poi->id);
-        $result .= sprintf("<tr><td>Title</td><td><input type=\"text\" name=\"title\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->title);
+        $result .= sprintf("<tr><td>Layer Name</td><td><input type=\"text\" name=\"title\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->title);
 
         $result .= sprintf("<tr><td>Lat/Lon</td><td><input type=\"text\" id=\"lat1\" name=\"lat\" value=\"%s\" size=\"12\">\n", $poi->lat);
         $result .= sprintf("<input type=\"text\" id=\"lon1\"name=\"lon\" value=\"%s\" size=\"12\"></td></tr>\n", $poi->lon);
 
-        $result .= sprintf("<tr><td>Is visible</td><td>%s</td></tr>\n", self::createCheckbox("isVisible", $poi->isVisible));
+        $result .= sprintf("<tr><td>Is Visible</td><td>%s</td></tr>\n", self::createCheckbox("isVisible", $poi->isVisible));
         $result .= sprintf("<tr><td>Porpoise URL</td><td><input type=\"text\" name=\"baseURL\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->object->baseURL);
 
+        $result .= sprintf("<tr><td>Layer Title</td><td><input type=\"text\" name=\"line1\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->line1);
+        $result .= sprintf("<tr><td>Line 2</td>     <td><input type=\"text\" name=\"line2\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->line2);
+        $result .= sprintf("<tr><td>Line 3</td>     <td><input type=\"text\" name=\"line3\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->line3);
+        $result .= sprintf("<tr><td>Icon Name</td>  <td><input type=\"text\" name=\"line4\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->line4);
+        
         $result .= "<caption><button type=\"submit\">Save</button></caption>\n";
         $result .= "</table>\n";
         $result .= "</form>";
@@ -535,6 +547,7 @@ HTML;
     {
         $result = "";
         $result .= "<table class=\"animation\">\n";
+        $result .= sprintf("<tr><td>Name</td><td><input type=\"text\" name=\"animations[%s][name]\" value=\"%s\"></td></tr>\n", $index, $animation->name);
         $result .= sprintf("<tr><td>Event</td><td>%s</td></tr>\n", self::createEventSelector(sprintf("animations[%s][event]", $index), $event));
         $result .= sprintf("<tr><td>Type</td><td>%s</td></tr>\n", self::createAnimationTypeSelector(sprintf("animations[%s][type]", $index), $animation->type));
         $result .= sprintf("<tr><td>Length</td><td><input type=\"text\" name=\"animations[%s][length]\" value=\"%s\"></td></tr>\n", $index, $animation->length);
@@ -545,6 +558,7 @@ HTML;
         $result .= sprintf("<tr><td>From</td><td><input type=\"text\" name=\"animations[%s][from]\" value=\"%s\"></td></tr>\n", $index, $animation->from);
         $result .= sprintf("<tr><td>To</td><td><input type=\"text\" name=\"animations[%s][to]\" value=\"%s\"></td></tr>\n", $index, $animation->to);
         $result .= sprintf("<tr><td>Axis (x,y,z)</td><td><input type=\"text\" name=\"animations[%s][axis]\" value=\"%s\"></td></tr>\n", $index, $animation->axisString());
+        $result .= sprintf("<tr><td>Followed By</td><td><input type=\"text\" name=\"animations[%s][followedBy]\" value=\"%s\"></td></tr>\n", $index, $animation->followedBy);
         $result .= "</table>\n";
 
         return $result;
@@ -562,7 +576,7 @@ HTML;
         $result = "";
         $result .= sprintf("<form accept-charset=\"utf-8\" action=\"?action=newPOI&layerName=%s\" method=\"POST\">\n", urlencode($layerName));
         $result .= sprintf("<table class=\"newPOI\">\n");
-        $result .= sprintf("<tr><td>Dimension</td><td><input type=\"text\" name=\"dimension\" size=\"1\"></td></tr>\n");
+        $result .= sprintf("<tr><td>Dimension</td><td><input type=\"text\" name=\"dimension\" size=\"1\" value=\"3\"></td></tr>\n");
         $result .= sprintf("<caption><button type=\"submit\">Create</button></caption>");
         $result .= "</table>\n";
         $result .= "</form>\n";
@@ -576,7 +590,9 @@ HTML;
      */
     public static function createLoginScreen()
     {
-        $result = "";
+        $result = "<h1><img src=\"http://www.arpoise.com/images/arpoise_logo_rgb-1024.png\" width=64></img>";
+        $result .= "ARpoise Directory Login</h1>\n";
+        
         /* preserve GET parameters */
         $get = $_GET;
         unset($get["username"]);
@@ -593,7 +609,7 @@ HTML;
             }
             $getString .= urlencode($key) . "=" . urlencode($value);
         }
-        $result .= sprintf("Arpoise Directory Login<br><br><form accept-charset=\"utf-8\" method=\"POST\" action=\"%s%s\">\n", $_SERVER["PHP_SELF"], $getString);
+        $result .= sprintf("<br><br><form accept-charset=\"utf-8\" method=\"POST\" action=\"%s%s\">\n", $_SERVER["PHP_SELF"], $getString);
         $result .= "<table class=\"login\">\n";
         $result .= "<tr><td>Username</td><td><input type=\"text\" name=\"username\" size=\"15\"></td></tr>\n";
         $result .= "<tr><td>Password</td><td><input type=\"password\" name=\"password\" size=\"15\"></td></tr>\n";

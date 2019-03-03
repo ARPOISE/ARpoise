@@ -22,20 +22,19 @@
  */
 class LayarResponse
 {
-
-    /** @var string Title to show over the 3d content */
-    public $layerTitle = NULL;
-
     /** @var POI[] */
-    public $hotspots = array();
+    public $hotspots = array(); // THIS HAS TO BE THE FIRST ENTRY!
 
     /** @var string[] When sending a POI update (instead of a full refresh), this specifies hotspots to delete from the previous set */
     public $deletedHotspots = array();
-
+    
     /** @var int Radius containing the returned POI set */
     public $radius = 0;
-
-    /** @var int Pleaching value, 0 - 100 */
+    
+    /** @var int number of hotspots/pois in layer */
+    public $numberOfHotspots = 0;
+    
+    /** @var int Bleaching value, 0 - 100 */
     public $bleachingValue = 0;
 
     /** @var int Refresh interval in seconds */
@@ -62,6 +61,9 @@ class LayarResponse
     /** @var bool Do apply the Kalman filter */
     public $applyKalmanFilter = TRUE;
 
+    /** @var string Redirect the client to this url */
+    public $redirectionUrl = NULL;
+    
     /** @var string Redirect the client to this layer */
     public $redirectionLayer = NULL;
 
@@ -71,14 +73,16 @@ class LayarResponse
     /** @var string Message to if no pois are found */
     public $noPoisMessage = NULL;
 
+    /** @var string Title to show over the 3d content */
+    public $layerTitle = NULL;
+    
     /** @var Action[] */
     public $actions = array();
 
     /** @var Animation[] */
     public $animations = array(
         "onCreate" => array(),
-        "onUpdate" => array(),
-        "onDelete" => array(),
+        "onFollow" => array(),
         "onFocus" => array(),
         "onClick" => array()
     );

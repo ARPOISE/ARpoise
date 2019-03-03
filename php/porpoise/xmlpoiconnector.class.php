@@ -110,6 +110,7 @@ class XMLPOIConnector extends POIConnector
                         break;
                     case "showMessage":
                     case "redirectionLayer":
+                    case "redirectionUrl":
                     case "layerTitle":
                     case "noPoisMessage":
                         $result->$name = (string) $childNode;
@@ -129,8 +130,7 @@ class XMLPOIConnector extends POIConnector
                             if (! empty($events)) {
                                 foreach (array(
                                     "onCreate",
-                                    "onUpdate",
-                                    "onDelete",
+                                    "onFollow",
                                     "onFocus",
                                     "onClick"
                                 ) as $event) {
@@ -149,6 +149,7 @@ class XMLPOIConnector extends POIConnector
         }
 
         $result->hotspots = $this->getPOIs($filter);
+        $result->numberOfHotspots = count($result->hotspots);
 
         libxml_use_internal_errors($libxmlErrorHandlingState);
 
@@ -202,11 +203,12 @@ class XMLPOIConnector extends POIConnector
                 $poi = new POI1D();
             } else if ((int) $poiData->dimension == 2) {
                 $poi = new POI2D();
-            } else if ((int) $poiData->dimension == 3) {
+            } else /* if ((int)$poiData->dimension == 3) */
+            {
                 $poi = new POI3D();
-            } else {
-                throw new Exception("Invalid dimension: " . (string) $poiData->dimension);
-            }
+            } // else {
+            // throw new Exception("Invalid dimension: " . (string)$poiData->dimension);
+            // }
             foreach ($poiData->children() as $child) {
                 $nodeName = $child->getName();
                 if ($nodeName == "action") {
@@ -227,8 +229,7 @@ class XMLPOIConnector extends POIConnector
                         if (! empty($events)) {
                             foreach (array(
                                 "onCreate",
-                                "onUpdate",
-                                "onDelete",
+                                "onFollow",
                                 "onFocus",
                                 "onClick"
                             ) as $event) {
@@ -466,6 +467,7 @@ class XMLPOIConnector extends POIConnector
             "applyKalmanFilter",
             "showMessage",
             "redirectionLayer",
+            "redirectionUrl",
             "layerTitle",
             "noPoisMessage"
         );

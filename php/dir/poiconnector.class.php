@@ -58,6 +58,7 @@ abstract class POIConnector implements iPOIConnector {
 	public function getLayarResponse(Filter $filter = NULL) {
 		$result = new LayarResponse();
 		$result->hotspots = $this->getPOIs($filter);
+		$result->numberOfHotspots = count($result->hotspots);
 		return $result;
 	}
 
@@ -129,6 +130,6 @@ abstract class POIConnector implements iPOIConnector {
 	 * @return bool
 	 */
 	protected function passesFilter(POI $poi, Filter $filter = NULL) {
-		return TRUE;
+	    return $poi->isVisible;
 	}
 }

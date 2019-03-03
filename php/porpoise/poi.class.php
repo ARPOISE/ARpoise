@@ -309,6 +309,8 @@ class POIObject extends Arrayable {
  * @package PorPOISe
  */
 class Animation extends Arrayable {
+    /** @var string name of the animation */
+    public $name;
 	/** @var string type of animation */
 	public $type;
 	/** @var float length of the animation in seconds */
@@ -327,7 +329,9 @@ class Animation extends Arrayable {
 	public $from = NULL;
 	/** @var float to modifier for end state */
 	public $to = NULL;
-	/** @var vector (x,y,z assoicative array) axis for the animation */
+	/** @var string names of the animations this animation is followed by */
+	public $followedBy;
+	/** @var vector (x,y,z associative array) axis for the animation */
 	public $axis = array("x" => NULL, "y" => NULL, "z" => NULL);
 
 	public function axisString() {
@@ -355,6 +359,8 @@ class Animation extends Arrayable {
 			break;
 		case "type":
 		case "interpolation":
+		case "name":
+		case "followedBy":
 			$this->$key = (string)$value;
 			break;
 		case "length":
@@ -404,7 +410,7 @@ abstract class POI extends Arrayable {
 	/** @var POIAction[] Possible actions for this POI */
 	public $actions = array();
 	/** @var Animation[] Animations for this POI */
-	public $animations = array("onCreate" => array(), "onUpdate" => array(), "onDelete" => array(), "onFocus" => array(), "onClick" => array());
+	public $animations = array("onCreate" => array(), "onFocus" => array(), "onClick" => array(), "onFollow" => array());
 	/** @var string attribution text */
 	public $attribution = NULL;
 	/** @var int Distance in meters between the user and this POI */
@@ -417,6 +423,8 @@ abstract class POI extends Arrayable {
 	public $lat = NULL;
 	/** @var int Longitude of this POI in microdegrees */
 	public $lon = NULL;
+	/** @var string First line of text */
+	public $line1 = NULL;
 	/** @var string Second line of text */
 	public $line2 = NULL;
 	/** @var string Third line of text */
@@ -461,7 +469,7 @@ abstract class POI extends Arrayable {
 								$value[] = new POIAction($sourceAction);
 							}
 						} else if ($propertyName == "animations") {
-							$value = array("onCreate" => array(), "onUpdate" => array(), "onDelete" => array(), "onFocus" => array(), "onClick" => array());
+							$value = array("onCreate" => array(), "onFollow" => array(), "onFocus" => array(), "onClick" => array());
 							foreach ($source["animations"] as $event => $animations) {
 								foreach ($animations as $animation) {
 									$value[$event][] = new Animation($animation);
@@ -504,7 +512,7 @@ abstract class POI extends Arrayable {
 								$value[] = new POIAction($sourceAction);
 							}
 						} else if ($propertyName == "animations") {
-							$value = array("onCreate" => array(), "onUpdate" => array(), "onDelete" => array(), "onFocus" => array(), "onClick" => array());
+						    $value = array("onCreate" => array(), "onFollow" => array(), "onFocus" => array(), "onClick" => array());
 							foreach ($source->animations as $event => $animations) {
 								foreach ($animations as $animation) {
 									$value[$event][] = new Animation($animation);
