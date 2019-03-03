@@ -27,6 +27,12 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.24  2019/02/22 20:28:01  peter
+Removed a compiler warning
+
+Revision 1.23  2019/02/22 19:06:22  peter
+Added the handling of the DefaultLayerName
+
 Revision 1.22  2019/02/22 15:04:21  peter
 Handling of showMenuButton for default layer
 
@@ -99,7 +105,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.22 2019/02/22 15:04:21 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.24 2019/02/22 20:28:01 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -1016,7 +1022,7 @@ static void createStatisticsHits(int layer, char * layerName, int layerServed)
 	}
 }
 
-extern int showDefaultLayer = 1;
+int showDefaultLayer = 1;
 
 static int arpoiseDirectory(int argc, char * argv[])
 {
@@ -1153,8 +1159,8 @@ static int arpoiseDirectory(int argc, char * argv[])
 			{
 				// Request the default layer from porpoise and return it to the client
 
-				layerUrl = "/php/porpoise/web/porpoise.php";
-				layerName = "Reign-of-Gold";
+				layerUrl = pblCgiConfigValue("DefaultLayerUrl", "/php/porpoise/web/porpoise.php");
+				layerName = pblCgiConfigValue("DefaultLayerName", "Default-Layer-Reign-of-Gold");
 
 				layerServed = 1;
 				PBL_CGI_TRACE("-------> Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
@@ -1163,7 +1169,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 
 				int myLatDifference = 0;
 				int myLonDifference = 0;
-				ptr = changeLatAndLon(ptr, "48.158809", "11.580103", &myLatDifference, &myLonDifference);
+				ptr = changeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
 				latDifference += myLatDifference;
 				lonDifference += myLonDifference;
 
