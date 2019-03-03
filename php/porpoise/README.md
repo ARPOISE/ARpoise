@@ -19,7 +19,6 @@ made available on the net and referenced by the **POI** definition in your layer
 Creation of asset bundles in Unity is beyond this documentation. One thing we found is,
 asset bundles created for either Android or iOS do not work on the "other" platform.
 Therefore you need to provide **two** asset bundles, one for Android and one for iOS.
-
 As you can only enter one asset bundle url in the ARpoise PorPOISe configuration, 
 ARpoise assumes that the asset bundle name given is the one of the Android asset bundle.
 The name of the iOS asset bundle has to be the Android name followed by 'i'.
@@ -73,7 +72,11 @@ The following properties of a POI can be edited:
 * **Is visible**: This combo box defines whether the POI is visible.
 * **Absolute altitude**: Allows to set the absolute altitude of the POI.
 * **Relative altitude**: Allows to set the altitude of the POI relative to the user's device.
-* **URL of asset bundle**: The POI's geometry will be taken from a Unity asset bundle downloaded from this web location.
+* **URL of asset bundle**: The POI's geometry will be taken from a Unity asset bundle downloaded from this web location. One thing we found is, asset bundles created for either Android or iOS do not work on the "other" platform.
+Therefore you need to provide **two** asset bundles, one for Android and one for iOS.
+As you can only enter one asset bundle url in the ARpoise PorPOISe configuration, 
+ARpoise assumes that the asset bundle name given is the one of the Android asset bundle.
+The name of the iOS asset bundle has to be the Android name followed by 'i'.
 * **Prefab name**: The POI's geometry loaded from the asset bundle with this prefab name.
 * **Layer name**: If this value is set, the entire layer will be loaded instead of the POI.
 * **Relative location**: The location of the POI relative to the user's device. Comma separated list of the X-east-west, Y-up-down, Z-north-south values.
