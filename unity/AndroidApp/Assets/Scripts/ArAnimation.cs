@@ -44,7 +44,10 @@ namespace com.arpoise.arpoiseapp
         public static string Halfsine = "halfsine";
 
         public readonly long PoiId;
+        public readonly GameObject Wrapper;
         public readonly GameObject GameObject;
+        public readonly string Name;
+        public readonly string FollowedBy;
 
         private readonly long _lengthTicks;
         private readonly long _delayTicks;
@@ -57,16 +60,20 @@ namespace com.arpoise.arpoiseapp
         private readonly float _to;
         private readonly Vector3 _axis;
 
-        private bool _isActive = true;
         private long _startTicks = 0;
-        private long _elapsedTicks = 0;
 
-        public ArAnimation(long poiId, GameObject gameObject, PoiAnimation poiAnimation)
+        public ArAnimation(long poiId, GameObject wrapper, GameObject gameObject, PoiAnimation poiAnimation, bool isActive)
         {
+            IsActive = isActive;
+            JustActivated = false;
+            JustStopped = false;
+
             PoiId = poiId;
+            Wrapper = wrapper;
             GameObject = gameObject;
             if (poiAnimation != null)
             {
+                Name = poiAnimation.name;
                 _lengthTicks = (long)(10000000.0 * poiAnimation.length);
                 _delayTicks = (long)(10000000.0 * poiAnimation.delay);
                 if (poiAnimation.type != null)
@@ -88,57 +95,27 @@ namespace com.arpoise.arpoiseapp
                 _to = poiAnimation.to;
                 _axis = poiAnimation.axis == null ? Vector3.zero
                     : new Vector3(poiAnimation.axis.x, poiAnimation.axis.y, poiAnimation.axis.z);
+                FollowedBy = poiAnimation.followedBy;
             }
         }
 
-        public void Stop(long worldStartTicks, long nowTicks, bool animate = true)
-        {
-            if (animate)
-            {
-                Animate(worldStartTicks, nowTicks);
-            }
-            _isActive = false;
-
-            if (_persisting)
-            {
-                _elapsedTicks = nowTicks - _startTicks;
-            }
-            else
-            {
-                _elapsedTicks = 0;
-                if (Rotate.Equals(_type))
-                {
-                    GameObject.transform.eulerAngles = Vector3.zero;
-                }
-                else if (Scale.Equals(_type))
-                {
-                    GameObject.transform.localScale = Vector3.one;
-                }
-                else if (Transform.Equals(_type))
-                {
-                    GameObject.transform.localPosition = Vector3.zero;
-                }
-            }
-            return;
-        }
+        public bool IsActive { get; private set; }
+        public bool JustActivated { get; private set; }
+        public bool JustStopped { get; private set; }
 
         public void Activate(long worldStartTicks, long nowTicks)
         {
-            _isActive = true;
-            if (_elapsedTicks > 0)
-            {
-                _startTicks = nowTicks - _elapsedTicks;
-            }
-            else
-            {
-                _startTicks = 0;
-            }
-            Animate(worldStartTicks, nowTicks);
+            IsActive = true;
+            _startTicks = 0;
+            Animate(worldStartTicks, nowTicks, true);
         }
 
-        public void Animate(long worldStartTicks, long nowTicks)
+        public void Animate(long worldStartTicks, long nowTicks, bool justActivated = false)
         {
-            if (worldStartTicks <= 0 || !_isActive || _lengthTicks < 1 || _delayTicks < 0)
+            JustActivated = justActivated;
+            JustStopped = false;
+
+            if (worldStartTicks <= 0 || !IsActive || _lengthTicks < 1 || _delayTicks < 0)
             {
                 return;
             }
@@ -153,6 +130,7 @@ namespace com.arpoise.arpoiseapp
             if (_startTicks == 0)
             {
                 _startTicks = nowTicks;
+                JustActivated = true;
             }
             else
             {
@@ -173,6 +151,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         _startTicks += _lengthTicks;
                     }
+                    JustActivated = true;
                 }
                 animationValue = (nowTicks - _startTicks) / ((float)_lengthTicks);
             }
@@ -210,7 +189,7 @@ namespace com.arpoise.arpoiseapp
 
             if (Rotate.Equals(_type))
             {
-                GameObject.transform.eulerAngles = new Vector3(
+                Wrapper.transform.eulerAngles = new Vector3(
                     _axis.x * animationFactor,
                     _axis.y * animationFactor,
                     _axis.z * animationFactor
@@ -218,7 +197,7 @@ namespace com.arpoise.arpoiseapp
             }
             else if (Scale.Equals(_type))
             {
-                GameObject.transform.localScale = new Vector3(
+                Wrapper.transform.localScale = new Vector3(
                     _axis.x == 0 ? 1 : _axis.x * animationFactor,
                     _axis.y == 0 ? 1 : _axis.y * animationFactor,
                     _axis.z == 0 ? 1 : _axis.z * animationFactor
@@ -226,12 +205,39 @@ namespace com.arpoise.arpoiseapp
             }
             else if (Transform.Equals(_type))
             {
-                GameObject.transform.localPosition = new Vector3(
+                Wrapper.transform.localPosition = new Vector3(
                     _axis.x * animationFactor,
                     _axis.y * animationFactor,
                     _axis.z * animationFactor
                     );
             }
+        }
+
+        public void Stop(long worldStartTicks, long nowTicks, bool animate = true)
+        {
+            if (animate)
+            {
+                Animate(worldStartTicks, nowTicks);
+            }
+            JustStopped = true;
+            IsActive = false;
+
+            if (!_persisting)
+            {
+                if (Rotate.Equals(_type))
+                {
+                    Wrapper.transform.eulerAngles = Vector3.zero;
+                }
+                else if (Scale.Equals(_type))
+                {
+                    Wrapper.transform.localScale = Vector3.one;
+                }
+                else if (Transform.Equals(_type))
+                {
+                    Wrapper.transform.localPosition = Vector3.zero;
+                }
+            }
+            return;
         }
     }
 }

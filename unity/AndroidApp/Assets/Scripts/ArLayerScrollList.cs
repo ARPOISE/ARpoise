@@ -9,6 +9,9 @@ namespace com.arpoise.arpoiseapp
     public class Item
     {
         public string itemName;
+        public string layerName;
+        public int distance;
+        public string url;
         public string line2;
         public string line3;
         public Sprite icon;
@@ -27,14 +30,16 @@ namespace com.arpoise.arpoiseapp
 
         public void AddButtons(List<Item> itemList, ArBehaviour behaviour)
         {
-            for (int i = 0; i < itemList.Count; i++)
+            if (itemList != null)
             {
-                Item item = itemList[i];
-                GameObject newButton = _buttonObjectPool.GetObject();
-                newButton.transform.SetParent(_contentPanel);
+                foreach (var item in itemList)
+                {
+                    var newButton = _buttonObjectPool.GetObject();
+                    newButton.transform.SetParent(_contentPanel);
 
-                LayerButton button = newButton.GetComponent<LayerButton>();
-                button.Setup(item, behaviour);
+                    var button = newButton.GetComponent<LayerButton>();
+                    button.Setup(item, behaviour);
+                }
             }
         }
 
@@ -42,7 +47,7 @@ namespace com.arpoise.arpoiseapp
         {
             while (_contentPanel.childCount > 0)
             {
-                GameObject toRemove = _contentPanel.GetChild(0).gameObject;
+                var toRemove = _contentPanel.GetChild(0).gameObject;
                 _buttonObjectPool.ReturnObject(toRemove);
             }
         }

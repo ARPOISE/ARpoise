@@ -68,6 +68,7 @@ namespace com.arpoise.arpoiseapp
     [Serializable]
     public class PoiAnimation
     {
+        public string name = string.Empty;
         public string type = string.Empty;
         public float length = 0;
         public float delay = 0;
@@ -78,14 +79,14 @@ namespace com.arpoise.arpoiseapp
         public float from = 0;
         public float to = 0;
         public PoiVector3 axis = null;
+        public string followedBy = string.Empty;
     }
 
     [Serializable]
     public class PoiAnimations
     {
         public PoiAnimation[] onCreate = null;
-        public PoiAnimation[] onUpdate = null;
-        public PoiAnimation[] onDelete = null;
+        public PoiAnimation[] onFollow = null;
         public PoiAnimation[] onFocus = null;
         public PoiAnimation[] onClick = null;
     }
@@ -119,6 +120,7 @@ namespace com.arpoise.arpoiseapp
         public int lat = 0;
         public int lon = 0;
 
+        public string line1 = string.Empty;
         public string line2 = string.Empty;
         public string line3 = string.Empty;
         public string line4 = string.Empty;
@@ -128,6 +130,7 @@ namespace com.arpoise.arpoiseapp
         public float Latitude { get { return lat / 1000000f; } }
         public float Longitude { get { return lon / 1000000f; } }
 
+        [NonSerialized]
         public ArLayer ArLayer;
 
         public string BaseUrl
@@ -193,6 +196,7 @@ namespace com.arpoise.arpoiseapp
         public int areaWidth = 0;
         public int visibilityRange = 1500;
         public bool applyKalmanFilter = true;
+        public bool showMenuButton = true;
 
         public PoiAction[] actions = new PoiAction[0];
 

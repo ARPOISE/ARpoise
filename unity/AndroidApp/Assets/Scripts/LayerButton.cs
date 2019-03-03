@@ -16,7 +16,6 @@ namespace com.arpoise.arpoiseapp
         private Item _item;
         private ArBehaviour _behaviour;
 
-        // Use this for initialization
         private void Start()
         {
             button.onClick.AddListener(HandleClick);
@@ -27,7 +26,7 @@ namespace com.arpoise.arpoiseapp
             _item = currentItem;
             nameLabel.text = _item.itemName;
             line2Label.text = _item.line2;
-            line3Label.text = _item.line3;
+            line3Label.text = _item.distance + "m" + (string.IsNullOrEmpty(_item.line3) ? string.Empty : ", " + _item.line3);
             iconImage.sprite = _item.icon;
             _behaviour = behaviour;
         }

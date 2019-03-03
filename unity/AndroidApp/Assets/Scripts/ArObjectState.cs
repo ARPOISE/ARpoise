@@ -36,23 +36,29 @@ namespace com.arpoise.arpoiseapp
 {
     public class ArObjectState
     {
-        private readonly List<ArObject> _arObjects = new List<ArObject>();
-        private readonly List<ArObject> _arObjectsToDelete = new List<ArObject>();
-        private readonly List<Poi> _arPois = new List<Poi>();
-        private readonly List<ArAnimation> _onCreateAnimations = new List<ArAnimation>();
-        private readonly Dictionary<GameObject, ArAnimation> _onFocusAnimations = new Dictionary<GameObject, ArAnimation>();
-        private readonly List<ArAnimation> _billboardAnimations = new List<ArAnimation>();
-
         public volatile bool IsDirty = false;
-        public ArAnimation OnFocusAnimation = null;
         public List<ArObject> ArObjectsToPlace = null;
 
-        public List<ArObject> ArObjects { get { return _arObjects; } }
-        public List<ArObject> ArObjectsToDelete { get { return _arObjectsToDelete; } }
-        public List<Poi> ArPois { get { return _arPois; } }
-        public List<ArAnimation> OnCreateAnimations { get { return _onCreateAnimations; } }
-        public Dictionary<GameObject, ArAnimation> OnFocusAnimations { get { return _onFocusAnimations; } }
-        public List<ArAnimation> BillboardAnimations { get { return _billboardAnimations; } }
+        public List<ArObject> ArObjects { get; private set; }
+        public List<ArObject> ArObjectsToDelete { get; private set; }
+        public List<Poi> ArPois { get; private set; }
+        public List<ArAnimation> OnCreateAnimations { get; private set; }
+        public List<ArAnimation> OnFollowAnimations { get; private set; }
+        public List<ArAnimation> OnFocusAnimations { get; private set; }
+        public List<ArAnimation> OnClickAnimations { get; private set; }
+        public List<ArAnimation> BillboardAnimations { get; private set; }
+
+        public ArObjectState()
+        {
+            ArObjects = new List<ArObject>();
+            ArObjectsToDelete = new List<ArObject>();
+            ArPois = new List<Poi>();
+            OnCreateAnimations = new List<ArAnimation>();
+            OnFollowAnimations = new List<ArAnimation>();
+            OnFocusAnimations = new List<ArAnimation>();
+            OnClickAnimations = new List<ArAnimation>();
+            BillboardAnimations = new List<ArAnimation>();
+        }
 
         private void RemoveFromAnimations(ArObject arObject)
         {
@@ -64,13 +70,17 @@ namespace com.arpoise.arpoiseapp
             {
                 OnCreateAnimations.Remove(animation);
             }
-            foreach (var pair in OnFocusAnimations.Where(x => arObject.Id == x.Value.PoiId).ToList())
+            foreach (var animation in OnFollowAnimations.Where(x => arObject.Id == x.PoiId).ToList())
             {
-                if (OnFocusAnimation == pair.Value)
-                {
-                    OnFocusAnimation = null;
-                }
-                OnFocusAnimations.Remove(pair.Key);
+                OnFollowAnimations.Remove(animation);
+            }
+            foreach (var animation in OnFocusAnimations.Where(x => arObject.Id == x.PoiId).ToList())
+            {
+                OnFocusAnimations.Remove(animation);
+            }
+            foreach (var animation in OnClickAnimations.Where(x => arObject.Id == x.PoiId).ToList())
+            {
+                OnClickAnimations.Remove(animation);
             }
         }
 

@@ -39,17 +39,25 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using Vuforia;
 
-
 namespace com.arpoise.arpoiseapp
 {
+    public class RefreshRequest
+    {
+        public string url;
+        public string layerName;
+        public float? latitude;
+        public float? longitude;
+    }
+
     public class ArBehaviour : MonoBehaviour
     {
+        private static readonly string _selectingText = "Please select a layer.";
         private static readonly string _loadingText = "Loading data, please wait";
 #if DEVEL
-        private static readonly string _layerName = "Arpoise-Directory";
+        private static readonly string _arpoiseDirectoryLayer = "Arpoise-Directory";
         private static readonly string _arpoiseDirectoryUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
 #else
-        private static readonly string _layerName = "Arpoise-Directory";
+        private static readonly string _arpoiseDirectoryLayer = "Arpoise-Directory";
         private static readonly string _arpoiseDirectoryUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
 #endif
         private double _locationTimestamp = 0;
@@ -88,6 +96,7 @@ namespace com.arpoise.arpoiseapp
         private int _framesPerCurrentSecond = 1;
 
         private bool _applyKalmanFilter = true;
+        private volatile RefreshRequest _refreshRequest = null;
         private float _refreshInterval = 0;
         private int _bleachingValue = -1;
         private int _areaSize = 0;
@@ -113,17 +122,50 @@ namespace com.arpoise.arpoiseapp
         public GameObject PanelHeaderButton = null;
         public Transform ContentPanel;
         public SimpleObjectPool ButtonObjectPool;
+        public GameObject InputPanel;
 
         #endregion
 
-        protected bool MenuEnabled = true;
+        protected bool InputPanelEnabled = true;
+        protected bool? MenuEnabled = null;
+        private List<Item> _layerItemList = null;
         private ArLayerScrollList _layerScrollList = null;
+        private bool _waitingForLayerSelection = false;
 
         #region Buttons
 
+        public void HandleInputPanelClosed(float? latitude, float? longitude)
+        {
+            Debug.Log("HandleInputPanelClosed lat " + latitude + " lon " + longitude);
+
+            _refreshRequest = new RefreshRequest
+            {
+                url = _arpoiseDirectoryUrl,
+                layerName = _arpoiseDirectoryLayer,
+                latitude = latitude,
+                longitude = longitude
+            };
+        }
+
+        private long _lastButtonSecond = 0;
+
         public void HandleMenuButtonClick()
         {
-            if (MenuEnabled)
+            if (InputPanelEnabled)
+            {
+                var second = DateTime.Now.Ticks / 10000000L;
+                if (_lastButtonSecond == second)
+                {
+                    InputPanel.SetActive(true);
+                    var inputPanel = InputPanel.GetComponent<InputPanel>();
+                    inputPanel.Activate(this);
+                    return;
+                }
+                _lastButtonSecond = second;
+            }
+
+            List<Item> itemList = _layerItemList;
+            if (MenuEnabled.HasValue && MenuEnabled.Value && itemList != null && itemList.Any())
             {
                 if (_layerScrollList != null)
                 {
@@ -131,20 +173,9 @@ namespace com.arpoise.arpoiseapp
                 }
 
                 _layerScrollList = new ArLayerScrollList(ContentPanel, ButtonObjectPool);
-                List<Item> itemList = new List<Item>();
-                itemList.Add(new Item { itemName = "Layer 1", line2 = "Author 1", line3 = "Description 1" });
-                itemList.Add(new Item { itemName = "Layer 2", line2 = "Author 1", line3 = "Description 1" });
-                itemList.Add(new Item { itemName = "Layer 3", line2 = "Author 1", line3 = "Description 1" });
-                itemList.Add(new Item { itemName = "Layer 4", line2 = "Author 1", line3 = "Description 1" });
-                itemList.Add(new Item { itemName = "Layer 5", line2 = "Author 1", line3 = "Description 1" });
-                itemList.Add(new Item { itemName = "Layer 6", line2 = "Author 1", line3 = "Description 1" });
-                //itemList.Add(new Item { itemName = "Layer 7", line2 = "Author 1", line3 = "Description 1" });
-                //itemList.Add(new Item { itemName = "Layer 8", line2 = "Author 1", line3 = "Description 1" });
-                //itemList.Add(new Item { itemName = "Layer 8", line2 = "Author 1", line3 = "Description 1" });
-                //itemList.Add(new Item { itemName = "Layer 10", line2 = "Author 1", line3 = "Description 1" });
-                //itemList.Add(new Item { itemName = "Layer 11", line2 = "Author 1", line3 = "Description 1" });
                 _layerScrollList.AddButtons(itemList, this);
 
+                InputPanel.SetActive(false);
                 HeaderButton.SetActive(false);
                 MenuButton.SetActive(false);
                 LayerPanel.SetActive(true);
@@ -153,21 +184,53 @@ namespace com.arpoise.arpoiseapp
 
         public void HandlePanelHeaderButtonClick()
         {
-            if (MenuEnabled)
+            if (MenuEnabled.HasValue && MenuEnabled.Value)
             {
                 HeaderButton.SetActive(_headerButtonActivated);
-                MenuButton.SetActive(true);
+                MenuButton.SetActive(MenuEnabled.HasValue && MenuEnabled.Value);
                 LayerPanel.SetActive(false);
                 if (_layerScrollList != null)
                 {
                     _layerScrollList.RemoveButtons();
                 }
             }
+            if (InputPanelEnabled)
+            {
+                var second = DateTime.Now.Ticks / 10000000L;
+                if (_lastButtonSecond == second)
+                {
+                    InputPanel.SetActive(true);
+                    InputPanel inputPanel = InputPanel.GetComponent<InputPanel>();
+                    inputPanel.Activate(this);
+                }
+                _lastButtonSecond = second;
+            }
         }
 
         public void HandleLayerButtonClick(Item item)
         {
-            Debug.Log("HandleLayerButtonClick " + item.itemName);
+            if (item != null && !IsEmpty(item.layerName) && !IsEmpty(item.url))
+            {
+                Debug.Log("HandleLayerButtonClick " + item.itemName);
+
+                _refreshRequest = new RefreshRequest
+                {
+                    url = item.url,
+                    layerName = item.layerName,
+                    latitude = _fixedDeviceLatitude,
+                    longitude = _fixedDeviceLongitude
+                };
+            }
+            if (MenuEnabled.HasValue && MenuEnabled.Value)
+            {
+                HeaderButton.SetActive(_headerButtonActivated);
+                MenuButton.SetActive(MenuEnabled.HasValue && MenuEnabled.Value);
+                LayerPanel.SetActive(false);
+                if (_layerScrollList != null)
+                {
+                    _layerScrollList.RemoveButtons();
+                }
+            }
         }
 
         #endregion
@@ -277,7 +340,7 @@ namespace com.arpoise.arpoiseapp
                     }
                     billboardWrapper.transform.parent = parentTransform;
                     parentTransform = billboardWrapper.transform;
-                    arObjectState.BillboardAnimations.Add(new ArAnimation(poiId, billboardWrapper, null));
+                    arObjectState.BillboardAnimations.Add(new ArAnimation(poiId, billboardWrapper, objectToAdd, null, true));
                 }
 
                 // Prepare the rotation of the object
@@ -306,7 +369,7 @@ namespace com.arpoise.arpoiseapp
                             {
                                 return "Instantiate(_wrapper) failed";
                             }
-                            arObjectState.OnCreateAnimations.Add(new ArAnimation(poiId, animationWrapper, poiAnimation));
+                            arObjectState.OnCreateAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, true));
                             animationWrapper.transform.parent = parentTransform;
                             parentTransform = animationWrapper.transform;
                         }
@@ -325,7 +388,42 @@ namespace com.arpoise.arpoiseapp
                             {
                                 return "Instantiate(_wrapper) failed";
                             }
-                            arObjectState.OnFocusAnimations[objectToAdd] = new ArAnimation(poiId, animationWrapper, poiAnimation);
+                            arObjectState.OnFocusAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
+                            animationWrapper.transform.parent = parentTransform;
+                            parentTransform = animationWrapper.transform;
+                        }
+                    }
+
+                    if (poi.animations.onClick != null)
+                    {
+                        foreach (var poiAnimation in poi.animations.onClick)
+                        {
+                            SphereCollider sc = objectToAdd.AddComponent<SphereCollider>() as SphereCollider;
+                            sc.radius = .71f; // 2 ** -2 / 2
+
+                            // Put the animation into a wrapper
+                            var animationWrapper = Instantiate(Wrapper);
+                            if (animationWrapper == null)
+                            {
+                                return "Instantiate(_wrapper) failed";
+                            }
+                            arObjectState.OnClickAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
+                            animationWrapper.transform.parent = parentTransform;
+                            parentTransform = animationWrapper.transform;
+                        }
+                    }
+
+                    if (poi.animations.onFollow != null)
+                    {
+                        foreach (var poiAnimation in poi.animations.onFollow)
+                        {
+                            // Put the animation into a wrapper
+                            var animationWrapper = Instantiate(Wrapper);
+                            if (animationWrapper == null)
+                            {
+                                return "Instantiate(_wrapper) failed";
+                            }
+                            arObjectState.OnFollowAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                             animationWrapper.transform.parent = parentTransform;
                             parentTransform = animationWrapper.transform;
                         }
@@ -390,8 +488,8 @@ namespace com.arpoise.arpoiseapp
                 else
                 {
                     // Absolute lat/lon coordinates
-                    float filteredLatitude = _filteredLatitude;
-                    float filteredLongitude = _filteredLongitude;
+                    float filteredLatitude = UsedLatitude;
+                    float filteredLongitude = UsedLongitude;
 
                     var distance = CalculateDistance(poi.Latitude, poi.Longitude, filteredLatitude, filteredLongitude);
                     if (distance <= ((poi.ArLayer != null) ? poi.ArLayer.visibilityRange : 1500))
@@ -472,7 +570,7 @@ namespace com.arpoise.arpoiseapp
                     continue;
                 }
                 var layerPois = layer.hotspots.Where(x => x.isVisible && !IsEmpty(x.GameObjectName) && (x.ArLayer = layer) == layer);
-                pois.AddRange(layerPois.Where(x => CalculateDistance(x.Latitude, x.Longitude, _filteredLatitude, _filteredLongitude) <= layer.visibilityRange));
+                pois.AddRange(layerPois.Where(x => CalculateDistance(x.Latitude, x.Longitude, UsedLatitude, UsedLongitude) <= layer.visibilityRange));
             }
 
             _applyKalmanFilter = applyKalmanFilter;
@@ -578,32 +676,48 @@ namespace com.arpoise.arpoiseapp
         // A coroutine retrieving the objects
         private IEnumerator GetData()
         {
+            var build = "rel";
             var os = "Android";
-            var bundle = "190208";
+            var bundle = "190224";
 #if UNITY_IOS
             os = "iOS";
-            bundle = "20190208";
+            bundle = "20190224";
 #endif
+#if DEVEL
+            build = "dev"
+#endif
+            long count = 0;
+            string layerName = _arpoiseDirectoryLayer;
+            string uri = _arpoiseDirectoryUrl;
 
-            var uri = _arpoiseDirectoryUrl;
-            var layerName = _layerName;
-            int count = 0;
             bool setError = true;
 
             while (IsEmpty(_error))
             {
                 count++;
 
+                var assetBundleUrls = new HashSet<string>();
+
                 float filteredLatitude = _filteredLatitude;
                 float filteredLongitude = _filteredLongitude;
+                float usedLatitude = UsedLatitude;
+                float usedLongitude = UsedLongitude;
                 int maxWait = 0;
                 var layers = new List<ArLayer>();
                 var nextPageKey = string.Empty;
+
+                Debug.Log("uri " + uri + " layerName " + layerName);
+                Debug.Log("filteredLatitude " + filteredLatitude + " filteredLongitude " + filteredLongitude);
+                Debug.Log("usedLatitude " + usedLatitude + " usedLongitude " + usedLongitude);
+
+                #region Download all pages of the layer
                 for (; ; )
                 {
                     var url = uri + "?lang=en"
-                        + "&lat=" + filteredLatitude.ToString("F6")
-                        + "&lon=" + filteredLongitude.ToString("F6")
+                        + "&lat=" + usedLatitude.ToString("F6")
+                        + "&lon=" + usedLongitude.ToString("F6")
+                        + (filteredLatitude != usedLatitude ? "&latOfDevice=" + filteredLatitude.ToString("F6") : string.Empty)
+                        + (filteredLongitude != usedLongitude ? "&lonOfDevice=" + filteredLongitude.ToString("F6") : string.Empty)
                         + "&layerName=" + layerName
                         + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
@@ -611,12 +725,10 @@ namespace com.arpoise.arpoiseapp
                         + "&bundle=" + bundle
                         + "&os=" + os
                         + "&count=" + count
-#if DEVEL
-                        + "&build=dev"
-#else
-                        + "&build=rel"
-#endif
+                        + "&build=" + build
                     ;
+
+                    Debug.Log("url " + url);
 
                     UnityWebRequest request = UnityWebRequest.Get(url);
                     request.timeout = 30;
@@ -692,146 +804,25 @@ namespace com.arpoise.arpoiseapp
                         yield break;
                     }
                 }
+                #endregion
 
-                var innerLayers = new HashSet<string>();
-
-                foreach (var layer in layers.Where(x => x.hotspots != null))
+                if (!MenuEnabled.HasValue)
                 {
-                    innerLayers.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.InnerLayerName)).Select(x => x.InnerLayerName));
-                }
-
-                foreach (var innerLayer in innerLayers)
-                {
-                    if (_innerLayers.ContainsKey(innerLayer))
+                    var inputPanel = InputPanel.GetComponent<InputPanel>();
+                    if (inputPanel.IsActivated())
                     {
-                        continue;
+                        MenuEnabled = true;
                     }
-
-                    if (layerName.Equals(innerLayer))
+                    else
                     {
-                        _innerLayers[layerName] = layers;
-                        continue;
-                    }
-
-                    nextPageKey = string.Empty;
-                    for (; ; )
-                    {
-                        var url = uri + "?lang=en"
-                        + "&lat=" + filteredLatitude.ToString("F6")
-                        + "&lon=" + filteredLongitude.ToString("F6")
-                        + "&layerName=" + innerLayer
-                        + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
-                        + "&userId=" + SystemInfo.deviceUniqueIdentifier
-                        + "&client=Arpoise&version=1&radius=1500&accuracy=100"
-                        + "&bundle=" + bundle
-                        + "&os=" + os
-                        + "&innerLayer=true"
-#if DEVEL
-                        + "&build=dev"
-#else
-                        + "&build=rel"
-#endif
-                        ;
-
-                        UnityWebRequest request = UnityWebRequest.Get(url);
-                        request.timeout = 30;
-                        yield return request.SendWebRequest();
-
-                        maxWait = 3000;
-                        while (!(request.isNetworkError || request.isHttpError) && !request.isDone && maxWait > 0)
-                        {
-                            yield return new WaitForSeconds(.01f);
-                            maxWait--;
-                        }
-
-                        if (maxWait < 1)
-                        {
-                            if (setError)
-                            {
-                                _error = "Layer " + innerLayer + " contents didn't download in 30 seconds.";
-                            }
-                            yield break;
-                        }
-
-                        if (request.isNetworkError || request.isHttpError)
-                        {
-                            if (setError)
-                            {
-                                _error = "Layer " + innerLayer + " contents download error: " + request.error;
-                            }
-                            yield break;
-                        }
-
-                        var text = request.downloadHandler.text;
-                        if (IsEmpty(text))
-                        {
-                            if (setError)
-                            {
-                                _error = "Layer " + innerLayer + " contents download received empty text.";
-                            }
-                            yield break;
-                        }
-
-                        try
-                        {
-                            var layer = ArLayer.Create(text);
-
-                            List<ArLayer> layersList = null;
-                            if (_innerLayers.TryGetValue(innerLayer, out layersList))
-                            {
-                                layersList.Add(layer);
-                            }
-                            else
-                            {
-                                _innerLayers[innerLayer] = new List<ArLayer> { layer };
-                            }
-
-                            if (layer.morePages == false || IsEmpty(layer.nextPageKey))
-                            {
-                                break;
-                            }
-                            nextPageKey = layer.nextPageKey;
-                        }
-                        catch (Exception e)
-                        {
-                            if (setError)
-                            {
-                                _error = "Layer " + innerLayer + " parse exception: " + e.Message;
-                            }
-                            yield break;
-                        }
+                        MenuEnabled = !layers.Any(x => !x.showMenuButton);
                     }
                 }
+                MenuButton.SetActive(MenuEnabled.HasValue && MenuEnabled.Value);
 
-                var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !IsEmpty(x));
-                if (!IsEmpty(layerTitle))
-                {
-                    HeaderText.GetComponent<Text>().text = layerTitle;
-                    _headerButtonActivated = true;
-                    HeaderButton.SetActive(_headerButtonActivated);
-                }
-                else
-                {
-                    HeaderText.GetComponent<Text>().text = string.Empty;
-                    _headerButtonActivated = false;
-                    HeaderButton.SetActive(_headerButtonActivated);
-                }
-
-                var assetBundleUrls = new HashSet<string>();
-
-                foreach (var layer in layers.Where(x => x.hotspots != null))
-                {
-                    assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
-                }
-
-                foreach (var layerList in _innerLayers.Values)
-                {
-                    foreach (var layer in layerList.Where(x => x.hotspots != null))
-                    {
-                        assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
-                    }
-                }
-
+                #region Download the asset bundle for icons
+                var iconAssetBundleUrl = "www.arpoise.com/AB/arpoiseicons.ace";
+                assetBundleUrls.Add(iconAssetBundleUrl);
                 foreach (var url in assetBundleUrls)
                 {
                     if (_assetBundles.ContainsKey(url))
@@ -907,6 +898,294 @@ namespace com.arpoise.arpoiseapp
                     }
                     _assetBundles[url] = assetBundle;
                 }
+                #endregion
+
+                #region Handle lists of possible layers to show
+                {
+                    List<Item> itemList = new List<Item>();
+                    foreach (var layer in layers.Where(x => x.hotspots != null))
+                    {
+                        if ("Arpoise-Directory".Equals(layer.layer))
+                        {
+                            foreach (var poi in layer.hotspots)
+                            {
+                                GameObject spriteObject = null;
+                                var spriteName = poi.line4;
+                                if (!IsEmpty(spriteName))
+                                {
+                                    AssetBundle iconAssetBundle = null;
+                                    if (_assetBundles.TryGetValue(iconAssetBundleUrl, out iconAssetBundle))
+                                    {
+                                        spriteObject = iconAssetBundle.LoadAsset<GameObject>(spriteName);
+                                    }
+                                }
+
+                                Sprite sprite = spriteObject != null ? spriteObject.GetComponent<SpriteRenderer>().sprite : null;
+
+                                itemList.Add(new Item
+                                {
+                                    layerName = poi.title,
+                                    itemName = poi.line1,
+                                    line2 = poi.line2,
+                                    line3 = poi.line3,
+                                    url = poi.BaseUrl,
+                                    distance = (int)poi.distance,
+                                    icon = sprite
+                                });
+                            }
+                        }
+                    }
+
+                    if (itemList.Any())
+                    {
+                        // There are different layers to show
+
+                        _layerItemList = itemList;
+                        HandleMenuButtonClick();
+
+                        // Wait for the user to select a layer
+                        try
+                        {
+                            _waitingForLayerSelection = true;
+                            for (; ; )
+                            {
+                                var refreshRequest = _refreshRequest;
+                                _refreshRequest = null;
+                                if (refreshRequest != null)
+                                {
+                                    count = 0;
+                                    layerName = refreshRequest.layerName;
+                                    uri = refreshRequest.url;
+                                    _fixedDeviceLatitude = refreshRequest.latitude;
+                                    _fixedDeviceLongitude = refreshRequest.longitude;
+                                    break;
+                                }
+                                yield return new WaitForSeconds(.1f);
+                            }
+                        }
+                        finally
+                        {
+                            _waitingForLayerSelection = false;
+                        }
+                        continue;
+                    }
+                }
+                #endregion
+
+                var innerLayers = new HashSet<string>();
+
+                foreach (var layer in layers.Where(x => x.hotspots != null))
+                {
+                    innerLayers.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.InnerLayerName)).Select(x => x.InnerLayerName));
+                }
+
+                #region Download all inner layers
+                foreach (var innerLayer in innerLayers)
+                {
+                    if (_innerLayers.ContainsKey(innerLayer))
+                    {
+                        continue;
+                    }
+
+                    if (layerName.Equals(innerLayer))
+                    {
+                        _innerLayers[layerName] = layers;
+                        continue;
+                    }
+
+                    nextPageKey = string.Empty;
+                    for (; ; )
+                    {
+                        var url = uri + "?lang=en"
+                        + "&lat=" + usedLatitude.ToString("F6")
+                        + "&lon=" + usedLongitude.ToString("F6")
+                        + ((filteredLatitude != usedLatitude) ? "&latOfDevice=" + filteredLatitude.ToString("F6") : string.Empty)
+                        + ((filteredLongitude != usedLongitude) ? "&lonOfDevice=" + filteredLongitude.ToString("F6") : string.Empty)
+                        + "&layerName=" + innerLayer
+                        + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
+                        + "&userId=" + SystemInfo.deviceUniqueIdentifier
+                        + "&client=Arpoise&version=1&radius=1500&accuracy=100"
+                        + "&bundle=" + bundle
+                        + "&os=" + os
+                        + "&innerLayer=true"
+                        + "&build=" + build
+                        ;
+
+                        UnityWebRequest request = UnityWebRequest.Get(url);
+                        request.timeout = 30;
+                        yield return request.SendWebRequest();
+
+                        maxWait = 3000;
+                        while (!(request.isNetworkError || request.isHttpError) && !request.isDone && maxWait > 0)
+                        {
+                            yield return new WaitForSeconds(.01f);
+                            maxWait--;
+                        }
+
+                        if (maxWait < 1)
+                        {
+                            if (setError)
+                            {
+                                _error = "Layer " + innerLayer + " contents didn't download in 30 seconds.";
+                            }
+                            yield break;
+                        }
+
+                        if (request.isNetworkError || request.isHttpError)
+                        {
+                            if (setError)
+                            {
+                                _error = "Layer " + innerLayer + " contents download error: " + request.error;
+                            }
+                            yield break;
+                        }
+
+                        var text = request.downloadHandler.text;
+                        if (IsEmpty(text))
+                        {
+                            if (setError)
+                            {
+                                _error = "Layer " + innerLayer + " contents download received empty text.";
+                            }
+                            yield break;
+                        }
+
+                        try
+                        {
+                            var layer = ArLayer.Create(text);
+
+                            List<ArLayer> layersList = null;
+                            if (_innerLayers.TryGetValue(innerLayer, out layersList))
+                            {
+                                layersList.Add(layer);
+                            }
+                            else
+                            {
+                                _innerLayers[innerLayer] = new List<ArLayer> { layer };
+                            }
+
+                            if (layer.morePages == false || IsEmpty(layer.nextPageKey))
+                            {
+                                break;
+                            }
+                            nextPageKey = layer.nextPageKey;
+                        }
+                        catch (Exception e)
+                        {
+                            if (setError)
+                            {
+                                _error = "Layer " + innerLayer + " parse exception: " + e.Message;
+                            }
+                            yield break;
+                        }
+                    }
+                }
+                #endregion
+
+                foreach (var layer in layers.Where(x => x.hotspots != null))
+                {
+                    assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
+                }
+
+                foreach (var layerList in _innerLayers.Values)
+                {
+                    foreach (var layer in layerList.Where(x => x.hotspots != null))
+                    {
+                        assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
+                    }
+                }
+
+                #region Download the asset bundles
+                foreach (var url in assetBundleUrls)
+                {
+                    if (_assetBundles.ContainsKey(url))
+                    {
+                        continue;
+                    }
+                    var assetBundleUrl = url;
+#if UNITY_IOS
+                    if (assetBundleUrl.EndsWith(".ace"))
+                    {
+                        assetBundleUrl = assetBundleUrl.Replace(".ace", "i.ace");
+                    }
+                    else
+                    {
+                        assetBundleUrl += "i";
+                    }
+#endif
+                    while (assetBundleUrl.Contains('\\'))
+                    {
+                        assetBundleUrl = assetBundleUrl.Replace("\\", string.Empty);
+                    }
+
+                    UnityWebRequest request = UnityWebRequestAssetBundle.GetAssetBundle(assetBundleUrl, 0);
+                    request.timeout = 60;
+                    yield return request.SendWebRequest();
+
+                    maxWait = 6000;
+                    while (!(request.isNetworkError || request.isHttpError) && !request.isDone && maxWait > 0)
+                    {
+                        yield return new WaitForSeconds(.01f);
+                        maxWait--;
+                    }
+
+                    if (maxWait < 1)
+                    {
+                        if (setError)
+                        {
+                            _error = "Bundle '" + assetBundleUrl + "' download timeout.";
+                        }
+                        yield break;
+                    }
+
+                    if (request.isNetworkError || request.isHttpError)
+                    {
+                        if (setError)
+                        {
+                            _error = "Bundle '" + assetBundleUrl + "' error: " + request.error;
+                        }
+                        yield break;
+                    }
+
+                    AssetBundle assetBundle = null;
+                    try
+                    {
+                        assetBundle = DownloadHandlerAssetBundle.GetContent(request);
+                    }
+                    catch (Exception e)
+                    {
+                        if (setError)
+                        {
+                            _error = "Bundle '" + assetBundleUrl + "' exception: " + e.Message;
+                        }
+                        yield break;
+                    }
+
+                    if (assetBundle == null)
+                    {
+                        if (setError)
+                        {
+                            _error = "Bundle '" + assetBundleUrl + "' download is null.";
+                        }
+                        yield break;
+                    }
+                    _assetBundles[url] = assetBundle;
+                }
+                #endregion
+
+                var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !IsEmpty(x));
+                if (!IsEmpty(layerTitle))
+                {
+                    HeaderText.GetComponent<Text>().text = layerTitle;
+                    _headerButtonActivated = true;
+                    HeaderButton.SetActive(_headerButtonActivated);
+                }
+                else
+                {
+                    HeaderText.GetComponent<Text>().text = string.Empty;
+                    _headerButtonActivated = false;
+                    HeaderButton.SetActive(_headerButtonActivated);
+                }
 
                 List<ArObject> existingArObjects = null;
                 var arObjectState = _arObjectState;
@@ -962,11 +1241,29 @@ namespace com.arpoise.arpoiseapp
                     }
                 }
 
-                if (_refreshInterval < 1)
+                var refreshInterval = _refreshInterval;
+                var doNotRefresh = refreshInterval < 1;
+
+                long now = DateTime.Now.Ticks;
+                long waitUntil = now + (long)refreshInterval * 10000000L;
+
+                while (doNotRefresh || now < waitUntil)
                 {
-                    yield break;
+                    now = DateTime.Now.Ticks;
+
+                    var refreshRequest = _refreshRequest;
+                    _refreshRequest = null;
+                    if (refreshRequest != null)
+                    {
+                        count = 0;
+                        layerName = refreshRequest.layerName;
+                        uri = refreshRequest.url;
+                        _fixedDeviceLatitude = refreshRequest.latitude;
+                        _fixedDeviceLongitude = refreshRequest.longitude;
+                        break;
+                    }
+                    yield return new WaitForSeconds(.1f);
                 }
-                yield return new WaitForSeconds(_refreshInterval);
             }
             yield break;
         }
@@ -984,8 +1281,8 @@ namespace com.arpoise.arpoiseapp
             var arObjectsToPlace = arObjectState.ArObjectsToPlace;
             if (arObjectsToPlace != null)
             {
-                var filteredLatitude = _filteredLatitude;
-                var filteredLongitude = _filteredLongitude;
+                var filteredLatitude = UsedLatitude;
+                var filteredLongitude = UsedLongitude;
 
                 if (!arObjectsToPlace.Any(x => x.IsDirty) && _latitudeHandled == filteredLatitude && _longitudeHandled == filteredLongitude)
                 {
@@ -1000,7 +1297,7 @@ namespace com.arpoise.arpoiseapp
                     var latDistance = CalculateDistance(arObject.Latitude, arObject.Longitude, filteredLatitude, arObject.Longitude);
                     var lonDistance = CalculateDistance(arObject.Latitude, arObject.Longitude, arObject.Latitude, filteredLongitude);
 
-                    if (arObject.Latitude < _filteredLatitude)
+                    if (arObject.Latitude < UsedLatitude)
                     {
                         if (latDistance > 0)
                         {
@@ -1014,7 +1311,7 @@ namespace com.arpoise.arpoiseapp
                             latDistance *= -1;
                         }
                     }
-                    if (arObject.Longitude < _filteredLongitude)
+                    if (arObject.Longitude < UsedLongitude)
                     {
                         if (lonDistance > 0)
                         {
@@ -1097,6 +1394,35 @@ namespace com.arpoise.arpoiseapp
         private readonly double _qMetersPerSecond = 3;
         private double _variance = -1;
 
+        private float? _fixedDeviceLatitude = null;
+        private float? _fixedDeviceLongitude = null;
+
+        protected float UsedLatitude
+        {
+            get
+            {
+                var latitude = _fixedDeviceLatitude;
+                if (latitude.HasValue)
+                {
+                    return latitude.Value;
+                }
+                return _filteredLatitude;
+            }
+        }
+
+        protected float UsedLongitude
+        {
+            get
+            {
+                var longitude = _fixedDeviceLongitude;
+                if (longitude.HasValue)
+                {
+                    return longitude.Value;
+                }
+                return _filteredLongitude;
+            }
+        }
+
         // Kalman filter processing for latitude and longitude
         private void KalmanFilter(double currentLatitude, double currentLongitude, double accuracy, long timeStampInMilliseconds)
         {
@@ -1142,36 +1468,30 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
-        // Test Code allowing to animate the location information
-        protected bool DoLocationAnimation = false;
-        protected float AnimationValue = 0;
-        protected float AnimationStartLatitude = 48.15812f;
-        protected float AnimationEndLatitude = 48.15892f;
-        protected float AnimationStartLongitude = 11.58007f;
-        protected float AnimationEndLongitude = 11.58067f;
-
-        private long _animationStartTenthOfSecond = 0;
-        private long _animationTenthOfSecond = 0;
-        private long _animationDuration = -1;
-
-        protected long AnimationDuration
-        {
-            get
-            {
-                if (_animationDuration < 0)
-                {
-                    var distance = CalculateDistance(AnimationStartLatitude, AnimationStartLongitude, AnimationEndLatitude, AnimationEndLongitude);
-                    _animationDuration = (long)(.5 + distance);
-                }
-                return _animationDuration;
-            }
-        }
-
         private LocationService _locationService = null;
 
-        // A Coroutine retrieving the current location and heading
+        // A Coroutine for retrieving the current location
+        //
         private IEnumerator GetPosition()
         {
+#if UNITY_EDITOR
+            // If in editor mode, set a fixed initial location and forget about the location service
+            //
+            _filteredLatitude = OriginalLatitude = 48.158464f;
+            _filteredLongitude = OriginalLongitude = 11.578708f;
+
+            Debug.Log("UNITY_EDITOR fixed location, lat " + _filteredLatitude + ", lon " + _filteredLongitude);
+
+            // Start GetData() function 
+            StartCoroutine("GetData");
+
+            while (_filteredLatitude <= 90)
+            {
+                yield return new WaitForSeconds(3600f);
+            }
+            // End of editor mode
+#endif
+
             bool doInitialize = true;
             while (IsEmpty(_error))
             {
@@ -1211,16 +1531,8 @@ namespace com.arpoise.arpoiseapp
                         yield break;
                     }
 
-                    if (DoLocationAnimation && AnimationDuration > 0)
-                    {
-                        _filteredLatitude = OriginalLatitude = AnimationStartLatitude;
-                        _filteredLongitude = OriginalLongitude = AnimationStartLongitude;
-                    }
-                    else
-                    {
-                        _filteredLatitude = OriginalLatitude = 1 + Input.location.lastData.latitude;
-                        _filteredLongitude = OriginalLongitude = Input.location.lastData.longitude;
-                    }
+                    _filteredLatitude = OriginalLatitude = Input.location.lastData.latitude;
+                    _filteredLongitude = OriginalLongitude = Input.location.lastData.longitude;
 
                     InitialDeviceOrientation = Input.deviceOrientation;
                     _cameraTransform.gameObject.GetComponent<VuforiaBehaviour>().enabled = true;
@@ -1237,43 +1549,18 @@ namespace com.arpoise.arpoiseapp
                 }
                 _currentHeading = Input.compass.trueHeading;
 
-                if (DoLocationAnimation && AnimationDuration > 0)
+                if (_locationLatitude != Input.location.lastData.latitude
+                    || _locationLongitude != Input.location.lastData.longitude
+                    || _locationTimestamp != Input.location.lastData.timestamp
+                    || _locationHorizontalAccuracy != Input.location.lastData.horizontalAccuracy
+                )
                 {
-                    var currentMilliSecond = DateTime.Now.Ticks / 10000L;
-                    var currentTenthOfSecond = currentMilliSecond / 100L;
-                    if (_animationStartTenthOfSecond == 0)
-                    {
-                        _animationStartTenthOfSecond = _animationTenthOfSecond = currentTenthOfSecond;
-                    }
-                    if (_animationTenthOfSecond != currentTenthOfSecond)
-                    {
-                        AnimationValue = ((currentTenthOfSecond - _animationStartTenthOfSecond) % (10 * AnimationDuration)) / (10f * AnimationDuration);
+                    _locationLatitude = Input.location.lastData.latitude;
+                    _locationLongitude = Input.location.lastData.longitude;
+                    _locationTimestamp = Input.location.lastData.timestamp;
+                    _locationHorizontalAccuracy = Input.location.lastData.horizontalAccuracy;
 
-                        _locationLatitude = AnimationStartLatitude + (AnimationEndLatitude - AnimationStartLatitude) * AnimationValue;
-                        _locationLongitude = AnimationStartLongitude + (AnimationEndLongitude - AnimationStartLongitude) * AnimationValue;
-                        _locationTimestamp = currentMilliSecond / 1000.0;
-                        _locationHorizontalAccuracy = 10;
-
-                        KalmanFilter(_locationLatitude, _locationLongitude, _locationHorizontalAccuracy, (long)(1000L * _locationTimestamp));
-
-                        _animationTenthOfSecond = currentTenthOfSecond;
-                    }
-                }
-                else
-                {
-                    if (_locationLatitude != 1 + Input.location.lastData.latitude
-                        || _locationLongitude != Input.location.lastData.longitude
-                        || _locationTimestamp != Input.location.lastData.timestamp
-                        || _locationHorizontalAccuracy != Input.location.lastData.horizontalAccuracy
-                    )
-                    {
-                        _locationLatitude = 1 + Input.location.lastData.latitude;
-                        _locationLongitude = Input.location.lastData.longitude;
-                        _locationTimestamp = Input.location.lastData.timestamp;
-                        _locationHorizontalAccuracy = Input.location.lastData.horizontalAccuracy;
-
-                        KalmanFilter(_locationLatitude, _locationLongitude, _locationHorizontalAccuracy, (long)(1000L * _locationTimestamp));
-                    }
+                    KalmanFilter(_locationLatitude, _locationLongitude, _locationHorizontalAccuracy, (long)(1000L * _locationTimestamp));
                 }
 
                 var arObjectState = _arObjectState;
@@ -1292,6 +1579,14 @@ namespace com.arpoise.arpoiseapp
 
         private void Start()
         {
+#if UNITY_EDITOR
+            Debug.Log("UNITY_EDITOR Start");
+#endif
+            var inputPanel = InputPanel.GetComponent<InputPanel>();
+            inputPanel.Activate(null);
+            _fixedDeviceLatitude = inputPanel.GetLatitude();
+            _fixedDeviceLongitude = inputPanel.GetLongitude();
+
             // Placing the wrapper in the hierarchy under the ARCamera,
             // is a work-around because FindGameObjectWithTag
             // does not find the ARCamera game object
@@ -1354,6 +1649,12 @@ namespace com.arpoise.arpoiseapp
             long now = DateTime.Now.Ticks;
             var second = now / 10000000L;
 
+            if (_waitingForLayerSelection)
+            {
+                InfoText.GetComponent<Text>().text = _selectingText;
+                return;
+            }
+
             if (_startTicks == 0 || _arObjectState == null)
             {
                 string progress = string.Empty;
@@ -1395,49 +1696,100 @@ namespace com.arpoise.arpoiseapp
 
             foreach (var arAnimation in arObjectState.BillboardAnimations)
             {
-                arAnimation.GameObject.transform.LookAt(Camera.main.transform);
-            }
-
-            foreach (var arAnimation in arObjectState.OnCreateAnimations)
-            {
-                arAnimation.Animate(_startTicks, now);
+                arAnimation.Wrapper.transform.LookAt(Camera.main.transform);
             }
 
             bool hit = false;
             if (arObjectState.OnFocusAnimations.Count > 0)
             {
-                ArAnimation arAnimation = null;
-                Ray ray = Camera.main.ScreenPointToRay(new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2, 0f));
+                var ray = Camera.main.ScreenPointToRay(new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2, 0f));
+
                 RaycastHit hitInfo;
                 if (Physics.Raycast(ray, out hitInfo, 1500f))
                 {
-                    hit = true;
+                    var objectHit = hitInfo.transform.gameObject;
+                    if (objectHit != null)
+                    {
+                        foreach (var arAnimation in arObjectState.OnFocusAnimations.Where(x => objectHit.Equals(x.GameObject)))
+                        {
+                            hit = true;
+                            if (!arAnimation.IsActive)
+                            {
+                                arAnimation.Activate(_startTicks, now);
+                            }
+                        }
+                    }
+                }
+            }
+
+            bool click = false;
+            if (arObjectState.OnClickAnimations.Count > 0 && Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                RaycastHit hitInfo;
+                if (Physics.Raycast(ray, out hitInfo, 1500f))
+                {
                     GameObject objectHit = hitInfo.transform.gameObject;
                     if (objectHit != null)
                     {
-                        arObjectState.OnFocusAnimations.TryGetValue(objectHit, out arAnimation);
-                    }
-                }
-                if (arAnimation != null)
-                {
-                    if (arObjectState.OnFocusAnimation == arAnimation)
-                    {
-                        arObjectState.OnFocusAnimation.Animate(_startTicks, now);
-                    }
-                    else
-                    {
-                        if (arObjectState.OnFocusAnimation != null)
+                        foreach (var arAnimation in arObjectState.OnClickAnimations.Where( x => objectHit.Equals(x.GameObject)))
                         {
-                            arObjectState.OnFocusAnimation.Stop(_startTicks, now);
+                            click = true;
+                            if (!arAnimation.IsActive)
+                            {
+                                arAnimation.Activate(_startTicks, now);
+                            }
                         }
-                        arObjectState.OnFocusAnimation = arAnimation;
-                        arObjectState.OnFocusAnimation.Activate(_startTicks, now);
                     }
                 }
-                else if (arObjectState.OnFocusAnimation != null)
+            }
+
+            var animations = arObjectState.OnCreateAnimations
+                .Concat(arObjectState.OnFollowAnimations)
+                .Concat(arObjectState.OnFocusAnimations)
+                .Concat(arObjectState.OnClickAnimations);
+
+            foreach (var arAnimation in animations)
+            {
+                if (arAnimation.JustActivated && arAnimation.GameObject != null)
                 {
-                    arObjectState.OnFocusAnimation.Stop(_startTicks, now);
-                    arObjectState.OnFocusAnimation = null;
+                    var audioSource = arAnimation.GameObject.GetComponent<AudioSource>();
+                    if (audioSource != null)
+                    {
+                        audioSource.Play();
+                    }
+                }
+                arAnimation.Animate(_startTicks, now);
+
+                if (arAnimation.JustStopped && !IsEmpty(arAnimation.FollowedBy))
+                {
+                    var annimationsToFollow = arAnimation.FollowedBy.Split(',');
+                    if (annimationsToFollow != null && annimationsToFollow.Length > 0)
+                    {
+                        foreach (var animationToFollow in annimationsToFollow)
+                        {
+                            if (!IsEmpty(animationToFollow))
+                            {
+                                var animationName = animationToFollow.Trim();
+                                foreach (var arAnimationToFollow in animations.Where(x => animationName.Equals(x.Name)))
+                                {
+                                    if (!arAnimationToFollow.IsActive)
+                                    {
+                                        arAnimationToFollow.Activate(_startTicks, now);
+                                        if (arAnimationToFollow.JustActivated && arAnimationToFollow.GameObject != null)
+                                        {
+                                            var audioSource = arAnimationToFollow.GameObject.GetComponent<AudioSource>();
+                                            if (audioSource != null)
+                                            {
+                                                audioSource.Play();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -1577,9 +1929,9 @@ namespace com.arpoise.arpoiseapp
                     //+ "CLT " + (_locationTimestamp).ToString("F3")
                     //+ " CA " + (_locationLatitude).ToString("F6")
                     //+ " A " + (_locationHorizontalAccuracy).ToString("F6")
-                    + " LA " + (_filteredLatitude).ToString("F6")
+                    + " LA " + (UsedLatitude).ToString("F6")
                     //+ " CO " + (_locationLongitude).ToString("F6")
-                    + " LO " + (_filteredLongitude).ToString("F6")
+                    + " LO " + (UsedLongitude).ToString("F6")
                     //+ " AS " + _areaSize
                     //+ " AV " + AnimationValue.ToString("F3")
                     //+ " Z " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).z.ToString("F1")
@@ -1599,6 +1951,7 @@ namespace com.arpoise.arpoiseapp
                     //+ " R " + ray.origin.x.ToString("F1") + " " + ray.origin.y.ToString("F1") + " " + ray.origin.z.ToString("F1")
                     //+ " " + ray.direction.x.ToString("F1") + " " + ray.direction.y.ToString("F1") + " " + ray.direction.z.ToString("F1")
                     + (hit ? " h " : string.Empty)
+                    + (click ? " c " : string.Empty)
                     ;
             }
         }
