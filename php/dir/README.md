@@ -1,20 +1,20 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# ARpoise-Directory Backend
+# ARpoise-Directory Back End
 
 ## Overview
 This is an ARpoise internal version of PorPOISe used for the placing of artist's layers in the ARpoise directory.
 
 The ARpoise directory has to be maintaned on www.arpoise.com. It contains a single "meta" layer, the Arpoise-Directory.
-The "**POI**s" of this layer define the name, url and location of all the layers visible in ARpoise.
+The "**POI**s" of this layer define the name, url, attributes, and location of all the layers visible in ARpoise.
 
 ## Functionality
-The ARpoise directory frontend contacts this web service with the client's location as parameter.
+The ARpoise directory front end contacts this web service with the client's location as parameter.
 
 The service returns all definitions of layers that are within the range of the client's location.
 
 If there are no layers within range of the client's location, an empty list of layer definitions is returned.
 
-Within the ARpoise-Directory backend the placing of the layers can be performed in a Google-maps-based click-and-drag web interface.
+Within the ARpoise-Directory back end the placing of the layers can be performed in a Google-maps-based click-and-drag web interface.
 
 ## Original Documentation
 
