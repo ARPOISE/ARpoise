@@ -96,6 +96,7 @@ The following properties of an animation can be edited:
 * **To**: End or middle value of the animation, depending on the **Interpolation**.
 * **Axis (x,y,z)**: Axis to apply the animation to. E.g.: A rotation with Axis 1,0,0 is only around the X axis.
 * **Followed by**: If one or more comma separated animation names are given in this field. The animations mentioned are started once this animation ends.
+
 If an animation is started and the Unity-prefab of the POI contains an AudioSource component, the audio source is played.
 ## Original Documentation
 ===PorPOISe for Layar===
