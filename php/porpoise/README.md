@@ -46,10 +46,23 @@ A list of all your layers is shown. In order to add a new layer you will have to
 ![BackEndImg2](/images/BackEnd2.png)
 #### Explanation:
 The following properties of a layer can be edited:
-* Layewr title: The layer title is optional, if given, it is displayed by the application in the top center of the screen.
-* Refresh interval: The refresh interval is optional, if given, it defines the seconds after which the client application will refresh the layer information.
-* Redirect to layer: The redirect layer is optional, if given, the layer redirected to is displayed by the client instead of the current one.
-
+* **Layer title**: The layer title is optional, if given, it is displayed by the application in the top center of the screen.
+* **Refresh interval**: The refresh interval is optional, if given, it defines the seconds after which the client application will refresh the layer information.
+* **Redirect to layer**: The redirect layer is optional, if given, the layer redirected to is displayed by the client instead of the current one.
+* **Visibility in meters**: The range in meters inside which the layer is visible to clients, 1500m is the maximum.
+* **Area size in meters**: The area size is optional, if given, pois having an absolute geo-location are kept within this area.
+* **Area width in meters**: The area width is optional, if given, pois having an absolute geo-location are kept within this area.
+* **Show menu button**: This combo box defines whether the ARpoise menu button is shown by the client application.
+* **Apply Kalman filter**: This combo box defines whether a Kalman filter is applied to the device location by the client application.
+* **No pois message**: This message is shown by the client application, if there no POIs in range of the device location.
+* Action **Show information**: This combo box defines whether wether information messages are displayed by the client application.
+* Action **Information message**: This allow to set a static information message to be displayed by the client application.
+* **Save** button: Save the attributes to the layer's xml file.
+* **New POI** link: Allows to add a new POI to the layer.
+* POI-list-**Lat**: Allows to change the latitude of the POI. 
+* POI-list-**Lon**: Allows to change the longitude of the POI. The POI's location can also be changed by dragging the POI's marker in the placement map.
+* POI-list-**Save**: Save changes to the POI's location to the layer's xml file.
+* POI-list-**DEL**: Delete the POI from the layer.
 ### Arpoise Back-End POI Configuration
 #### Image
 ![BackEndImg3](/images/BackEnd3.png)
