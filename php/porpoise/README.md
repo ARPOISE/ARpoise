@@ -37,11 +37,18 @@ The placing of the **POI**s of the layer into world coordinates can be performed
 
 ## Documentation
 ### Arpoise Back-End Layers List
+#### Image
 ![BackEndImg1](/images/BackEnd1.png)
+#### Explanation
+A list of all your layers is shown. In order to add a new layer you will have to edit the file **config.xml** in your configuration directory and also create an **.xml** file for your new layer in the configuration directory.
 ### Arpoise Back-End Layer Configuration
+#### Image
 ![BackEndImg2](/images/BackEnd2.png)
+#### Explanation
 ### Arpoise Back-End POI Configuration
+#### Image
 ![BackEndImg3](/images/BackEnd3.png)
+#### Explanation
 ## Original Documentation
 ===PorPOISe for Layar===
 Portable Point-of-Interest Server for Layar
