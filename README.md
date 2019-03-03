@@ -12,7 +12,7 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 ## Functionality
 - Content designers can create location-based AR experiences in Unity3d and add them as project layers to a general directory. This AR experiences can either be visible all over the world, or geo-fenced to be viewable only within areas defined by specific GPS coordinates.
 
-- These AR experiences can be viewed by anyone who downloads the free Arpoise client onto Android and iOS devices. Since the AR experiences are individual project layers within an existing app, content designers do not have to create individual apps for each project and bring each project into the App and Play stores themselves.
+- These AR experiences can be viewed by anyone who downloads the free ARpoise client onto Android and iOS devices. Since the AR experiences are individual project layers within an existing app, content designers do not have to create individual apps for each project and bring each project into the App and Play stores themselves.
 
 - Artist define layers of points of interest, (**POI**)s, can be added to,
 removed from, or placed within the world coordinates of ARpoise dynamically.
