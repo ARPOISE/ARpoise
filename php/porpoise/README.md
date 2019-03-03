@@ -39,9 +39,9 @@ The placing of the **POI**s of the layer into world coordinates can be performed
 ### Arpoise Back-End Layers List
 ![BackEndImg1](/images/BackEnd1.png)
 ### Arpoise Back-End Layer Configuration
-
+![BackEndImg2](/images/BackEnd2.png)
 ### Arpoise Back-End POI Configuration
-
+![BackEndImg3](/images/BackEnd3.png)
 ## Original Documentation
 ===PorPOISe for Layar===
 Portable Point-of-Interest Server for Layar
