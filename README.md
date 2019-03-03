@@ -2,8 +2,7 @@
 # *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
 
 ## Overview
-ARpoise is an open-source Augmented Reality service environment allowing
-to distribute and view location based AR content created in
+ARpoise is an open-source Augmented Reality service environment that allows users to distribute and view location based AR content created in 
 [Unity](http://unity3d.com). Client applications for Android, 
 see the 
 [Google Play](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store,
