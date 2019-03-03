@@ -29,7 +29,7 @@ you also need to avail the iOS asset bundle with the url ".../MyAssetBundle_i".
 ## Functionality
 The ARpoise client contacts this web service with the client location and the layer name as parameter.
 
-The service has to return the definitions of of the **POI**s of the layer.
+The service has to return the definitions of the **POI**s of the layer.
 
 The placing of the **POI**s of the layer into world coordinates can be performed in a Google-maps-based click-and-drag interface.
 
