@@ -22,7 +22,6 @@ Therefore you need to provide **two** asset bundles, one for Android and one for
 As you can only enter one asset bundle url in the ARpoise PorPOISe configuration, 
 ARpoise assumes that the asset bundle name given is the one of the Android asset bundle.
 The name of the iOS asset bundle has to be the Android name followed by 'i'.
-
 Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle_",
 you also need to avail the iOS asset bundle with the url ".../MyAssetBundle_i". 
 
