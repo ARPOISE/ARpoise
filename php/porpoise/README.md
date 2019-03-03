@@ -1,12 +1,12 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# ARpoise-PorPOISe Backend
+# ARpoise-PorPOISe Back End
 
 ## Overview
-This is the version of PorPOISe used for placing of the **POI**s of **YOUR** layers.
+This is the version of PorPOISe used for placing of the **POI**s of **your own** layers.
 
-In order to add your layers to ARpoise you need to download and install this package onto **YOUR** web server!
+In order to add your layers to ARpoise you need to download and install this package onto **your own** web server!
 
-For using the Google-maps-based click-and-drag interface interface you need to use **YOUR** own Google-maps id.
+For using the Google-maps-based click-and-drag interface interface you need to use **your own** Google-maps id.
 
 ## Application
 In order for any of your layers to be visible in ARpoise
