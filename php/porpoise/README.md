@@ -83,6 +83,7 @@ The following properties of a POI can be edited:
 * Animation-list-**Remove**: Delete the animtion from the POI.
 * **New animation** button: Allows to add a new animation to the POI.
 * **Save** button: Saves the POI's attributes to the layer's xml file.
+
 The following properties of an animation can be edited:
 * **Name**: The name is optional, it is used when one animation specifies that it should be followed by other animations.
 * **Event**: **onCreate** - the animation is started when the POI is loaded; **onClick** - the animation is started when the POI is clicked by the user; **onFocus** - the animation is started when the POI is looked at by the user; **onFollow** - the animation is started when it's predecessor animation ends.
