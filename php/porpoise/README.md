@@ -36,12 +36,12 @@ The service has to return the definitions of of the **POI**s of the layer.
 The placing of the **POI**s of the layer into world coordinates can be performed in a Google-maps-based click-and-drag interface.
 
 ## Documentation
-### Arpoise Back-End Layers List
+### ARpoise Back-End Layers List
 #### Image:
 ![BackEndImg1](/images/BackEnd1.png)
 #### Explanation:
 A list of all your layers is shown. In order to add a new layer you will have to edit the file **config.xml** in your configuration directory and also create an **.xml** file for your new layer in the configuration directory.
-### Arpoise Back-End Layer Configuration
+### ARpoise Back-End Layer Configuration
 #### Image:
 ![BackEndImg2](/images/BackEnd2.png)
 #### Explanation:
@@ -63,7 +63,7 @@ The following properties of a layer can be edited:
 * POI-list-**Lon**: Allows to change the longitude of the POI. The POI's location can also be changed by dragging the POI's marker in the placement map.
 * POI-list-**Save**: Save changes to the POI's location to the layer's xml file.
 * POI-list-**DEL**: Delete the POI from the layer.
-### Arpoise Back-End POI Configuration
+### ARpoise Back-End POI Configuration
 #### Image:
 ![BackEndImg3](/images/BackEnd3.png)
 #### Explanation:
