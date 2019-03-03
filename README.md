@@ -55,11 +55,11 @@ Currently Tamiko Thiel's
 ### iOS- and Android-Client Application
 See [unity/AndroidApp](unity/AndroidApp/README.md).
 The two applications do not differ in script code or assets. Therefore only one version is kept here on GitHub.
-### ARpoise-Directory Frontend
+### ARpoise-Directory Front End
 See [ARpoiseDirectory](ArpoiseDirectory/README.md).
-### ARpoise-Directory Backend
+### ARpoise-Directory Back End
 See [/php/dir](php/dir/README.md).
-### ARpoise-PorPOISe Backend
+### ARpoise-PorPOISe Back End
 See [/php/porpoise](php/porpoise/README.md).
 
 ## Restrictions
