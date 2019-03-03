@@ -96,7 +96,7 @@ The following properties of an animation can be edited:
 * **From**: Start value of the animation.
 * **To**: End or middle value of the animation, depending on the **Interpolation**.
 * **Axis (x,y,z)**: Axis to apply the animation to. E.g.: A rotation with Axis 1,0,0 is only around the X axis.
-* **Followed by**: If one or more comma separated animation names are given in this field. The animations mentioned are started once this animation ends.
+* **Followed by**: If one or more comma separated animation names are given in this field. The animations mentioned are started once this animation ends. Animation names are global for all POIs of a layer. So the end of an animation of one POI can start an animation of the same POI or of another POI.
 
 If an animation is started and the Unity-prefab of the POI contains an AudioSource component, the audio source is played.
 ## Original Documentation
