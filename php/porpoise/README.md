@@ -47,26 +47,56 @@ A list of all your layers is shown. In order to add a new layer you will have to
 #### Explanation:
 The following properties of a layer can be edited:
 * **Layer title**: The layer title is optional, if given, it is displayed by the application in the top center of the screen.
-* **Refresh interval**: The refresh interval is optional, if given, it defines the seconds after which the client application will refresh the layer information.
-* **Redirect to layer**: The redirect layer is optional, if given, the layer redirected to is displayed by the client instead of the current one.
+* **Refresh interval**: The refresh interval is optional, if given, it defines the seconds after which the client application will reload the layer information.
+* **Redirect to layer**: The redirection layer is optional, if given, the layer redirected to is displayed by the client instead of the current one.
 * **Visibility in meters**: The range in meters inside which the layer is visible to clients, 1500m is the maximum.
-* **Area size in meters**: The area size is optional, if given, pois having an absolute geo-location are kept within this area.
-* **Area width in meters**: The area width is optional, if given, pois having an absolute geo-location are kept within this area.
+* **Area size in meters**: The area size is optional, if given, POIs having an absolute geo-location are kept within this area.
+* **Area width in meters**: The area width is optional, if given, POIs having an absolute geo-location are kept within this area.
 * **Show menu button**: This combo box defines whether the ARpoise menu button is shown by the client application.
 * **Apply Kalman filter**: This combo box defines whether a Kalman filter is applied to the device location by the client application.
-* **No pois message**: This message is shown by the client application, if there no POIs in range of the device location.
-* Action **Show information**: This combo box defines whether wether information messages are displayed by the client application.
-* Action **Information message**: This allow to set a static information message to be displayed by the client application.
-* **Save** button: Save the attributes to the layer's xml file.
+* **No pois message**: This message is shown by the client application, if there are no POIs in range of the device location.
+* Action **Show information**: This combo box defines whether information messages are displayed by the client application.
+* Action **Information message**: This allows to set a static information message to be displayed by the client application.
+* **Save** button: Saves the attributes to the layer's xml file.
 * **New POI** link: Allows to add a new POI to the layer.
 * POI-list-**Lat**: Allows to change the latitude of the POI. 
 * POI-list-**Lon**: Allows to change the longitude of the POI. The POI's location can also be changed by dragging the POI's marker in the placement map.
 * POI-list-**Save**: Save changes to the POI's location to the layer's xml file.
 * POI-list-**DEL**: Delete the POI from the layer.
 ### Arpoise Back-End POI Configuration
-#### Image
+#### Image:
 ![BackEndImg3](/images/BackEnd3.png)
-#### Explanation
+#### Explanation:
+The following properties of a POI can be edited:
+* **Title**: The title is optional, it is not used by the client application.
+* **Lat/Lon**: Allows to change the latitude and longitude of the POI. The POI's location can also be changed by dragging the POI's marker in the placement map.
+* **Is visible**: This combo box defines whether the POI is visible.
+* **Absolute altitude**: Allows to set the absolute altitude of the POI.
+* **Relative altitude**: Allows to set the altitude of the POI relative to the user's device.
+* **URL of asset bundle**: The POI's geometry will be taken from a Unity asset bundle downloaded from this web location.
+* **Prefab name**: The POI's geometry loaded from the asset bundle with this prefab name.
+* **Layer name**: If this value is set, the entire layer will be loaded instead of the POI.
+* **Relative location**: The location of the POI relative to the user's device. Comma separated list of the X-east-west, Y-up-down, Z-north-south values.
+* **Scaling factor**: This values allows to scale the POI's geometry in all three dimensions.
+* **Vertical rotation**: This values allows to rotate the POI's geometry around the Y axis.
+* **Relative angle**: If this value is set to Yes, the POI's geometry will always turned so that the same side always faces the user.
+* Animation-list-**Remove**: Delete the animtion from the POI.
+* **New animation** button: Allows to add a new animation to the POI.
+* **Save** button: Saves the POI's attributes to the layer's xml file.
+The following properties of an animation can be edited:
+* **Name**: The name is optional, it is used when one animation specifies that it should be followed by other animations.
+* **Event**: **onCreate** - the animation is started when the POI is loaded; **onClick** - the animation is started when the POI is clicked by the user; **onFocus** - the animation is started when the POI is looked at by the user; **onFollow** - the animation is started when it's predecessor animation ends.
+* **Type**: **rotate**, **transform**, **scale**.
+* **Length**: Length of the animation in seconds.
+* **Delay**: Delay of the animation in seconds, onCreate-animations will only start after this delay.
+* **Interpolation**: **linear** - the value is changed linearly from **From** to **To**; **cyclic** - the value is changed linearly from **From** to **To** and then back to **From**; **sine** - the value swings **From** and **To** like a pendulum; **halfsine** - the value is changed from **From** to **To** and then back to **From**.
+* **Persist**: **Yes** - at the end of the animation the POI will stay as the animation leaves it; **NO** - at the end of the animation the POI will snap back to its original state.
+* **Repeat**: **Yes** - the animation is repeated forever; **NO** - the animation is only run once.
+* **From**: Start value of the animation.
+* **To**: End or middle value of the animation, depending on the **Interpolation**.
+* **Axis (x,y,z)**: Axis to apply the animation to. E.g.: A rotation with Axis 1,0,0 is only around the X axis.
+* **Followed by**: If one or more comma separated animation names are given in this field. The animations mentioned are started once this animation ends.
+If an animation is started and the Unity-prefab of the POI contains an AudioSource component, the audio source is played.
 ## Original Documentation
 ===PorPOISe for Layar===
 Portable Point-of-Interest Server for Layar
