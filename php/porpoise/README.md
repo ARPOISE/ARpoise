@@ -37,14 +37,19 @@ The placing of the **POI**s of the layer into world coordinates can be performed
 
 ## Documentation
 ### Arpoise Back-End Layers List
-#### Image
+#### Image:
 ![BackEndImg1](/images/BackEnd1.png)
-#### Explanation
+#### Explanation:
 A list of all your layers is shown. In order to add a new layer you will have to edit the file **config.xml** in your configuration directory and also create an **.xml** file for your new layer in the configuration directory.
 ### Arpoise Back-End Layer Configuration
-#### Image
+#### Image:
 ![BackEndImg2](/images/BackEnd2.png)
-#### Explanation
+#### Explanation:
+The following properties of a layer can be edited:
+* Layewr title: The layer title is optional, if given, it is displayed by the application in the top center of the screen.
+* Refresh interval: The refresh interval is optional, if given, it defines the seconds after which the client application will refresh the layer information.
+* Redirect to layer: The redirect layer is optional, if given, the layer redirected to is displayed by the client instead of the current one.
+
 ### Arpoise Back-End POI Configuration
 #### Image
 ![BackEndImg3](/images/BackEnd3.png)
