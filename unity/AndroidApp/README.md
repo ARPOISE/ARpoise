@@ -8,13 +8,18 @@ The ARpoise Client App has been submitted to the Google Play Store and the Apple
 You do not need to build it yourself.
 
 ## Functionality
-- Connects to the ARpoise-Directory Frontend and supplies the location of the user's device.
+- Connects to the ARpoise-Directory front-end and supplies the location of the user's device.
 
-- Receives back the porpoise-service url and name of the layer closest to the user or of the default layer.
+- Receives the response from the ARpoise-Directory service.
 
-- Connects to the porpoise service of the layer and downloads the list of **POI**s of the layer.
+- If there are two or more layers available at the user's location, the list of layers is shown to the user
+  in order for the user to select a layer to be shown.
+  
+- If there is exactly one layer, this layer is selected, or if there is no layer at all, a default layer is selected.
 
-- Downloads the Unity AssetBundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
+- Connects to the porpoise service of the selected layer and downloads the list of **POI**s of the layer.
+
+- Downloads the Unity asset bundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
 
 - Places the **POI**s' Unity prefabs into the 3D scene and shows the camera image as the background of the scene.
 
