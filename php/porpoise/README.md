@@ -2,28 +2,31 @@
 # ARpoise-PorPOISe Back End
 
 ## Overview
-This is the version of PorPOISe used for placing of the **POI**s of **your own** layers.
+This is the version of PorPOISe used for placing and delivering the **POI**s of **your own** layers.
 
 In order to add your layers to ARpoise you need to download and install this package onto **your own** web server!
 
-For using the Google-maps-based click-and-drag interface interface you need to use **your own** Google-maps id.
+For using the Google-maps-based click-and-drag interface as shown in the screen shots below
+you need to use **your own** Google-maps id.
 
 ## Application
 In order for any of your layers to be visible in ARpoise
 you need to supply the **url** of your PorPOISe installation that is serving the layer's content,
-and the **name**, and the **longitude** and **latitude** coordinates of the layer.
+and the **name**, and the **longitude** and **latitude** coordinates of the layer to the administrators of www.arpoise.com.
 
-The 3D content of all of the **POI**s of your layer needs to be put as an Unity prefab into an Unity asset bundle
-made available on the net and referenced by the **POI** definition in your layer.
+The 3D content of each of the **POI**s of your layer needs to be created as an Unity prefab
+and needs to be put into an Unity asset bundle made available on the web.
+The asset bundle is referenced by the **POI**'s definition in your layer.
 
-Creation of asset bundles in Unity is beyond this documentation. One thing we found is,
-asset bundles created for either Android or iOS do not work on the "other" platform.
+Creation of asset bundles in Unity is beyond this documentation.
+
+One thing we found is, asset bundles created for either Android or iOS do not work on the "other" platform.
 Therefore you need to provide **two** asset bundles, one for Android and one for iOS.
-As you can only enter one asset bundle url in the ARpoise PorPOISe configuration, 
+As you can only enter one asset bundle url in the ARpoise PorPOISe configuration of any POI, 
 ARpoise assumes that the asset bundle name given is the one of the Android asset bundle.
-The name of the iOS asset bundle has to be the Android name followed by 'i'.
-Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle_",
-you also need to avail the iOS asset bundle with the url ".../MyAssetBundle_i". 
+The name of the iOS asset bundle has to be the Android name followed by the letter 'i'.
+Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle",
+you also need to avail the iOS asset bundle with the url ".../MyAssetBundlei". 
 
 
 ## Functionality
@@ -34,11 +37,13 @@ The service has to return the definitions of the **POI**s of the layer.
 The placing of the **POI**s of the layer into world coordinates can be performed in a Google-maps-based click-and-drag interface.
 
 ## Documentation
+
 ### ARpoise Back-End Layers List
 #### Screen Shot:
 ![BackEndImg1](/images/BackEnd1.png)
 #### Explanation:
 A list of all your layers is shown. In order to add a new layer you will have to edit the file **config.xml** in your configuration directory and also create an **.xml** file for your new layer in the configuration directory.
+
 ### ARpoise Back-End Layer Configuration
 #### Screen Shot:
 ![BackEndImg2](/images/BackEnd2.png)
@@ -61,6 +66,7 @@ The following properties of a layer can be edited:
 * POI-list-**Lon**: Allows to change the longitude of the POI. The POI's location can also be changed by dragging the POI's marker in the placement map.
 * POI-list-**Save**: Save changes to the POI's location to the layer's xml file.
 * POI-list-**DEL**: Delete the POI from the layer.
+
 ### ARpoise Back-End POI Configuration
 #### Screen Shot:
 ![BackEndImg3](/images/BackEnd3.png)
