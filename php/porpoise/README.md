@@ -46,9 +46,7 @@ A list of all your layers is shown. In order to add a new layer you will have to
 
 ### ARpoise Back-End Layer Configuration
 #### Screen Shot:
-<hr>
 ![BackEndImg2](/images/BackEnd2.png)
-<hr>
 #### Explanation:
 The following properties of a layer can be edited:
 * **Layer title**: The layer title is optional, if given, it is displayed by the application in the top center of the screen.
