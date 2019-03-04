@@ -410,7 +410,7 @@ abstract class POI extends Arrayable {
 	/** @var POIAction[] Possible actions for this POI */
 	public $actions = array();
 	/** @var Animation[] Animations for this POI */
-	public $animations = array("onCreate" => array(), "onFocus" => array(), "onClick" => array(), "onFollow" => array());
+	public $animations = array("onCreate" => array(), "onFocus" => array(), "inFocus" => array(), "onClick" => array(), "onFollow" => array());
 	/** @var string attribution text */
 	public $attribution = NULL;
 	/** @var int Distance in meters between the user and this POI */
@@ -437,8 +437,6 @@ abstract class POI extends Arrayable {
 	public $type = NULL;
 	/** @var bool doNotIndex */
 	public $doNotIndex = FALSE;
-	/** @var bool inFocus */
-	public $inFocus = FALSE;
 	/** @var bool Show the small BIW on the bottom of the screen */
 	public $showSmallBiw = TRUE;
 	/** @var show the big BIW when the POI is tapped */
@@ -469,7 +467,7 @@ abstract class POI extends Arrayable {
 								$value[] = new POIAction($sourceAction);
 							}
 						} else if ($propertyName == "animations") {
-							$value = array("onCreate" => array(), "onFollow" => array(), "onFocus" => array(), "onClick" => array());
+						    $value = array("onCreate" => array(), "onFollow" => array(), "inFocus" => array(), "onFocus" => array(), "onClick" => array());
 							foreach ($source["animations"] as $event => $animations) {
 								foreach ($animations as $animation) {
 									$value[$event][] = new Animation($animation);
@@ -512,7 +510,7 @@ abstract class POI extends Arrayable {
 								$value[] = new POIAction($sourceAction);
 							}
 						} else if ($propertyName == "animations") {
-						    $value = array("onCreate" => array(), "onFollow" => array(), "onFocus" => array(), "onClick" => array());
+						    $value = array("onCreate" => array(), "onFollow" => array(), "inFocus" => array(), "onFocus" => array(), "onClick" => array());
 							foreach ($source->animations as $event => $animations) {
 								foreach ($animations as $animation) {
 									$value[$event][] = new Animation($animation);

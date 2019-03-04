@@ -80,7 +80,6 @@ class LayarPOIServer
     );
 
     protected $optionalPOIFieldsDefaults = array(
-        "inFocus" => FALSE,
         "alt" => NULL,
         "relativeAlt" => NULL,
         "timestamp" => NULL,
@@ -223,11 +222,6 @@ class LayarPOIServer
                     break;
                 case "hotspots":
                     foreach ($value as $poi) {
-                        // test if current POI was requested and should be in focus
-                        if ($poi->id == @$this->filter->requestedPoiId) {
-                            $poi->inFocus = true;
-                        }
-
                         $aPoi = $poi->toArray();
                         // strip out optional fields to cut on bandwidth
                         foreach ($this->optionalPOIFieldsDefaults as $field => $defaultValue) {

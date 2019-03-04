@@ -84,6 +84,7 @@ class LayarResponse
         "onCreate" => array(),
         "onFollow" => array(),
         "onFocus" => array(),
+        "inFocus" => array(),
         "onClick" => array()
     );
 

@@ -132,6 +132,7 @@ class XMLPOIConnector extends POIConnector
                                     "onCreate",
                                     "onFollow",
                                     "onFocus",
+                                    "inFocus",
                                     "onClick"
                                 ) as $event) {
                                     if (strpos($events, $event) !== FALSE) {
@@ -231,6 +232,7 @@ class XMLPOIConnector extends POIConnector
                                 "onCreate",
                                 "onFollow",
                                 "onFocus",
+                                "inFocus",
                                 "onClick"
                             ) as $event) {
                                 if (strpos($events, $event) !== FALSE) {

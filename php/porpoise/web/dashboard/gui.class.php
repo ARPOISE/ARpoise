@@ -593,6 +593,7 @@ HTML;
         foreach (array(
             "onCreate",
             "onFocus",
+            "inFocus",
             "onClick",
             "onFollow"
         ) as $event) {
