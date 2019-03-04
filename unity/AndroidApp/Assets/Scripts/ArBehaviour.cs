@@ -394,6 +394,25 @@ namespace com.arpoise.arpoiseapp
                         }
                     }
 
+                    if (poi.animations.inFocus != null)
+                    {
+                        foreach (var poiAnimation in poi.animations.inFocus)
+                        {
+                            SphereCollider sc = objectToAdd.AddComponent<SphereCollider>() as SphereCollider;
+                            sc.radius = .71f; // 2 ** -2 / 2
+
+                            // Put the animation into a wrapper
+                            var animationWrapper = Instantiate(Wrapper);
+                            if (animationWrapper == null)
+                            {
+                                return "Instantiate(_wrapper) failed";
+                            }
+                            arObjectState.InFocusAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
+                            animationWrapper.transform.parent = parentTransform;
+                            parentTransform = animationWrapper.transform;
+                        }
+                    }
+
                     if (poi.animations.onClick != null)
                     {
                         foreach (var poiAnimation in poi.animations.onClick)
@@ -1700,9 +1719,11 @@ namespace com.arpoise.arpoiseapp
             }
 
             bool hit = false;
-            if (arObjectState.OnFocusAnimations.Count > 0)
+            if (arObjectState.OnFocusAnimations.Count > 0 || arObjectState.InFocusAnimations.Count > 0)
             {
                 var ray = Camera.main.ScreenPointToRay(new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2, 0f));
+
+                var inFocusAnimationsToStop = arObjectState.InFocusAnimations.Where(x => x.IsActive).ToList();
 
                 RaycastHit hitInfo;
                 if (Physics.Raycast(ray, out hitInfo, 1500f))
@@ -1718,6 +1739,24 @@ namespace com.arpoise.arpoiseapp
                                 arAnimation.Activate(_startTicks, now);
                             }
                         }
+
+                        foreach (var arAnimation in arObjectState.InFocusAnimations.Where(x => objectHit.Equals(x.GameObject)))
+                        {
+                            hit = true;
+                            if (!arAnimation.IsActive)
+                            {
+                                arAnimation.Activate(_startTicks, now);
+                            }
+                            inFocusAnimationsToStop.Remove(arAnimation);
+                        }
+                    }
+                }
+
+                foreach (var arAnimation in inFocusAnimationsToStop)
+                {
+                    if (arAnimation.IsActive)
+                    {
+                        arAnimation.Stop(_startTicks, now);
                     }
                 }
             }
@@ -1748,6 +1787,7 @@ namespace com.arpoise.arpoiseapp
             var animations = arObjectState.OnCreateAnimations
                 .Concat(arObjectState.OnFollowAnimations)
                 .Concat(arObjectState.OnFocusAnimations)
+                .Concat(arObjectState.InFocusAnimations)
                 .Concat(arObjectState.OnClickAnimations);
 
             foreach (var arAnimation in animations)

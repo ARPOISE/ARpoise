@@ -88,6 +88,7 @@ namespace com.arpoise.arpoiseapp
         public PoiAnimation[] onCreate = null;
         public PoiAnimation[] onFollow = null;
         public PoiAnimation[] onFocus = null;
+        public PoiAnimation[] inFocus = null;
         public PoiAnimation[] onClick = null;
     }
 

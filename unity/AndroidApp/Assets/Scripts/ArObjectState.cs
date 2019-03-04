@@ -45,6 +45,7 @@ namespace com.arpoise.arpoiseapp
         public List<ArAnimation> OnCreateAnimations { get; private set; }
         public List<ArAnimation> OnFollowAnimations { get; private set; }
         public List<ArAnimation> OnFocusAnimations { get; private set; }
+        public List<ArAnimation> InFocusAnimations { get; private set; }
         public List<ArAnimation> OnClickAnimations { get; private set; }
         public List<ArAnimation> BillboardAnimations { get; private set; }
 
@@ -56,6 +57,7 @@ namespace com.arpoise.arpoiseapp
             OnCreateAnimations = new List<ArAnimation>();
             OnFollowAnimations = new List<ArAnimation>();
             OnFocusAnimations = new List<ArAnimation>();
+            InFocusAnimations = new List<ArAnimation>();
             OnClickAnimations = new List<ArAnimation>();
             BillboardAnimations = new List<ArAnimation>();
         }
@@ -77,6 +79,10 @@ namespace com.arpoise.arpoiseapp
             foreach (var animation in OnFocusAnimations.Where(x => arObject.Id == x.PoiId).ToList())
             {
                 OnFocusAnimations.Remove(animation);
+            }
+            foreach (var animation in InFocusAnimations.Where(x => arObject.Id == x.PoiId).ToList())
+            {
+                InFocusAnimations.Remove(animation);
             }
             foreach (var animation in OnClickAnimations.Where(x => arObject.Id == x.PoiId).ToList())
             {
