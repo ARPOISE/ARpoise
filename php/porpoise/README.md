@@ -97,9 +97,17 @@ The following properties of an animation can be edited:
 * **Type**: **rotate**, **transform**, **scale**.
 * **Length**: Length of the animation in seconds.
 * **Delay**: Delay of the animation in seconds, onCreate-animations will only start after this delay.
-* **Interpolation**: **linear** - the value is changed linearly from **From** to **To**; **cyclic** - the value is changed linearly from **From** to **To** and then back to **From**; **sine** - the value swings **From** and **To** and back like a pendulum; **halfsine** - the value is changed from **From** to **To** and then back to **From**.
-* **Persist**: **Yes** - at the end of the animation the POI will stay as the animation leaves it; **NO** - at the end of the animation the POI will snap back to its original state.
-* **Repeat**: **Yes** - the animation is repeated forever; **NO** - the animation is only run once.
+* **Interpolation**:
+  * **linear** - the value is changed linearly from **From** to **To**;
+  * **cyclic** - the value is changed linearly from **From** to **To** and then back to **From**;
+  * **sine** - the value swings **From** and **To** and back like a pendulum;
+  * **halfsine** - the value is changed from **From** to **To** and then back to **From**.
+* **Persist**:
+  * **Yes** - at the end of the animation the POI will stay as the animation leaves it;
+  * **No** - at the end of the animation the POI will snap back to its original state.
+* **Repeat**:
+  * **Yes** - the animation is repeated forever;
+  * **No** - the animation is only run once.
 * **From**: Start value of the animation.
 * **To**: End or middle value of the animation, depending on the **Interpolation**.
 * **Axis (x,y,z)**: Axis to apply the animation to. E.g.: A rotation with Axis 1,0,0 is only around the X axis.
