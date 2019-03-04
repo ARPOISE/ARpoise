@@ -100,7 +100,7 @@ The following properties of an animation can be edited:
 * **Interpolation**:
   * **linear** - the value is changed linearly from **From** to **To**;
   * **cyclic** - the value is changed linearly from **From** to **To** and then back to **From**;
-  * **sine** - the value swings **From** and **To** and back like a pendulum;
+  * **sine** - the value swings between **From** and **To** like a pendulum;
   * **halfsine** - the value is changed from **From** to **To** and then back to **From**.
 * **Persist**:
   * **Yes** - at the end of the animation the POI will stay as the animation leaves it;
