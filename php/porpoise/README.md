@@ -28,7 +28,6 @@ The name of the iOS asset bundle has to be the Android name followed by the lett
 Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle",
 you also need to avail the iOS asset bundle with the url ".../MyAssetBundlei". 
 
-
 ## Functionality
 The ARpoise client contacts this web service with the client location and the layer name as parameter.
 
@@ -36,18 +35,18 @@ The service has to return the definitions of the **POI**s of the layer.
 
 The placing of the **POI**s of the layer into world coordinates can be performed in a Google-maps-based click-and-drag interface.
 
-## Documentation
+## Documentation:
 
-### ARpoise Back-End Layers List
-#### Screen Shot:
+## ARpoise Back-End Layers List
+### Screen Shot:
 ![BackEndImg1](/images/BackEnd1.png)
-#### Explanation:
+### Explanation:
 A list of all your layers is shown. In order to add a new layer you will have to edit the file **config.xml** in your configuration directory and also create an **.xml** file for your new layer in the configuration directory.
 
-### ARpoise Back-End Layer Configuration
-#### Screen Shot:
+## ARpoise Back-End Layer Configuration
+### Screen Shot:
 ![BackEndImg2](/images/BackEnd2.png)
-#### Explanation:
+### Explanation:
 The following properties of a layer can be edited:
 * **Layer title**: The layer title is optional, if given, it is displayed by the application in the top center of the screen.
 * **Refresh interval**: The refresh interval is optional, if given, it defines the seconds after which the client application will reload the layer information.
@@ -67,10 +66,10 @@ The following properties of a layer can be edited:
 * POI-list-**Save**: Save changes to the POI's location to the layer's xml file.
 * POI-list-**DEL**: Delete the POI from the layer.
 
-### ARpoise Back-End POI Configuration
-#### Screen Shot:
+## ARpoise Back-End POI Configuration
+### Screen Shot:
 ![BackEndImg3](/images/BackEnd3.png)
-#### Explanation:
+### Explanation:
 The following properties of a POI can be edited:
 * **Title**: The title is optional, it is not used by the client application.
 * **Lat/Lon**: Allows to change the latitude and longitude of the POI. The POI's location can also be changed by dragging the POI's marker in the placement map.
@@ -152,3 +151,4 @@ from SURFnet to Layar and took the project with him.
   * http://www.surfnet.nl/en The home of the creator of PorPOISe
   * http://teknograd.wordpress.com/2009/10/19/augmented-reality-create-your-own-layar-layer/ An explanation on how to build the most minimal of Layar servers. Very useful to get started
   * http://layar.com/ is, of course, the reason this project exists
+  
