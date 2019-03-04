@@ -129,8 +129,6 @@ class XMLPOIConnector extends POIConnector
                             if (! empty($events)) {
                                 foreach (array(
                                     "onCreate",
-                                    "onUpdate",
-                                    "onDelete",
                                     "onFocus",
                                     "onClick"
                                 ) as $event) {
@@ -229,8 +227,6 @@ class XMLPOIConnector extends POIConnector
                         if (! empty($events)) {
                             foreach (array(
                                 "onCreate",
-                                "onUpdate",
-                                "onDelete",
                                 "onFocus",
                                 "onClick"
                             ) as $event) {

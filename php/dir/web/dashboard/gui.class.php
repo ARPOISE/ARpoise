@@ -522,7 +522,8 @@ HTML;
     {
         $result = sprintf("<select name=\"%s\">", $name);
         foreach (array(
-            "onCreate", /* "onUpdate", "onDelete",  */ "onFocus",
+            "onCreate",
+            "onFocus",
             "onClick"
         ) as $event) {
             $result .= sprintf("<option value=\"%s\"%s>%s</option>", $event, ($selected == $event ? " selected" : ""), $event);
