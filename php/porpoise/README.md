@@ -97,7 +97,7 @@ The following properties of an animation can be edited:
   * **onCreate** - the animation is started when the POI is loaded;
   * **onClick** - the animation is started when the POI is clicked by the user;
   * **onFocus** - the animation is started when the POI is looked at by the user;
-  * **inFocus** - the animation is started when the POI is looked at by the user and is stopped once the POI looses the focus;
+  * **inFocus** - the animation is started when the POI is looked at by the user and is stopped once the POI loses the focus;
   * **onFollow** - the animation is started when it's predecessor animation ends.
 * **Type**: **rotate**, **transform**, **scale**.
 * **Length**: Length of the animation in seconds.
