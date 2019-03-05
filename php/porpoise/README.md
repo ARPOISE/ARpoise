@@ -86,7 +86,7 @@ The name of the iOS asset bundle has to be the Android name followed by 'i'.
 * **Relative location**: The location of the POI relative to the user's device. Comma separated list of the X-east-west, Y-up-down, Z-north-south values.
 * **Scaling factor**: This values allows to scale the POI's geometry in all three dimensions.
 * **Vertical rotation**: This values allows to rotate the POI's geometry around the Y axis.
-* **Relative angle**: If this value is set to Yes, the POI's geometry will always turned so that the same side always faces the user.
+* **Relative angle**: If this value is set to Yes, the POI's geometry will always be turned so that the same side always faces the user.
 * Animation-list-**Remove**: Delete the animtion from the POI.
 * **New animation** button: Allows to add a new animation to the POI.
 * **Save** button: Saves the POI's attributes to the layer's xml file.
