@@ -28,7 +28,7 @@ and loads the 3D Unity prefab of the **POI** from it.
 
 - Unity-created 3D content of ARpoise can include your animations. Furthermore, **POI**s can have
 ARpoise level animations like scale, rotation, and transformation to be started
-'on load', 'on focus', or 'on click' of a **POI**.
+'on create', 'on focus', 'in focus', or 'on click' of a **POI**.
 
 - **POI**s can have an absolute world location defined by longitude and latitude
 or they can have a position relative to the user's device defined in meters of distance in the X, Y, and Z directions.
