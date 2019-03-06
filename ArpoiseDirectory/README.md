@@ -3,7 +3,7 @@
 
 ## Overview
 ARpoiseDirectory is a cgi-bin program written in C.
-It acts as a cgi-filter between the ARpoise client app and the ARpoise directory back end.
+The program acts as a cgi-filter between the ARpoise client app and the ARpoise directory back end.
 
 ## Functionality
 After receiving a request from the ARpoise client app,
