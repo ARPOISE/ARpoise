@@ -37,57 +37,76 @@ namespace com.arpoise.arpoiseapp
     public class ArObjectState
     {
         public volatile bool IsDirty = false;
-        public List<ArObject> ArObjectsToPlace = null;
 
-        public List<ArObject> ArObjects { get; private set; }
+        private List<ArAnimation> _onCreateAnimations = new List<ArAnimation>();
+        private List<ArAnimation> _onFollowAnimations = new List<ArAnimation>();
+        private List<ArAnimation> _onFocusAnimations = new List<ArAnimation>();
+        private List<ArAnimation> _inFocusAnimations = new List<ArAnimation>();
+        private List<ArAnimation> _onClickAnimations = new List<ArAnimation>();
+        private List<ArAnimation> _billboardAnimations = new List<ArAnimation>();
+        private List<ArAnimation> _allAnimations = null;
+
+        private List<ArObject> _arObjects = new List<ArObject>();
+        public IEnumerable<ArObject> ArObjects { get { return _arObjects; } }
         public List<ArObject> ArObjectsToDelete { get; private set; }
+        public List<ArObject> ArObjectsToPlace { get; private set; }
         public List<Poi> ArPois { get; private set; }
-        public List<ArAnimation> OnCreateAnimations { get; private set; }
-        public List<ArAnimation> OnFollowAnimations { get; private set; }
-        public List<ArAnimation> OnFocusAnimations { get; private set; }
-        public List<ArAnimation> InFocusAnimations { get; private set; }
-        public List<ArAnimation> OnClickAnimations { get; private set; }
-        public List<ArAnimation> BillboardAnimations { get; private set; }
 
         public ArObjectState()
         {
-            ArObjects = new List<ArObject>();
             ArObjectsToDelete = new List<ArObject>();
+            ArObjectsToPlace = null;
             ArPois = new List<Poi>();
-            OnCreateAnimations = new List<ArAnimation>();
-            OnFollowAnimations = new List<ArAnimation>();
-            OnFocusAnimations = new List<ArAnimation>();
-            InFocusAnimations = new List<ArAnimation>();
-            OnClickAnimations = new List<ArAnimation>();
-            BillboardAnimations = new List<ArAnimation>();
+        }
+
+        public void SetArObjectsToPlace()
+        {
+            ArObjectsToPlace = ArObjects.Where(x => !x.IsRelative).ToList();
+        }
+
+        public void AddOnCreateAnimation(ArAnimation animation)
+        {
+            _onCreateAnimations.Add(animation);
+        }
+
+        public void AddOnFollowAnimation(ArAnimation animation)
+        {
+            _onFollowAnimations.Add(animation);
+        }
+
+        public void AddOnFocusAnimation(ArAnimation animation)
+        {
+            _onFocusAnimations.Add(animation);
+        }
+
+        public void AddInFocusAnimation(ArAnimation animation)
+        {
+            _inFocusAnimations.Add(animation);
+        }
+
+        public void AddOnClickAnimation(ArAnimation animation)
+        {
+            _onClickAnimations.Add(animation);
+        }
+
+        public void AddBillboardAnimation(ArAnimation animation)
+        {
+            _billboardAnimations.Add(animation);
         }
 
         private void RemoveFromAnimations(ArObject arObject)
         {
-            foreach (var animation in BillboardAnimations.Where(x => arObject.Id == x.PoiId).ToList())
-            {
-                BillboardAnimations.Remove(animation);
-            }
-            foreach (var animation in OnCreateAnimations.Where(x => arObject.Id == x.PoiId).ToList())
-            {
-                OnCreateAnimations.Remove(animation);
-            }
-            foreach (var animation in OnFollowAnimations.Where(x => arObject.Id == x.PoiId).ToList())
-            {
-                OnFollowAnimations.Remove(animation);
-            }
-            foreach (var animation in OnFocusAnimations.Where(x => arObject.Id == x.PoiId).ToList())
-            {
-                OnFocusAnimations.Remove(animation);
-            }
-            foreach (var animation in InFocusAnimations.Where(x => arObject.Id == x.PoiId).ToList())
-            {
-                InFocusAnimations.Remove(animation);
-            }
-            foreach (var animation in OnClickAnimations.Where(x => arObject.Id == x.PoiId).ToList())
-            {
-                OnClickAnimations.Remove(animation);
-            }
+            _billboardAnimations.RemoveAll(x => arObject.Id == x.PoiId);
+            _onCreateAnimations.RemoveAll(x => arObject.Id == x.PoiId);
+            _onFollowAnimations.RemoveAll(x => arObject.Id == x.PoiId);
+            _onFocusAnimations.RemoveAll(x => arObject.Id == x.PoiId);
+            _inFocusAnimations.RemoveAll(x => arObject.Id == x.PoiId);
+            _onClickAnimations.RemoveAll(x => arObject.Id == x.PoiId);
+        }
+
+        public void Add(ArObject arObject)
+        {
+            _arObjects.Add(arObject);
         }
 
         public void DestroyArObjects()
@@ -99,10 +118,137 @@ namespace com.arpoise.arpoiseapp
                 {
                     RemoveFromAnimations(child);
                 }
-                ArObjects.Remove(arObject);
+                _arObjects.Remove(arObject);
                 Object.Destroy(arObject.WrapperObject);
             }
             ArObjectsToDelete.Clear();
+            _allAnimations = null;
+        }
+
+        public bool HandleAnimations(long startTicks, long now)
+        {
+            var hit = false;
+
+            foreach (var arAnimation in _billboardAnimations)
+            {
+                arAnimation.Wrapper.transform.LookAt(Camera.main.transform);
+            }
+
+            var inFocusAnimationsToStop = _inFocusAnimations.Where(x => x.IsActive).ToList();
+
+            if (_onFocusAnimations.Count > 0 || _inFocusAnimations.Count > 0)
+            {
+                var ray = Camera.main.ScreenPointToRay(new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2, 0f));
+
+                RaycastHit hitInfo;
+                if (Physics.Raycast(ray, out hitInfo, 1500f))
+                {
+                    var objectHit = hitInfo.transform.gameObject;
+                    if (objectHit != null)
+                    {
+                        foreach (var arAnimation in _onFocusAnimations.Where(x => objectHit.Equals(x.GameObject)))
+                        {
+                            hit = true;
+                            if (!arAnimation.IsActive)
+                            {
+                                arAnimation.Activate(startTicks, now);
+                            }
+                        }
+
+                        foreach (var arAnimation in _inFocusAnimations.Where(x => objectHit.Equals(x.GameObject)))
+                        {
+                            hit = true;
+                            if (!arAnimation.IsActive)
+                            {
+                                arAnimation.Activate(startTicks, now);
+                            }
+                            inFocusAnimationsToStop.Remove(arAnimation);
+                        }
+                    }
+                }
+            }
+
+            if (_onClickAnimations.Count > 0 && Input.GetMouseButtonDown(0))
+            {
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                RaycastHit hitInfo;
+                if (Physics.Raycast(ray, out hitInfo, 1500f))
+                {
+                    var objectHit = hitInfo.transform.gameObject;
+                    if (objectHit != null)
+                    {
+                        foreach (var arAnimation in _onClickAnimations.Where(x => objectHit.Equals(x.GameObject)))
+                        {
+                            hit = true;
+                            if (!arAnimation.IsActive)
+                            {
+                                arAnimation.Activate(startTicks, now);
+                            }
+                        }
+                    }
+                }
+            }
+
+            var animations = _allAnimations;
+            if (animations == null)
+            {
+                _allAnimations = animations = _inFocusAnimations.Concat(_onFollowAnimations)
+                    .Concat(_onFocusAnimations).Concat(_onCreateAnimations).Concat(_onClickAnimations).ToList();
+            }
+
+            foreach (var arAnimation in animations)
+            {
+                if (arAnimation.JustActivated && arAnimation.GameObject != null)
+                {
+                    var audioSource = arAnimation.GameObject.GetComponent<AudioSource>();
+                    if (audioSource != null)
+                    {
+                        audioSource.Play();
+                    }
+                }
+
+                if (inFocusAnimationsToStop.Contains(arAnimation))
+                {
+                    arAnimation.Stop(startTicks, now);
+                    inFocusAnimationsToStop.Remove(arAnimation);
+                }
+                else
+                {
+                    arAnimation.Animate(startTicks, now);
+                }
+
+                if (arAnimation.JustStopped && !ArBehaviour.IsEmpty(arAnimation.FollowedBy))
+                {
+                    var animationsToFollow = arAnimation.FollowedBy.Split(',');
+                    if (animationsToFollow != null)
+                    {
+                        foreach (var animationToFollow in animationsToFollow)
+                        {
+                            if (!ArBehaviour.IsEmpty(animationToFollow))
+                            {
+                                var animationName = animationToFollow.Trim();
+                                foreach (var arAnimationToFollow in animations.Where(x => animationName.Equals(x.Name)))
+                                {
+                                    if (!arAnimationToFollow.IsActive)
+                                    {
+                                        arAnimationToFollow.Activate(startTicks, now);
+                                        if (arAnimationToFollow.JustActivated && arAnimationToFollow.GameObject != null)
+                                        {
+                                            var audioSource = arAnimationToFollow.GameObject.GetComponent<AudioSource>();
+                                            if (audioSource != null)
+                                            {
+                                                audioSource.Play();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return hit;
         }
     }
 }

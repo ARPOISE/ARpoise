@@ -103,7 +103,7 @@ namespace com.arpoise.arpoiseapp
         private int _areaWidth = 0;
 
         // Not string is null or white space
-        public bool IsEmpty(string s)
+        public static bool IsEmpty(string s)
         {
             return s == null || string.IsNullOrEmpty(s.Trim());
         }
@@ -243,7 +243,7 @@ namespace com.arpoise.arpoiseapp
             if (parentObject == null)
             {
                 // Add to ar object state
-                arObjectState.ArObjects.Add(arObject);
+                arObjectState.Add(arObject);
 
                 List<ArLayer> innerLayers = null;
                 if (!IsEmpty(poi.InnerLayerName) && _innerLayers.TryGetValue(poi.InnerLayerName, out innerLayers))
@@ -340,7 +340,7 @@ namespace com.arpoise.arpoiseapp
                     }
                     billboardWrapper.transform.parent = parentTransform;
                     parentTransform = billboardWrapper.transform;
-                    arObjectState.BillboardAnimations.Add(new ArAnimation(poiId, billboardWrapper, objectToAdd, null, true));
+                    arObjectState.AddBillboardAnimation(new ArAnimation(poiId, billboardWrapper, objectToAdd, null, true));
                 }
 
                 // Prepare the rotation of the object
@@ -369,7 +369,7 @@ namespace com.arpoise.arpoiseapp
                             {
                                 return "Instantiate(_wrapper) failed";
                             }
-                            arObjectState.OnCreateAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, true));
+                            arObjectState.AddOnCreateAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, true));
                             animationWrapper.transform.parent = parentTransform;
                             parentTransform = animationWrapper.transform;
                         }
@@ -379,16 +379,13 @@ namespace com.arpoise.arpoiseapp
                     {
                         foreach (var poiAnimation in poi.animations.onFocus)
                         {
-                            SphereCollider sc = objectToAdd.AddComponent<SphereCollider>() as SphereCollider;
-                            sc.radius = .71f; // 2 ** -2 / 2
-
                             // Put the animation into a wrapper
                             var animationWrapper = Instantiate(Wrapper);
                             if (animationWrapper == null)
                             {
                                 return "Instantiate(_wrapper) failed";
                             }
-                            arObjectState.OnFocusAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
+                            arObjectState.AddOnFocusAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                             animationWrapper.transform.parent = parentTransform;
                             parentTransform = animationWrapper.transform;
                         }
@@ -398,16 +395,13 @@ namespace com.arpoise.arpoiseapp
                     {
                         foreach (var poiAnimation in poi.animations.inFocus)
                         {
-                            SphereCollider sc = objectToAdd.AddComponent<SphereCollider>() as SphereCollider;
-                            sc.radius = .71f; // 2 ** -2 / 2
-
                             // Put the animation into a wrapper
                             var animationWrapper = Instantiate(Wrapper);
                             if (animationWrapper == null)
                             {
                                 return "Instantiate(_wrapper) failed";
                             }
-                            arObjectState.InFocusAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
+                            arObjectState.AddInFocusAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                             animationWrapper.transform.parent = parentTransform;
                             parentTransform = animationWrapper.transform;
                         }
@@ -417,16 +411,13 @@ namespace com.arpoise.arpoiseapp
                     {
                         foreach (var poiAnimation in poi.animations.onClick)
                         {
-                            SphereCollider sc = objectToAdd.AddComponent<SphereCollider>() as SphereCollider;
-                            sc.radius = .71f; // 2 ** -2 / 2
-
                             // Put the animation into a wrapper
                             var animationWrapper = Instantiate(Wrapper);
                             if (animationWrapper == null)
                             {
                                 return "Instantiate(_wrapper) failed";
                             }
-                            arObjectState.OnClickAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
+                            arObjectState.AddOnClickAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                             animationWrapper.transform.parent = parentTransform;
                             parentTransform = animationWrapper.transform;
                         }
@@ -442,7 +433,7 @@ namespace com.arpoise.arpoiseapp
                             {
                                 return "Instantiate(_wrapper) failed";
                             }
-                            arObjectState.OnFollowAnimations.Add(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
+                            arObjectState.AddOnFollowAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                             animationWrapper.transform.parent = parentTransform;
                             parentTransform = animationWrapper.transform;
                         }
@@ -697,10 +688,10 @@ namespace com.arpoise.arpoiseapp
         {
             var build = "rel";
             var os = "Android";
-            var bundle = "190224";
+            var bundle = "190306";
 #if UNITY_IOS
             os = "iOS";
-            bundle = "20190224";
+            bundle = "20190306";
 #endif
 #if DEVEL
             build = "dev"
@@ -713,6 +704,7 @@ namespace com.arpoise.arpoiseapp
 
             while (IsEmpty(_error))
             {
+                MenuEnabled = null;
                 count++;
 
                 var assetBundleUrls = new HashSet<string>();
@@ -1227,7 +1219,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         yield break;
                     }
-                    if (arObjectState.ArObjects.Count == 0)
+                    if (!arObjectState.ArObjects.Any())
                     {
                         var message = layers.Select(x => x.noPoisMessage).FirstOrDefault(x => !IsEmpty(x));
                         if (IsEmpty(message))
@@ -1237,7 +1229,7 @@ namespace com.arpoise.arpoiseapp
                         _error = message;
                         yield break;
                     }
-                    arObjectState.ArObjectsToPlace = arObjectState.ArObjects.Where(x => !x.IsRelative).ToList();
+                    arObjectState.SetArObjectsToPlace();
 
                     InitialHeading = Input.compass.trueHeading;
                     _headingShown = Input.compass.trueHeading;
@@ -1656,6 +1648,7 @@ namespace com.arpoise.arpoiseapp
             }
         }
 #endif
+
         private void Update()
         {
             // Set any error text onto the canvas
@@ -1703,7 +1696,7 @@ namespace com.arpoise.arpoiseapp
                             CreateArObjects(arObjectState, null, SceneAnchor.transform, arObjectState.ArPois);
                             arObjectState.ArPois.Clear();
                         }
-                        arObjectState.ArObjectsToPlace = arObjectState.ArObjects.Where(x => !x.IsRelative).ToList();
+                        arObjectState.SetArObjectsToPlace();
                         arObjectState.IsDirty = false;
                     }
                 }
@@ -1713,125 +1706,7 @@ namespace com.arpoise.arpoiseapp
                 }
             }
 
-            foreach (var arAnimation in arObjectState.BillboardAnimations)
-            {
-                arAnimation.Wrapper.transform.LookAt(Camera.main.transform);
-            }
-
-            bool hit = false;
-            if (arObjectState.OnFocusAnimations.Count > 0 || arObjectState.InFocusAnimations.Count > 0)
-            {
-                var ray = Camera.main.ScreenPointToRay(new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2, 0f));
-
-                var inFocusAnimationsToStop = arObjectState.InFocusAnimations.Where(x => x.IsActive).ToList();
-
-                RaycastHit hitInfo;
-                if (Physics.Raycast(ray, out hitInfo, 1500f))
-                {
-                    var objectHit = hitInfo.transform.gameObject;
-                    if (objectHit != null)
-                    {
-                        foreach (var arAnimation in arObjectState.OnFocusAnimations.Where(x => objectHit.Equals(x.GameObject)))
-                        {
-                            hit = true;
-                            if (!arAnimation.IsActive)
-                            {
-                                arAnimation.Activate(_startTicks, now);
-                            }
-                        }
-
-                        foreach (var arAnimation in arObjectState.InFocusAnimations.Where(x => objectHit.Equals(x.GameObject)))
-                        {
-                            hit = true;
-                            if (!arAnimation.IsActive)
-                            {
-                                arAnimation.Activate(_startTicks, now);
-                            }
-                            inFocusAnimationsToStop.Remove(arAnimation);
-                        }
-                    }
-                }
-
-                foreach (var arAnimation in inFocusAnimationsToStop)
-                {
-                    if (arAnimation.IsActive)
-                    {
-                        arAnimation.Stop(_startTicks, now);
-                    }
-                }
-            }
-
-            bool click = false;
-            if (arObjectState.OnClickAnimations.Count > 0 && Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                RaycastHit hitInfo;
-                if (Physics.Raycast(ray, out hitInfo, 1500f))
-                {
-                    GameObject objectHit = hitInfo.transform.gameObject;
-                    if (objectHit != null)
-                    {
-                        foreach (var arAnimation in arObjectState.OnClickAnimations.Where( x => objectHit.Equals(x.GameObject)))
-                        {
-                            click = true;
-                            if (!arAnimation.IsActive)
-                            {
-                                arAnimation.Activate(_startTicks, now);
-                            }
-                        }
-                    }
-                }
-            }
-
-            var animations = arObjectState.OnCreateAnimations
-                .Concat(arObjectState.OnFollowAnimations)
-                .Concat(arObjectState.OnFocusAnimations)
-                .Concat(arObjectState.InFocusAnimations)
-                .Concat(arObjectState.OnClickAnimations);
-
-            foreach (var arAnimation in animations)
-            {
-                if (arAnimation.JustActivated && arAnimation.GameObject != null)
-                {
-                    var audioSource = arAnimation.GameObject.GetComponent<AudioSource>();
-                    if (audioSource != null)
-                    {
-                        audioSource.Play();
-                    }
-                }
-                arAnimation.Animate(_startTicks, now);
-
-                if (arAnimation.JustStopped && !IsEmpty(arAnimation.FollowedBy))
-                {
-                    var annimationsToFollow = arAnimation.FollowedBy.Split(',');
-                    if (annimationsToFollow != null && annimationsToFollow.Length > 0)
-                    {
-                        foreach (var animationToFollow in annimationsToFollow)
-                        {
-                            if (!IsEmpty(animationToFollow))
-                            {
-                                var animationName = animationToFollow.Trim();
-                                foreach (var arAnimationToFollow in animations.Where(x => animationName.Equals(x.Name)))
-                                {
-                                    if (!arAnimationToFollow.IsActive)
-                                    {
-                                        arAnimationToFollow.Activate(_startTicks, now);
-                                        if (arAnimationToFollow.JustActivated && arAnimationToFollow.GameObject != null)
-                                        {
-                                            var audioSource = arAnimationToFollow.GameObject.GetComponent<AudioSource>();
-                                            if (audioSource != null)
-                                            {
-                                                audioSource.Play();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            var hit = arObjectState.HandleAnimations(_startTicks, now);
 
             if (_currentSecond == second)
             {
@@ -1991,7 +1866,6 @@ namespace com.arpoise.arpoiseapp
                     //+ " R " + ray.origin.x.ToString("F1") + " " + ray.origin.y.ToString("F1") + " " + ray.origin.z.ToString("F1")
                     //+ " " + ray.direction.x.ToString("F1") + " " + ray.direction.y.ToString("F1") + " " + ray.direction.z.ToString("F1")
                     + (hit ? " h " : string.Empty)
-                    + (click ? " c " : string.Empty)
                     ;
             }
         }
