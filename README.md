@@ -62,5 +62,5 @@ See [/php/porpoise](php/porpoise/README.md).
 ## Restrictions
 - Unity behaviour scripts written in C# cannot be included in Unity-created 3D content of ARpoise.
 
-- Adding, removing and placing layers within ARpoise is an email-based process involving the administrators of
+- Adding, removing and placing layers within the ARpoise-Directory is an email-based process involving the administrators of
 [www.arpoise.com](http://www.arpoise.com).
