@@ -67,31 +67,37 @@ namespace com.arpoise.arpoiseapp
         public void AddOnCreateAnimation(ArAnimation animation)
         {
             _onCreateAnimations.Add(animation);
+            _allAnimations = null;
         }
 
         public void AddOnFollowAnimation(ArAnimation animation)
         {
             _onFollowAnimations.Add(animation);
+            _allAnimations = null;
         }
 
         public void AddOnFocusAnimation(ArAnimation animation)
         {
             _onFocusAnimations.Add(animation);
+            _allAnimations = null;
         }
 
         public void AddInFocusAnimation(ArAnimation animation)
         {
             _inFocusAnimations.Add(animation);
+            _allAnimations = null;
         }
 
         public void AddOnClickAnimation(ArAnimation animation)
         {
             _onClickAnimations.Add(animation);
+            _allAnimations = null;
         }
 
         public void AddBillboardAnimation(ArAnimation animation)
         {
             _billboardAnimations.Add(animation);
+            _allAnimations = null;
         }
 
         private void RemoveFromAnimations(ArObject arObject)
@@ -102,6 +108,7 @@ namespace com.arpoise.arpoiseapp
             _onFocusAnimations.RemoveAll(x => arObject.Id == x.PoiId);
             _inFocusAnimations.RemoveAll(x => arObject.Id == x.PoiId);
             _onClickAnimations.RemoveAll(x => arObject.Id == x.PoiId);
+            _allAnimations = null;
         }
 
         public void Add(ArObject arObject)
@@ -122,7 +129,26 @@ namespace com.arpoise.arpoiseapp
                 Object.Destroy(arObject.WrapperObject);
             }
             ArObjectsToDelete.Clear();
-            _allAnimations = null;
+        }
+
+        public int Count
+        {
+            get
+            {
+                return _arObjects.Count;
+            }
+        }
+        public int NumberOfAnimations
+        {
+            get
+            {
+                var animations = _allAnimations;
+                if (animations != null)
+                {
+                    return animations.Count;
+                }
+                return 0;
+            }
         }
 
         public bool HandleAnimations(long startTicks, long now)
@@ -218,14 +244,14 @@ namespace com.arpoise.arpoiseapp
                     arAnimation.Animate(startTicks, now);
                 }
 
-                if (arAnimation.JustStopped && !ArBehaviour.IsEmpty(arAnimation.FollowedBy))
+                if (arAnimation.JustStopped && !ArBehaviourPosition.IsEmpty(arAnimation.FollowedBy))
                 {
                     var animationsToFollow = arAnimation.FollowedBy.Split(',');
                     if (animationsToFollow != null)
                     {
                         foreach (var animationToFollow in animationsToFollow)
                         {
-                            if (!ArBehaviour.IsEmpty(animationToFollow))
+                            if (!ArBehaviourPosition.IsEmpty(animationToFollow))
                             {
                                 var animationName = animationToFollow.Trim();
                                 foreach (var arAnimationToFollow in animations.Where(x => animationName.Equals(x.Name)))

@@ -5,18 +5,6 @@ using System.Collections.Generic;
 
 namespace com.arpoise.arpoiseapp
 {
-    [System.Serializable]
-    public class Item
-    {
-        public string itemName;
-        public string layerName;
-        public int distance;
-        public string url;
-        public string line2;
-        public string line3;
-        public Sprite icon;
-    }
-
     public class ArLayerScrollList 
     {
         private Transform _contentPanel;
@@ -28,7 +16,7 @@ namespace com.arpoise.arpoiseapp
             _buttonObjectPool = buttonObjectPool;
         }
 
-        public void AddButtons(List<Item> itemList, ArBehaviour behaviour)
+        public void AddButtons(List<ArItem> itemList, ArBehaviour behaviour)
         {
             if (itemList != null)
             {

@@ -13,7 +13,7 @@ namespace com.arpoise.arpoiseapp
         public Text line3Label;
         public Image iconImage;
 
-        private Item _item;
+        private ArItem _item;
         private ArBehaviour _behaviour;
 
         private void Start()
@@ -21,7 +21,7 @@ namespace com.arpoise.arpoiseapp
             button.onClick.AddListener(HandleClick);
         }
 
-        public void Setup(Item currentItem, ArBehaviour behaviour)
+        public void Setup(ArItem currentItem, ArBehaviour behaviour)
         {
             _item = currentItem;
             nameLabel.text = _item.itemName;

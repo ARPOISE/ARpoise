@@ -101,6 +101,8 @@ namespace com.arpoise.arpoiseapp
         public string relativeLocation = string.Empty;
         public string icon = string.Empty;
         public float size = 0;
+        public string triggerImageURL = string.Empty;
+        public float triggerImageWidth = 0;
     }
 
     [Serializable]
@@ -197,6 +199,7 @@ namespace com.arpoise.arpoiseapp
         public int areaWidth = 0;
         public int visibilityRange = 1500;
         public bool applyKalmanFilter = true;
+        public bool isDefaultLayer = false;
         public bool showMenuButton = true;
 
         public PoiAction[] actions = new PoiAction[0];
