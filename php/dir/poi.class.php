@@ -383,6 +383,8 @@ abstract class POI extends Arrayable {
 	public $attribution = NULL;
 	/** @var int Distance in meters between the user and this POI */
 	public $distance = NULL;
+	/** @var int Visibility Range in meters of this POI */
+	public $visibilityRange = 1500;
 	/** @var string Identifier for this POI */
 	public $id = NULL;
 	/** @var string URL of an image to show for this POI */
@@ -450,6 +452,7 @@ abstract class POI extends Arrayable {
 							case "dimension":
 							case "type":
 							case "alt":
+							case "visibilityRange":
 								$value = (int)$source[$propertyName];
 								break;
 							case "lat":
@@ -493,6 +496,7 @@ abstract class POI extends Arrayable {
 							case "dimension":
 							case "type":
 							case "alt":
+							case "visibilityRange":
 								$value = (int)$source->$propertyName;
 								break;
 							case "relativeAlt":

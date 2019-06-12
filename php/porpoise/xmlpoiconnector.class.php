@@ -106,6 +106,7 @@ class XMLPOIConnector extends POIConnector
                     case "showMenuButton":
                     case "fullRefresh":
                     case "applyKalmanFilter":
+                    case "isDefaultLayer":
                         $result->$name = (bool) ((string) $childNode);
                         break;
                     case "showMessage":
@@ -246,6 +247,7 @@ class XMLPOIConnector extends POIConnector
                         case "dimension":
                         case "type":
                         case "alt":
+                        case "visibilityRange":
                             $value = (int) $child;
                             break;
                         case "lat":
@@ -288,6 +290,16 @@ class XMLPOIConnector extends POIConnector
                             $poi->distance = GeoUtil::getGreatCircleDistance(deg2rad($lat), deg2rad($lon), deg2rad($poi->lat), deg2rad($poi->lon));
                             // filter passed, see if radius allows for inclusion
                             if ($poi->distance < $radius + $accuracy) {
+                                $result[] = $poi;
+                            }
+                            else if ($poi->visibilityRange > 0 && $poi->visibilityRange >= $poi->distance) {
+                                $result[] = $poi;
+                            }
+                        }
+                        else if ($poi->visibilityRange > 0 && $poi->visibilityRange >= $radius + $accuracy) {
+                            $poi->distance = GeoUtil::getGreatCircleDistance(deg2rad($lat), deg2rad($lon), deg2rad($poi->lat), deg2rad($poi->lon));
+                            
+                            if ($poi->visibilityRange >= $poi->distance){
                                 $result[] = $poi;
                             }
                         }
@@ -467,6 +479,7 @@ class XMLPOIConnector extends POIConnector
             "showMenuButton",
             "fullRefresh",
             "applyKalmanFilter",
+            "isDefaultLayer",
             "showMessage",
             "redirectionLayer",
             "redirectionUrl",
@@ -611,7 +624,9 @@ class XMLPOIConnector extends POIConnector
                     "poiLayerName",
                     "relativeLocation",
                     "icon",
-                    "size"
+                    "size",
+                    "triggerImageURL",
+                    "triggerImageWidth"
                 ) as $elementName) {
                     $objectElement->addChild($elementName, str_replace("&", "&amp;", $poi->object->$elementName));
                 }

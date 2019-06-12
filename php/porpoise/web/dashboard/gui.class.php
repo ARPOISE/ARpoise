@@ -270,6 +270,7 @@ HTML;
         $result .= sprintf("<tr><td>Area width in meters</td><td><input type=\"text\" name=\"areaWidth\" value=\"%s\"></td></tr>\n", $layerProperties->areaWidth);
         $result .= sprintf("<tr><td>Show menu button</td><td>%s</td></tr>\n", self::createCheckbox("showMenuButton", $layerProperties->showMenuButton));
         $result .= sprintf("<tr><td>Apply Kalman filter</td><td>%s</td></tr>\n", self::createCheckbox("applyKalmanFilter", $layerProperties->applyKalmanFilter));
+        $result .= sprintf("<tr><td>Is a default layer</td><td>%s</td></tr>\n", self::createCheckbox("isDefaultLayer", $layerProperties->isDefaultLayer));
         $result .= sprintf("<tr><td>No pois message</td><td><input type=\"text\" name=\"noPoisMessage\" value=\"%s\"></td></tr>\n", $layerProperties->noPoisMessage);
 
         // $result .= sprintf("<tr><td>Refresh distance</td><td><input type=\"text\" name=\"refreshDistance\" value=\"%s\"></td></tr>\n", $layerProperties->refreshDistance);
@@ -351,7 +352,8 @@ HTML;
             $result .= sprintf("<input type=\"hidden\" name=\"showBiwOnClick\" value=\"%s\" > \n", $poi->showBiwOnClick);
 
             $result .= sprintf("<input type=\"hidden\" name=\"isVisible\" value=\"%s\" > \n", $poi->isVisible);
-
+            $result .= sprintf("<input type=\"hidden\" name=\"visibilityRange\" value=\"%s\" > \n", $poi->visibilityRange);
+            
             $result .= sprintf("<input type=\"hidden\" name=\"dimension\" value=\"%s\" > \n", $poi->dimension);
             $result .= sprintf("<input type=\"hidden\" name=\"alt\" value=\"%s\" > \n", $poi->alt);
             $result .= sprintf("<input type=\"hidden\" name=\"relativeAlt\" value=\"%s\" > \n", $poi->relativeAlt);
@@ -365,7 +367,8 @@ HTML;
                 $result .= sprintf("<input type=\"hidden\" name=\"scale\" value=\"%s\" > \n", $poi->transform->scale);
                 $result .= sprintf("<input type=\"hidden\" name=\"angle\" value=\"%s\" > \n", $poi->transform->angle);
                 $result .= sprintf("<input type=\"hidden\" name=\"rel\" value=\"%s\" > \n", $poi->transform->rel);
-            }
+                $result .= sprintf("<input type=\"hidden\" name=\"triggerImageURL\" value=\"%s\" > \n", $poi->object->triggerImageURL);
+                $result .= sprintf("<input type=\"hidden\" name=\"triggerImageWidth\" value=\"%s\" > \n", $poi->object->triggerImageWidth);            }
             foreach ($poi->actions as $key => $action) {
                 $result .= sprintf("%s\n", self::createHiddenActionSubtable($key, $action));
             }
@@ -477,10 +480,11 @@ HTML;
         $result .= sprintf("<input type=\"text\" id=\"lon1\"name=\"lon\" value=\"%s\" size=\"12\"></td></tr>\n", $poi->lon);
 
         $result .= sprintf("<tr><td>Is visible</td><td>%s</td></tr>\n", self::createCheckbox("isVisible", $poi->isVisible));
-        //$result .= sprintf("<tr><td>Dimension</td><td><input type=\"text\" name=\"dimension\" value=\"%s\" size=\"2\"></td></tr>\n", $poi->dimension);
+        $result .= sprintf("<tr><td>Visibility in meters</td><td><input type=\"text\" name=\"visibilityRange\" value=\"%s\" size=\"12\"></td></tr>\n", $poi->visibilityRange);
+        
         $result .= sprintf("<tr><td>Absolute altitude</td><td><input type=\"text\" name=\"alt\" value=\"%s\" size=\"5\"></td></tr>\n", $poi->alt);
         $result .= sprintf("<tr><td>Relative altitude</td><td><input type=\"text\" name=\"relativeAlt\" value=\"%s\" size=\"5\"></td></tr>\n", $poi->relativeAlt);
-        //if ($poi->dimension > 1) {
+
             $result .= sprintf("<tr><td>URL for asset bundle</td><td><input type=\"text\" name=\"baseURL\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->object->baseURL);
             $result .= sprintf("<tr><td>Prefab name</td><td><input type=\"text\" name=\"full\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->object->full);
             $result .= sprintf("<tr><td>Layer name</td><td><input type=\"text\" name=\"poiLayerName\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->object->poiLayerName);
@@ -488,11 +492,12 @@ HTML;
             $result .= sprintf("<tr><td>Scaling factor</td><td><input type=\"text\" name=\"scale\" value=\"%s\" size=\"5\"></td></tr>\n", $poi->transform->scale);
             $result .= sprintf("<tr><td>Vertical rotation</td><td><input type=\"text\" name=\"angle\" value=\"%s\" size=\"5\"></td></tr>\n", $poi->transform->angle);
             $result .= sprintf("<tr><td>Relative angle</td><td>%s</td></tr>\n", self::createCheckbox("rel", $poi->transform->rel));
-        //}
+            $result .= sprintf("<tr><td>URL for trigger image</td><td><input type=\"text\" name=\"triggerImageURL\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->object->triggerImageURL);
+            $result .= sprintf("<tr><td>Width of trigger image</td><td><input type=\"text\" name=\"triggerImageWidth\" value=\"%s\" size=\"5\"></td></tr>\n", $poi->object->triggerImageWidth);
         foreach ($poi->actions as $key => $action) {
             $result .= sprintf("<tr><td>Action<br><button type=\"button\" onclick=\"GUI.removePOIAction(%s)\">Remove</button></td><td>%s</td></tr>\n", $key, self::createActionSubtable($key, $action));
         }
-        //$result .= sprintf("<tr><td colspan=\"2\"><button type=\"button\" onclick=\"GUI.addPOIAction(this)\">New action</button></td></tr>\n");
+        $result .= sprintf("<tr><td colspan=\"2\"><button type=\"button\" onclick=\"GUI.addPOIAction(this)\">New action</button></td></tr>\n");
         $index = 0;
         foreach ($poi->animations as $event => $animations) {
             foreach ($animations as $animation) {
@@ -522,17 +527,30 @@ HTML;
      */
     public static function createActionSubtable($index, Action $action, $layerAction = FALSE)
     {
+    //        if (! $layerAction) {
+    //            $result .= sprintf("<tr><td>Auto-trigger range</td><td><input type=\"text\" name=\"actions[%s][autoTriggerRange]\" value=\"%s\" size=\"2\"></td></tr>\n", $index, $action->autoTriggerRange);
+    //            $result .= sprintf("<tr><td>Auto-trigger only</td><td>%s</td></tr>\n", self::createCheckbox(sprintf("actions[%s][autoTriggerOnly]", $index), $action->autoTriggerOnly));
+    //        }
+    
         $result = "";
-        $result .= "<table class=\"action\">\n";
-        $result .= sprintf("<tr><td>Label</td><td><input type=\"text\" name=\"actions[%s][label]\" value=\"%s\"></td></tr>\n", $index, $action->label);
-        if (! $layerAction) {
-            $result .= sprintf("<tr><td>Auto-trigger range</td><td><input type=\"text\" name=\"actions[%s][autoTriggerRange]\" value=\"%s\" size=\"2\"></td></tr>\n", $index, $action->autoTriggerRange);
-            $result .= sprintf("<tr><td>Auto-trigger only</td><td>%s</td></tr>\n", self::createCheckbox(sprintf("actions[%s][autoTriggerOnly]", $index), $action->autoTriggerOnly));
+        
+        if (! $layerAction)
+        {
+            $result .= "<table class=\"action\">\n";
+            $result .= sprintf("<tr><td>Parameter</td><td><input type=\"text\" name=\"actions[%s][label]\" value=\"%s\"></td></tr>\n", $index, $action->label);
+            $result .= sprintf("<tr><td>Is Active</td><td>%s</td></tr>\n", self::createCheckbox(sprintf("actions[%s][showActivity]", $index), $action->showActivity));
+            $result .= sprintf("<tr><td>Value</td><td><input type=\"text\" name=\"actions[%s][activityMessage]\" value=\"%s\"></td></tr>\n", $index, $action->activityMessage);
+            $result .= "</table>\n";
         }
-        $result .= sprintf("<tr><td>Show information</td><td>%s</td></tr>\n", self::createCheckbox(sprintf("actions[%s][showActivity]", $index), $action->showActivity));
-        $result .= sprintf("<tr><td>Information message</td><td><input type=\"text\" name=\"actions[%s][activityMessage]\" value=\"%s\"></td></tr>\n", $index, $action->activityMessage);
-
-        $result .= "</table>\n";
+        else 
+        {
+            $result .= "<table class=\"action\">\n";
+            $result .= sprintf("<tr><td>Label</td><td><input type=\"text\" name=\"actions[%s][label]\" value=\"%s\"></td></tr>\n", $index, $action->label);
+            $result .= sprintf("<tr><td>Show information</td><td>%s</td></tr>\n", self::createCheckbox(sprintf("actions[%s][showActivity]", $index), $action->showActivity));
+            $result .= sprintf("<tr><td>Information message</td><td><input type=\"text\" name=\"actions[%s][activityMessage]\" value=\"%s\"></td></tr>\n", $index, $action->activityMessage);
+            $result .= "</table>\n";
+        }
+        
 
         return $result;
     }
@@ -811,10 +829,14 @@ HTML;
                 case "poiLayerName":
                 case "relativeLocation":
                 case "icon":
+                case "triggerImageURL":
                     $result->object->$key = (string) $request[$key];
                     break;
                 case "size":
                     $result->object->$key = (int) $request[$key];
+                    break;
+                case "triggerImageWidth":
+                    $result->object->$key = (float) $request[$key];
                     break;
                 case "angle":
                     $result->transform->$key = (int) $request[$key];
@@ -875,6 +897,7 @@ HTML;
                 case "showMenuButton":
                 case "fullRefresh":
                 case "applyKalmanFilter":
+                case "isDefaultLayer":
                     $result->$name = (bool) (string) $value;
                     break;
                 case "actions":

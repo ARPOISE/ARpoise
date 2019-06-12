@@ -52,7 +52,8 @@ class LayarPOIServer {
 		"doNotIndex" => FALSE,
 		"showSmallBiw" => TRUE,
 		"showBiwOnClick" => TRUE,
-		"isVisible" => TRUE
+	    "isVisible" => TRUE,
+	    "visibilityRange" => 1500
 	);
 	protected $optionalResponseFieldsDefaults = array(
 		"bleachingValue" => 0,

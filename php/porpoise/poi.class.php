@@ -261,6 +261,10 @@ class POIObject extends Arrayable {
 	public $icon = NULL;
 	/** @var float Size of the object in meters, i.e. the length of the smallest cube that can contain the object */
 	public $size;
+	/** @var string URL of a trigger image for the poi */
+	public $triggerImageURL;
+	/** @var float width of the trigger image in real world meters */
+	public $triggerImageWidth;
 
 	/**
 	 * Constructor
@@ -272,6 +276,7 @@ class POIObject extends Arrayable {
 
 		if (is_array($source)) {
 			$this->baseURL = $source["baseURL"];
+			$this->triggerImageURL = $source["triggerImageURL"];
 			$this->full = $source["full"];
 			$this->poiLayerName = $source["poiLayerName"];
 			if (!empty($source["relativeLocation"])) {
@@ -281,14 +286,16 @@ class POIObject extends Arrayable {
 				$this->icon = $source["icon"];
 			}
 			$this->size = (float)$source["size"];
+			$this->triggerImageWidth = (float)$source["triggerImageWidth"];
 		} else {
-			foreach (array("baseURL", "full", "poiLayerName", "relativeLocation", "icon", "size") as $fieldName) {
+		    foreach (array("baseURL", "full", "poiLayerName", "relativeLocation", "icon", "size", "triggerImageURL", "triggerImageWidth") as $fieldName) {
 				switch ($fieldName) {
 				case "baseURL":
 				case "full":
 				case "poiLayerName":
 				case "relativeLocation":
 				case "icon":
+				case "triggerImageURL":
 					if (empty($source->$fieldName)) {
 						break;
 					}
@@ -297,6 +304,9 @@ class POIObject extends Arrayable {
 				case "size":
 					$this->size = (float)$source->size;
 					break;
+				case "triggerImageWidth":
+				    $this->triggerImageWidth = (float)$source->triggerImageWidth;
+				    break;
 				}
 			}
 		}
@@ -415,6 +425,8 @@ abstract class POI extends Arrayable {
 	public $attribution = NULL;
 	/** @var int Distance in meters between the user and this POI */
 	public $distance = NULL;
+	/** @var int Visibility Range in meters of this POI */
+	public $visibilityRange = 1500;
 	/** @var string Identifier for this POI */
 	public $id = NULL;
 	/** @var string URL of an image to show for this POI */
@@ -482,6 +494,7 @@ abstract class POI extends Arrayable {
 							case "dimension":
 							case "type":
 							case "alt":
+							case "visibilityRange":
 								$value = (int)$source[$propertyName];
 								break;
 							case "lat":
@@ -525,6 +538,7 @@ abstract class POI extends Arrayable {
 							case "dimension":
 							case "type":
 							case "alt":
+							case "visibilityRange":
 								$value = (int)$source->$propertyName;
 								break;
 							case "relativeAlt":

@@ -61,6 +61,9 @@ class LayarResponse
     /** @var bool Do apply the Kalman filter */
     public $applyKalmanFilter = TRUE;
 
+    /** @var bool Is the layer a default layer */
+    public $isDefaultLayer = FALSE;
+    
     /** @var string Redirect the client to this url */
     public $redirectionUrl = NULL;
     

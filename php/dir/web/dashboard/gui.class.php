@@ -324,6 +324,7 @@ HTML;
             $result .= sprintf("<input type=\"hidden\" name=\"line4\" value=\"%s\" > \n", $poi->line4);
             
             $result .= sprintf("<input type=\"hidden\" name=\"isVisible\" value=\"%s\" > \n", $poi->isVisible);
+            $result .= sprintf("<input type=\"hidden\" name=\"visibilityRange\" value=\"%s\" > \n", $poi->visibilityRange);
 
             $result .= sprintf("<input type=\"hidden\" name=\"baseURL\" value=\"%s\" > \n", $poi->object->baseURL);
 
@@ -421,9 +422,11 @@ HTML;
         $result .= sprintf("<tr><td>Layer Name</td><td><input type=\"text\" name=\"title\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->title);
 
         $result .= sprintf("<tr><td>Lat/Lon</td><td><input type=\"text\" id=\"lat1\" name=\"lat\" value=\"%s\" size=\"12\">\n", $poi->lat);
-        $result .= sprintf("<input type=\"text\" id=\"lon1\"name=\"lon\" value=\"%s\" size=\"12\"></td></tr>\n", $poi->lon);
+        $result .= sprintf("<input type=\"text\" id=\"lon1\" name=\"lon\" value=\"%s\" size=\"12\"></td></tr>\n", $poi->lon);
 
         $result .= sprintf("<tr><td>Is Visible</td><td>%s</td></tr>\n", self::createCheckbox("isVisible", $poi->isVisible));
+        $result .= sprintf("<tr><td>Visibility in meters</td><td><input type=\"text\" name=\"visibilityRange\" value=\"%s\" size=\"12\"></td></tr>\n", $poi->visibilityRange);
+        
         $result .= sprintf("<tr><td>Porpoise URL</td><td><input type=\"text\" name=\"baseURL\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->object->baseURL);
 
         $result .= sprintf("<tr><td>Layer Title</td><td><input type=\"text\" name=\"line1\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->line1);

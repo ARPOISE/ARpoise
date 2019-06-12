@@ -86,7 +86,8 @@ class LayarPOIServer
         "doNotIndex" => FALSE,
         "showSmallBiw" => TRUE,
         "showBiwOnClick" => TRUE,
-        "isVisible" => TRUE
+        "isVisible" => TRUE,
+        "visibilityRange" => 1500
     );
 
     protected $optionalResponseFieldsDefaults = array(
@@ -98,6 +99,7 @@ class LayarPOIServer
         "refreshDistance" => 100,
         "fullRefresh" => TRUE,
         "applyKalmanFilter" => TRUE,
+        "isDefaultLayer" => FALSE,
         "actions" => array(),
         "showMessage" => NULL,
         "redirectionLayer" => NULL,
