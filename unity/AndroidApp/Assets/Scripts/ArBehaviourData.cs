@@ -44,6 +44,14 @@ using GoogleARCore;
 
 namespace com.arpoise.arpoiseapp
 {
+    public class ArpoiseCertificateHandler : CertificateHandler
+    {
+        protected override bool ValidateCertificate(byte[] certificateData)
+        {
+            return true;
+        }
+    }
+
     public class RefreshRequest
     {
         public string url;
@@ -66,6 +74,9 @@ namespace com.arpoise.arpoiseapp
     {
         #region Globals
 
+        public static string ArvosApplicationName = "Arvos";
+        public static string ArpoiseApplicationName = "Arpoise";
+
         public GameObject SceneAnchor = null;
         public GameObject Wrapper = null;
         public GameObject InputPanel;
@@ -73,6 +84,7 @@ namespace com.arpoise.arpoiseapp
 
         #endregion
 
+        #region Protecteds
         protected bool HasTriggerImages = false;
         protected Dictionary<int, TriggerObject> TriggerObjects = new Dictionary<int, TriggerObject>();
 #if HAS_AR_CORE
@@ -93,20 +105,22 @@ namespace com.arpoise.arpoiseapp
         protected static readonly string ArpoiseDirectoryLayer = "Arpoise-Directory";
         protected static readonly string ArpoiseDirectoryUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
 #endif
+        #endregion
 
-        #region GetData
+        #region ArObjects
 
 #if HAS_AR_CORE
-        private string _clientApplicationName = "Arvos";
+        private string _clientApplicationName = ArvosApplicationName;
 #else
 #if HAS_AR_KIT
-        private string _clientApplicationName = "Arvos";
+        private string _clientApplicationName = ArvosApplicationName;
 #else
-        private string _clientApplicationName = "Arpoise";
+        private readonly string _clientApplicationName = ArpoiseApplicationName;
 #endif
 #endif
         private readonly Dictionary<string, List<ArLayer>> _innerLayers = new Dictionary<string, List<ArLayer>>();
         private readonly Dictionary<string, AssetBundle> _assetBundles = new Dictionary<string, AssetBundle>();
+        private readonly Dictionary<string, Texture2D> _triggerImages = new Dictionary<string, Texture2D>();
         private int _bleachingValue = -1;
 
         // Link ar object to ar object state or to parent object
@@ -139,6 +153,8 @@ namespace com.arpoise.arpoiseapp
             return null;
         }
 
+        private int _abEvolutionOfFishIndex = 0;
+
         // Create ar object for a pois and link it
         public string CreateArObject(
             ArObjectState arObjectState,
@@ -151,7 +167,16 @@ namespace com.arpoise.arpoiseapp
             )
         {
             gameObject = null;
-            if ("EvolutionOfFish".Equals(objectToAdd.name))
+            var objectName = objectToAdd.name;
+
+            // Create a copy of the object
+            objectToAdd = Instantiate(objectToAdd);
+            if (objectToAdd == null)
+            {
+                return "Instantiate(" + objectName + ") failed";
+            }
+
+            if ("EvolutionOfFish".Equals(objectName))
             {
                 var evolutionOfFish = objectToAdd.GetComponent<EvolutionOfFish>();
                 if (evolutionOfFish != null)
@@ -159,16 +184,23 @@ namespace com.arpoise.arpoiseapp
                     evolutionOfFish.ArCamera = ArCamera;
                 }
             }
+            else if ("AB_EvolutionOfFish".Equals(objectName))
+            {
+                var evolutionOfFish = objectToAdd.GetComponent<AbEvolutionOfFish>();
+                if (evolutionOfFish != null)
+                {
+                    evolutionOfFish.Index = _abEvolutionOfFishIndex++ % 2;
+                    evolutionOfFish.ArCamera = ArCamera;
+
+                    foreach (var action in poi.actions)
+                    {
+                        evolutionOfFish.SetParameter(action.showActivity, action.label, action.activityMessage);
+                    }
+                }
+            }
 
             // All objects are below the scene anchor or the parent
             var parentTransform = parentObjectTransform;
-
-            // Create a copy of the object
-            objectToAdd = Instantiate(objectToAdd);
-            if (objectToAdd == null)
-            {
-                return "Instantiate(" + objectToAdd.name + ") failed";
-            }
 
             // Wrap the object into a wrapper, so it can be moved around when the device moves
             var wrapper = Instantiate(Wrapper);
@@ -417,35 +449,22 @@ namespace com.arpoise.arpoiseapp
                     return "Poi with id " + poiId + ", unknown game object: '" + objectName + "'";
                 }
 
-                if (poi.poiObject != null && !IsEmpty(poi.poiObject.triggerImageURL))
+                var triggerImageURL = poi.TriggerImageURL;
+                if (!IsEmpty(triggerImageURL))
                 {
                     try
                     {
-                        var url = poi.poiObject.triggerImageURL;
                         Texture2D texture = null;
-
-                        var enumerator = LoadTexture(url);
-                        while (enumerator.MoveNext())
+                        if (!_triggerImages.TryGetValue(triggerImageURL, out texture) || texture == null)
                         {
-                            var value = enumerator.Current;
-                            if (value != null && value is Texture2D)
-                            {
-                                texture = (Texture2D)value;
-                                break;
-                            }
+                            return "?t " + triggerImageURL;
                         }
-
-                        if (texture == null)
-                        {
-                            return "?t " + url;
-                        }
-
-                        var width = poi.poiObject.triggerImageWidth;
 #if HAS_AR_CORE
+                        var width = poi.poiObject.triggerImageWidth;
                         var t = new TriggerObject
                         {
                             index = AugmentedImageDatabase.Count,
-                            triggerImageURL = url,
+                            triggerImageURL = triggerImageURL,
                             texture = texture,
                             width = width,
                             gameObject = objectToAdd,
@@ -453,13 +472,14 @@ namespace com.arpoise.arpoiseapp
                         };
                         TriggerObjects[t.index] = t;
 
-                        AugmentedImageDatabase.AddImage(url, texture, width);
+                        AugmentedImageDatabase.AddImage(triggerImageURL, texture, width);
 #endif
 #if HAS_AR_KIT
+                        var width = poi.poiObject.triggerImageWidth;
                         var t = new TriggerObject
                         {
                             index = TriggerObjects.Count,
-                            triggerImageURL = url,
+                            triggerImageURL = triggerImageURL,
                             texture = texture,
                             width = width,
                             gameObject = objectToAdd,
@@ -475,7 +495,7 @@ namespace com.arpoise.arpoiseapp
                 }
                 else
                 {
-                    GameObject gameObject;
+                    GameObject newObject;
                     var result = CreateArObject(
                         arObjectState,
                         objectToAdd,
@@ -483,7 +503,7 @@ namespace com.arpoise.arpoiseapp
                         parentObjectTransform,
                         poi,
                         poiId,
-                        out gameObject
+                        out newObject
                         );
                     if (!IsEmpty(result))
                     {
@@ -496,22 +516,6 @@ namespace com.arpoise.arpoiseapp
             return null;
         }
 
-        // For retrieving the textures
-        private IEnumerator LoadTexture(string url)
-        {
-            Texture2D result = null;
-            var texture = new Texture2D(4, 4, TextureFormat.RGBA32, false);
-            using (var www = new WWW(url))
-            {
-                while (!www.isDone)
-                {
-                    yield return new WaitForSeconds(.01f);
-                }
-                www.LoadImageIntoTexture(texture);
-                result = texture;
-            }
-            yield return result;
-        }
 
         // Create ar objects from layers
         private ArObjectState CreateArObjectState(List<ArObject> existingArObjects, List<ArLayer> layers)
@@ -672,16 +676,18 @@ namespace com.arpoise.arpoiseapp
             }
             return arObjectState;
         }
+        #endregion
 
+        #region GetData
         // A coroutine retrieving the objects
         protected override IEnumerator GetData()
         {
             var build = "rel";
             var os = "Android";
-            var bundle = "190310";
+            var bundle = "190702";
 #if UNITY_IOS
             os = "iOS";
-            bundle = "20190310";
+            bundle = "20" + bundle;
 #endif
 #if DEVEL
             build = "dev"
@@ -692,12 +698,19 @@ namespace com.arpoise.arpoiseapp
 
             bool setError = true;
 
+            while (OriginalLatitude == 0.0 && OriginalLongitude == 0.0)
+            {
+                // wait for the position to be determined
+                yield return new WaitForSeconds(.01f);
+            }
+
             while (IsEmpty(ErrorMessage))
             {
                 MenuEnabled = null;
                 count++;
 
                 var assetBundleUrls = new HashSet<string>();
+                var triggerImageUrls = new HashSet<string>();
 
                 float filteredLatitude = FilteredLatitude;
                 float filteredLongitude = FilteredLongitude;
@@ -707,11 +720,7 @@ namespace com.arpoise.arpoiseapp
                 var layers = new List<ArLayer>();
                 var nextPageKey = string.Empty;
 
-                Debug.Log("uri " + uri + " layerName " + layerName);
-                Debug.Log("filteredLatitude " + filteredLatitude + " filteredLongitude " + filteredLongitude);
-                Debug.Log("usedLatitude " + usedLatitude + " usedLongitude " + usedLongitude);
-
-#region Download all pages of the layer
+                #region Download all pages of the layer
                 for (; ; )
                 {
                     var url = uri + "?lang=en"
@@ -730,9 +739,13 @@ namespace com.arpoise.arpoiseapp
                         + "&build=" + build
                     ;
 
-                    Debug.Log("url " + url);
+                    //if (!url.StartsWith("https://"))
+                    //{
+                    //    url = "https://" + url;
+                    //}
 
                     var request = UnityWebRequest.Get(url);
+                    request.certificateHandler = new ArpoiseCertificateHandler();
                     request.timeout = 30;
                     yield return request.SendWebRequest();
 
@@ -770,7 +783,6 @@ namespace com.arpoise.arpoiseapp
                         }
                         yield break;
                     }
-
                     try
                     {
                         var layer = ArLayer.Create(text);
@@ -806,8 +818,9 @@ namespace com.arpoise.arpoiseapp
                         yield break;
                     }
                 }
-#endregion
+                #endregion
 
+                #region Handle the showMenuButton of the layers
                 if (InputPanel != null && !MenuEnabled.HasValue)
                 {
                     var inputPanel = InputPanel.GetComponent<InputPanel>();
@@ -824,8 +837,9 @@ namespace com.arpoise.arpoiseapp
                 {
                     MenuButton.SetActive(MenuEnabled.HasValue && MenuEnabled.Value);
                 }
+                #endregion
 
-#region Download the asset bundle for icons
+                #region Download the asset bundle for icons
                 var iconAssetBundleUrl = "www.arpoise.com/AB/arpoiseicons.ace";
                 assetBundleUrls.Add(iconAssetBundleUrl);
                 foreach (var url in assetBundleUrls)
@@ -849,8 +863,13 @@ namespace com.arpoise.arpoiseapp
                     {
                         assetBundleUrl = assetBundleUrl.Replace("\\", string.Empty);
                     }
-
-                    var request = UnityWebRequestAssetBundle.GetAssetBundle(assetBundleUrl, 0);
+                    var assetBundleUri = assetBundleUrl;
+                    //if (!assetBundleUri.StartsWith("https://"))
+                    //{
+                    //    assetBundleUri = "https://" + assetBundleUri;
+                    //}
+                    var request = UnityWebRequestAssetBundle.GetAssetBundle(assetBundleUri, 0);
+                    request.certificateHandler = new ArpoiseCertificateHandler();
                     request.timeout = 60;
                     yield return request.SendWebRequest();
 
@@ -903,9 +922,9 @@ namespace com.arpoise.arpoiseapp
                     }
                     _assetBundles[url] = assetBundle;
                 }
-#endregion
+                #endregion
 
-#region Handle lists of possible layers to show
+                #region Handle lists of possible layers to show
                 {
                     var itemList = new List<ArItem>();
                     foreach (var layer in layers.Where(x => x.hotspots != null))
@@ -944,7 +963,6 @@ namespace com.arpoise.arpoiseapp
                     if (itemList.Any())
                     {
                         // There are different layers to show
-
                         LayerItemList = itemList;
                         HandleMenuButtonClick();
 
@@ -975,8 +993,9 @@ namespace com.arpoise.arpoiseapp
                         continue;
                     }
                 }
-#endregion
+                #endregion
 
+                #region Download all inner layers
                 var innerLayers = new Dictionary<string, bool>();
                 foreach (var layer in layers.Where(x => x.hotspots != null))
                 {
@@ -986,7 +1005,6 @@ namespace com.arpoise.arpoiseapp
                     }
                 }
 
-#region Download all inner layers
                 foreach (var innerLayer in innerLayers.Keys)
                 {
                     if (_innerLayers.ContainsKey(innerLayer))
@@ -1022,7 +1040,12 @@ namespace com.arpoise.arpoiseapp
                         + "&build=" + build
                         ;
 
+                        //if (!url.StartsWith("https://"))
+                        //{
+                        //    url = "https://" + url;
+                        //}
                         var request = UnityWebRequest.Get(url);
+                        request.certificateHandler = new ArpoiseCertificateHandler();
                         request.timeout = 30;
                         yield return request.SendWebRequest();
 
@@ -1091,8 +1114,9 @@ namespace com.arpoise.arpoiseapp
                         }
                     }
                 }
-#endregion
+                #endregion
 
+                #region Download the asset bundles
                 foreach (var layer in layers.Where(x => x.hotspots != null))
                 {
                     assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
@@ -1106,7 +1130,6 @@ namespace com.arpoise.arpoiseapp
                     }
                 }
 
-#region Download the asset bundles
                 foreach (var url in assetBundleUrls)
                 {
                     if (_assetBundles.ContainsKey(url))
@@ -1128,8 +1151,13 @@ namespace com.arpoise.arpoiseapp
                     {
                         assetBundleUrl = assetBundleUrl.Replace("\\", string.Empty);
                     }
-
-                    var request = UnityWebRequestAssetBundle.GetAssetBundle(assetBundleUrl, 0);
+                    var assetBundleUri = assetBundleUrl;
+                    //if (!assetBundleUri.StartsWith("https://"))
+                    //{
+                    //    assetBundleUri = "https://" + assetBundleUri;
+                    //}
+                    var request = UnityWebRequestAssetBundle.GetAssetBundle(assetBundleUri, 0);
+                    request.certificateHandler = new ArpoiseCertificateHandler();
                     request.timeout = 60;
                     yield return request.SendWebRequest();
 
@@ -1182,11 +1210,84 @@ namespace com.arpoise.arpoiseapp
                     }
                     _assetBundles[url] = assetBundle;
                 }
-#endregion
+                #endregion
+
+                #region Download the trigger images
+                foreach (var layer in layers.Where(x => x.hotspots != null))
+                {
+                    triggerImageUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.TriggerImageURL)).Select(x => x.TriggerImageURL));
+                }
+
+                foreach (var layerList in _innerLayers.Values)
+                {
+                    foreach (var layer in layerList.Where(x => x.hotspots != null))
+                    {
+                        triggerImageUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.TriggerImageURL)).Select(x => x.TriggerImageURL));
+                    }
+                }
+
+                foreach (var url in triggerImageUrls)
+                {
+                    if (_triggerImages.ContainsKey(url))
+                    {
+                        continue;
+                    }
+                    var triggerImageUrl = url;
+                    while (triggerImageUrl.Contains('\\'))
+                    {
+                        triggerImageUrl = triggerImageUrl.Replace("\\", string.Empty);
+                    }
+                    var triggerImageUri = triggerImageUrl;
+                    //if (!triggerImageUri.StartsWith("https://"))
+                    //{
+                    //    triggerImageUri = "https://" + triggerImageUri;
+                    //}
+                    var request = UnityWebRequestTexture.GetTexture(triggerImageUri);
+                    request.certificateHandler = new ArpoiseCertificateHandler();
+                    request.timeout = 30;
+                    yield return request.SendWebRequest();
+
+                    maxWait = 3000;
+                    while (!(request.isNetworkError || request.isHttpError) && !request.isDone && maxWait > 0)
+                    {
+                        yield return new WaitForSeconds(.01f);
+                        maxWait--;
+                    }
+
+                    if (maxWait < 1)
+                    {
+                        if (setError)
+                        {
+                            ErrorMessage = "Image " + triggerImageUri + " contents didn't download in 30 seconds.";
+                        }
+                        yield break;
+                    }
+
+                    if (maxWait < 1 || request.isNetworkError || request.isHttpError)
+                    {
+                        if (setError)
+                        {
+                            ErrorMessage = "Image " + triggerImageUri + " contents download error: " + request.error;
+                        }
+                        yield break;
+                    }
+
+                    var texture = DownloadHandlerTexture.GetContent(request);
+                    if (texture == null)
+                    {
+                        if (setError)
+                        {
+                            ErrorMessage = "Image " + triggerImageUri + " contents download received empty texture.";
+                        }
+                        yield break;
+                    }
+                    _triggerImages[url] = texture;
+                }
+                #endregion
 
                 var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !IsEmpty(x));
                 SetHeaderActive(layerTitle);
-
+                
                 List<ArObject> existingArObjects = null;
                 var arObjectState = ArObjectState;
                 if (arObjectState != null)
@@ -1208,7 +1309,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         yield break;
                     }
-                    if (!arObjectState.ArObjects.Any())
+                    if (!arObjectState.ArObjects.Any() && !ArvosApplicationName.Equals(_clientApplicationName))
                     {
                         var message = layers.Select(x => x.noPoisMessage).FirstOrDefault(x => !IsEmpty(x));
                         if (IsEmpty(message))
@@ -1267,7 +1368,9 @@ namespace com.arpoise.arpoiseapp
             }
             yield break;
         }
+        #endregion
 
+        #region Misc
         public virtual void HandleMenuButtonClick()
         {
         }
@@ -1301,6 +1404,6 @@ namespace com.arpoise.arpoiseapp
             }
         }
 #endif
-#endregion
+        #endregion
     }
 }

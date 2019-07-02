@@ -38,17 +38,19 @@ namespace com.arpoise.arpoiseapp
 {
     public class ArFish : MonoBehaviour
     {
-        public float SpeedMult = 1;
-
         private ArFlock _flock;
         public ArFlock Flock { set { _flock = value; } }
 
         private float _speed = 0.001f;
-        private readonly float _rotationSpeed = 4.0f;
 
         private void Start()
         {
-            _speed = Random.Range(.7f, 2);
+            var flock = _flock;
+            if (flock == null)
+            {
+                return;
+            }
+            _speed = Random.Range(flock.MinimumSpeed, flock.MaximumSpeed);
         }
 
         private void Update()
@@ -75,17 +77,17 @@ namespace com.arpoise.arpoiseapp
                 var direction = flock.transform.position - transform.position;
                 transform.rotation = Quaternion.Slerp(transform.rotation,
                                                       Quaternion.LookRotation(direction),
-                                                      _rotationSpeed * Time.deltaTime);
-                _speed = Random.Range(.7f, 2) * SpeedMult;
+                                                      _flock.RotationSpeed * Time.deltaTime);
+                _speed = Random.Range(flock.MinimumSpeed, flock.MaximumSpeed) * _flock.SpeedFactor;
             }
             else
             {
-                if (Random.Range(0, 5) < 1)
+                if (Random.Range(0, 100) < _flock.ApplyRulesPercentage)
                 {
                     ApplyRules(flock, allFish);
                 }
             }
-            transform.Translate(0, 0, Time.deltaTime * _speed * SpeedMult);
+            transform.Translate(0, 0, Time.deltaTime * _speed * _flock.SpeedFactor);
         }
 
         private void ApplyRules(ArFlock flock, GameObject[] allFish)
@@ -112,8 +114,8 @@ namespace com.arpoise.arpoiseapp
                             avoidDirection = avoidDirection + (transform.position - fish.transform.position);
                         }
 
-                        var anotherFlock = fish.GetComponent<ArFish>();
-                        groupSpeed = groupSpeed + anotherFlock._speed;
+                        var otherFiscg = fish.GetComponent<ArFish>();
+                        groupSpeed += otherFiscg._speed;
                     }
                 }
             }
@@ -121,14 +123,14 @@ namespace com.arpoise.arpoiseapp
             if (groupSize > 0)
             {
                 centerDirection = centerDirection / groupSize + (flock.GoalPosition - transform.position);
-                _speed = groupSpeed / groupSize * SpeedMult;
+                _speed = groupSpeed / groupSize * _flock.SpeedFactor;
 
                 var direction = (centerDirection + avoidDirection) - transform.position;
                 if (direction != Vector3.zero)
                 {
                     transform.rotation = Quaternion.Slerp(transform.rotation,
                                                           Quaternion.LookRotation(direction),
-                                                          _rotationSpeed * Time.deltaTime);
+                                                          _flock.RotationSpeed * Time.deltaTime);
                 }
             }
         }

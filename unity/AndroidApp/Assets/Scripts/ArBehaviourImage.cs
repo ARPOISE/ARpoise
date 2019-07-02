@@ -84,11 +84,10 @@ namespace com.arpoise.arpoiseapp
 #endif
             // Start GetPosition() coroutine 
             StartCoroutine("GetPosition");
+            // Start GetData() function 
+            StartCoroutine("GetData");
         }
 
-        /// <summary>
-        /// The Unity Update method.
-        /// </summary>
         protected virtual void Update()
         {
             // Set any error text onto the canvas

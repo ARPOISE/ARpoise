@@ -1,4 +1,33 @@
-﻿using com.arpoise.arpoiseapp;
+﻿/*
+EvolutionOfFish.cs - Gameplay of initial version of Evolution of Fish for Arpoise.
+
+Copyright (C) 2019, Tamiko Thiel and Peter Graf - All Rights Reserved
+
+ARPOISE - Augmented Reality Point Of Interest Service 
+
+This file is part of Arpoise.
+
+    Arpoise is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Arpoise is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Arpoise.  If not, see <https://www.gnu.org/licenses/>.
+
+For more information on 
+
+Tamiko Thiel, see www.TamikoThiel.com/
+Peter Graf, see www.mission-base.com/peter/
+Arpoise, see www.Arpoise.com/
+
+*/
+using com.arpoise.arpoiseapp;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,6 +47,12 @@ public class EvolutionOfFish : ArFlock
     protected new void Start()
     {
         base.Start();
+    }
+
+    private bool _first = true;
+    private void First()
+    {
+        _first = false;
 
         SwimLimits = new Vector3(12, 12, 12);
 
@@ -27,24 +62,28 @@ public class EvolutionOfFish : ArFlock
             var pos = transform.position + new Vector3(Random.Range(-SwimLimits.x, SwimLimits.x),
                                                        Random.Range(-SwimLimits.y, SwimLimits.y),
                                                        Random.Range(-SwimLimits.z, SwimLimits.z));
+            GameObject fish;
             switch (i % 5)
             {
                 case 1:
-                    allFish[i] = Instantiate(FishPrefab1, pos, Quaternion.identity);
+                    fish = Instantiate(FishPrefab1, pos, Quaternion.identity);
                     break;
                 case 2:
-                    allFish[i] = Instantiate(FishPrefab2, pos, Quaternion.identity);
+                    fish = Instantiate(FishPrefab2, pos, Quaternion.identity);
                     break;
                 case 3:
-                    allFish[i] = Instantiate(FishPrefab3, pos, Quaternion.identity);
+                    fish = Instantiate(FishPrefab3, pos, Quaternion.identity);
                     break;
                 case 4:
-                    allFish[i] = Instantiate(FishPrefab4, pos, Quaternion.identity);
+                    fish = Instantiate(FishPrefab4, pos, Quaternion.identity);
                     break;
                 default:
-                    allFish[i] = Instantiate(FishPrefab0, pos, Quaternion.identity);
+                    fish = Instantiate(FishPrefab0, pos, Quaternion.identity);
                     break;
             }
+            // put the fish below the EOF-GO, so it gets deleted if the GO gets deleted
+            fish.transform.parent = transform;
+            allFish[i] = fish;
             allFish[i].GetComponent<ArFish>().Flock = this;
         }
         AllFish = allFish;
@@ -127,6 +166,15 @@ public class EvolutionOfFish : ArFlock
     protected new void Update()
     {
         base.Update();
+
+        if (ArCamera == null)
+        {
+            return;
+        }
+        if (_first)
+        {
+            First();
+        }
 
         _garbageDistance += .001f;
 

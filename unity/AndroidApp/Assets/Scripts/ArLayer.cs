@@ -149,6 +149,19 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
+        public string TriggerImageURL
+        {
+            get
+            {
+                string triggerImageURL = poiObject != null ? poiObject.triggerImageURL : null;
+                if (triggerImageURL != null)
+                {
+                    triggerImageURL = triggerImageURL.Trim();
+                }
+                return triggerImageURL;
+            }
+        }
+
         public string GameObjectName
         {
             get

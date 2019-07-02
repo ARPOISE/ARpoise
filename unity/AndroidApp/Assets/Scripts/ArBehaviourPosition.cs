@@ -32,13 +32,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
-#if HAS_AR_CORE
-#else
-#if HAS_AR_KIT
-#else
-using Vuforia;
-#endif
-#endif
+
 namespace com.arpoise.arpoiseapp
 {
     public class ArBehaviourPosition : MonoBehaviour
@@ -47,10 +41,12 @@ namespace com.arpoise.arpoiseapp
 
         public GameObject ArCamera = null;
 
-        #endregion
-
         public ArObjectState ArObjectState { get; protected set; }
         public string ErrorMessage { get; set; }
+
+        #endregion
+
+        #region Protecteds
 
         protected int AreaSize = 0;
         protected int AreaWidth = 0;
@@ -100,8 +96,9 @@ namespace com.arpoise.arpoiseapp
                 return FilteredLongitude;
             }
         }
+        #endregion
 
-        #region GetPosition
+        #region PlaceArObjects
 
         private float _latitudeHandled = 0;
         private float _longitudeHandled = 0;
@@ -207,6 +204,136 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
+        #endregion
+        
+        #region GetPosition
+
+        private LocationService _locationService = null;
+
+        // A Coroutine for retrieving the current location
+        //
+        protected IEnumerator GetPosition()
+        {
+#if UNITY_EDITOR
+            // If in editor mode, set a fixed initial location and forget about the location service
+            //
+            FilteredLatitude = OriginalLatitude = 48.158464f;
+            FilteredLongitude = OriginalLongitude = 11.578708f;
+
+            Debug.Log("UNITY_EDITOR fixed location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
+
+            while (FilteredLatitude <= 90)
+            {
+                yield return new WaitForSeconds(3600f);
+            }
+            // End of editor mode
+#endif
+#if HAS_AR_CORE
+            // If it is the Android ARCore app, set a fixed initial location and forget about the location service
+            //
+            FilteredLatitude = OriginalLatitude = 5f;
+            FilteredLongitude = OriginalLongitude = 5f;
+
+            Debug.Log("HAS_AR_CORE fixed location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
+
+            while (FilteredLatitude <= 90)
+            {
+                yield return new WaitForSeconds(3600f);
+            }
+            // End of Android ARCore app
+#endif
+            int nFails = 0;
+            bool doInitialize = true;
+            while (IsEmpty(ErrorMessage))
+            {
+                if (doInitialize)
+                {
+                    doInitialize = false;
+                    Input.compass.enabled = true;
+
+                    if (_locationService == null)
+                    {
+                        _locationService = new LocationService();
+                        if (!_locationService.isEnabledByUser)
+                        {
+                            ErrorMessage = "Please enable the location service for the ARpoise application.";
+                            yield break;
+                        }
+                    }
+
+                    Input.location.Start(.1f, .1f);
+                    yield return new WaitForSeconds(.2f);
+
+                    int maxWait = 3000;
+                    while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
+                    {
+                        yield return new WaitForSeconds(.01f);
+                        maxWait--;
+                    }
+
+                    if (maxWait < 1)
+                    {
+                        ErrorMessage = "Location service didn't initialize in 30 seconds.";
+                        yield break;
+                    }
+
+                    if (Input.location.status == LocationServiceStatus.Failed)
+                    {
+                        if (++nFails > 10)
+                        {
+                            ErrorMessage = "Please enable the location service for the ARpoise app.";
+                            yield break;
+                        }
+                        Input.location.Stop();
+                        doInitialize = true;
+                        continue;
+                    }
+
+                    FilteredLatitude = OriginalLatitude = Input.location.lastData.latitude;
+                    FilteredLongitude = OriginalLongitude = Input.location.lastData.longitude;
+
+                    InitialDeviceOrientation = Input.deviceOrientation;
+                }
+
+                // For the first N seconds we remember the initial camera heading
+                if (CameraIsInitializing && StartTicks > 0 && DateTime.Now.Ticks > StartTicks + 20000000)
+                {
+                    CameraIsInitializing = false;
+                }
+                CurrentHeading = Input.compass.trueHeading;
+
+                if (LocationLatitude != Input.location.lastData.latitude
+                    || LocationLongitude != Input.location.lastData.longitude
+                    || LocationTimestamp != Input.location.lastData.timestamp
+                    || LocationHorizontalAccuracy != Input.location.lastData.horizontalAccuracy
+                )
+                {
+                    LocationLatitude = Input.location.lastData.latitude;
+                    LocationLongitude = Input.location.lastData.longitude;
+                    LocationTimestamp = Input.location.lastData.timestamp;
+                    LocationHorizontalAccuracy = Input.location.lastData.horizontalAccuracy;
+
+                    KalmanFilter(LocationLatitude, LocationLongitude, LocationHorizontalAccuracy, (long)(1000L * LocationTimestamp));
+                }
+
+                var arObjectState = ArObjectState;
+                if (arObjectState != null)
+                {
+                    PlaceArObjects(arObjectState);
+                }
+                yield return new WaitForSeconds(.01f);
+            }
+            yield break;
+        }
+        #endregion
+
+        #region Misc
+        protected virtual IEnumerator GetData()
+        {
+            ErrorMessage = "ArBehaviourPosition.GetData needs to be overridden";
+            yield break;
+        }
+
         // Calculates the distance between two sets of coordinates, taking into account the curvature of the earth
         protected float CalculateDistance(float lat1, float lon1, float lat2, float lon2)
         {
@@ -275,138 +402,6 @@ namespace com.arpoise.arpoiseapp
         {
             return s == null || string.IsNullOrEmpty(s.Trim());
         }
-
-        private LocationService _locationService = null;
-
-        // A Coroutine for retrieving the current location
-        //
-        protected IEnumerator GetPosition()
-        {
-#if UNITY_EDITOR
-            // If in editor mode, set a fixed initial location and forget about the location service
-            //
-            FilteredLatitude = OriginalLatitude = 48.158464f;
-            FilteredLongitude = OriginalLongitude = 11.578708f;
-
-            Debug.Log("UNITY_EDITOR fixed location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
-
-            // Start GetData() function 
-            StartCoroutine("GetData");
-
-            while (FilteredLatitude <= 90)
-            {
-                yield return new WaitForSeconds(3600f);
-            }
-            // End of editor mode
-#endif
-#if HAS_AR_CORE
-            // If it is the Android ARCore app, set a fixed initial location and forget about the location service
-            //
-            FilteredLatitude = OriginalLatitude = 48.158464f;
-            FilteredLongitude = OriginalLongitude = 11.578708f;
-
-            Debug.Log("UNITY_EDITOR fixed location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
-
-            // Start GetData() function 
-            StartCoroutine("GetData");
-
-            while (FilteredLatitude <= 90)
-            {
-                yield return new WaitForSeconds(3600f);
-            }
-            // End of Android ARCore app
-#endif
-            bool doInitialize = true;
-            while (IsEmpty(ErrorMessage))
-            {
-                if (doInitialize)
-                {
-                    doInitialize = false;
-                    Input.compass.enabled = true;
-
-                    if (_locationService == null)
-                    {
-                        _locationService = new LocationService();
-                        if (!_locationService.isEnabledByUser)
-                        {
-                            ErrorMessage = "Please enable the location service for the ARpoise application.";
-                            yield break;
-                        }
-                    }
-
-                    Input.location.Start(.1f, .1f);
-
-                    int maxWait = 3000;
-                    while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
-                    {
-                        yield return new WaitForSeconds(.01f);
-                        maxWait--;
-                    }
-
-                    if (maxWait < 1)
-                    {
-                        ErrorMessage = "Location service didn't initialize in 30 seconds.";
-                        yield break;
-                    }
-
-                    if (Input.location.status == LocationServiceStatus.Failed)
-                    {
-                        ErrorMessage = "Unable to determine device location.";
-                        yield break;
-                    }
-
-                    FilteredLatitude = OriginalLatitude = Input.location.lastData.latitude;
-                    FilteredLongitude = OriginalLongitude = Input.location.lastData.longitude;
-
-                    InitialDeviceOrientation = Input.deviceOrientation;
-#if HAS_AR_CORE
-#else
-#if HAS_AR_KIT
-#else
-                    ArCamera.GetComponent<VuforiaBehaviour>().enabled = true;
-                    VuforiaRuntime.Instance.InitVuforia();
-#endif
-#endif
-                    // Start GetData() function 
-                    StartCoroutine("GetData");
-                }
-
-                // For the first N seconds we remember the initial camera heading
-                if (CameraIsInitializing && StartTicks > 0 && DateTime.Now.Ticks > StartTicks + 20000000)
-                {
-                    CameraIsInitializing = false;
-                }
-                CurrentHeading = Input.compass.trueHeading;
-
-                if (LocationLatitude != Input.location.lastData.latitude
-                    || LocationLongitude != Input.location.lastData.longitude
-                    || LocationTimestamp != Input.location.lastData.timestamp
-                    || LocationHorizontalAccuracy != Input.location.lastData.horizontalAccuracy
-                )
-                {
-                    LocationLatitude = Input.location.lastData.latitude;
-                    LocationLongitude = Input.location.lastData.longitude;
-                    LocationTimestamp = Input.location.lastData.timestamp;
-                    LocationHorizontalAccuracy = Input.location.lastData.horizontalAccuracy;
-
-                    KalmanFilter(LocationLatitude, LocationLongitude, LocationHorizontalAccuracy, (long)(1000L * LocationTimestamp));
-                }
-
-                var arObjectState = ArObjectState;
-                if (arObjectState != null)
-                {
-                    PlaceArObjects(arObjectState);
-                }
-                yield return new WaitForSeconds(.01f);
-            }
-            yield break;
-        }
         #endregion
-
-        protected virtual IEnumerator GetData()
-        {
-            ErrorMessage = "ArBehaviourPosition.GetData needs to be overridden";
-            yield break;
-        }
     }
 }

@@ -53,8 +53,9 @@ using UnityEngine.XR.iOS;
 #endif
 public class ArKitAnchorManager : MonoBehaviour
 {
+#if HAS_AR_KIT
     private List<GameObject> _gameObjects = new List<GameObject>();
-
+#endif
     public Dictionary<int, TriggerObject> TriggerObjects { get; set; }
     public ArBehaviourImage ArBehaviour { get; set; }
 

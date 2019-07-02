@@ -33,6 +33,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+#if HAS_AR_CORE
+#else
+#if HAS_AR_KIT
+#else
+using Vuforia;
+#endif
+#endif
 
 namespace com.arpoise.arpoiseapp
 {
@@ -197,8 +204,18 @@ namespace com.arpoise.arpoiseapp
             FixedDeviceLatitude = inputPanel.GetLatitude();
             FixedDeviceLongitude = inputPanel.GetLongitude();
 
+#if HAS_AR_CORE
+#else
+#if HAS_AR_KIT
+#else
+            ArCamera.GetComponent<VuforiaBehaviour>().enabled = true;
+            VuforiaRuntime.Instance.InitVuforia();
+#endif
+#endif
             // Start GetPosition() coroutine 
             StartCoroutine("GetPosition");
+            // Start GetData() function 
+            StartCoroutine("GetData");
         }
 
         private GameObject FindGameObjectWithTag(string gameObjectTag)
@@ -405,22 +422,30 @@ namespace com.arpoise.arpoiseapp
                     return;
                 }
 
+                var firstArObject = arObjectState.ArObjects.FirstOrDefault();
                 InfoText.GetComponent<Text>().text =
                     ""
                     //+ "B " + _bleachingValue
                     //+ "CLT " + (_locationTimestamp).ToString("F3")
                     //+ " CA " + (_locationLatitude).ToString("F6")
                     //+ " A " + (_locationHorizontalAccuracy).ToString("F6")
-                    + " LA " + (UsedLatitude).ToString("F6")
+                    + "LA " + (UsedLatitude).ToString("F6")
                     //+ " CO " + (_locationLongitude).ToString("F6")
                     + " LO " + (UsedLongitude).ToString("F6")
                     //+ " AS " + _areaSize
                     //+ " AV " + AnimationValue.ToString("F3")
+                    //+ " F " + DisplayAnimationValueForward.ToString("F1")
+                    //+ " R " + DisplayAnimationValueRight.ToString("F1")
+                    //+ " % " + DisplayPercentage.ToString("F1")
+                    //+ " Z " + DisplayGoalPosition.z.ToString("F1")
+                    //+ " X " + DisplayGoalPosition.x.ToString("F1")
+                    //+ " Y " + DisplayGoalPosition.y.ToString("F1")
                     //+ " Z " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).z.ToString("F1")
                     //+ " X " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).x.ToString("F1")
                     //+ " Y " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).y.ToString("F1")
-                    //+ " LA " + (LastObject != null ? LastObject.Latitude : 0).ToString("F6")
-                    //+ " LO " + (LastObject != null ? LastObject.Longitude : 0).ToString("F6")
+                    //+ " OH " + (firstArObject != null ? firstArObject.Latitude : 0).ToString("F6")
+                    //+ " OL " + (firstArObject != null ? firstArObject.Longitude : 0).ToString("F6")
+                    + " D " + (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, firstArObject.Longitude) : 0).ToString("F1")
                     + " F " + _framesPerSecond
                     //+ " C " + _cameraTransform.eulerAngles.y.ToString("F")
                     //+ " IC " + _initialCameraAngle.ToString("F")
@@ -436,6 +461,11 @@ namespace com.arpoise.arpoiseapp
                     ;
             }
         }
+
+        public static Vector3 DisplayGoalPosition;
+        public static float DisplayAnimationValueForward;
+        public static float DisplayAnimationValueRight;
+        public static float DisplayPercentage;
 
         #endregion
     }
