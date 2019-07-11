@@ -1,5 +1,5 @@
 ﻿/*
-ArBehaviour.cs - MonoBehaviour for Arpoise, data handling.
+ArBehaviourData.cs - MonoBehaviour for Arpoise, data handling.
 
 Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 
@@ -72,19 +72,19 @@ namespace com.arpoise.arpoiseapp
 
     public class ArBehaviourData : ArBehaviourPosition
     {
-        #region Globals
-
         public static string ArvosApplicationName = "Arvos";
         public static string ArpoiseApplicationName = "Arpoise";
+
+        #region Globals
 
         public GameObject SceneAnchor = null;
         public GameObject Wrapper = null;
         public GameObject InputPanel;
         public GameObject MenuButton = null;
-
         #endregion
 
         #region Protecteds
+
         protected bool HasTriggerImages = false;
         protected Dictionary<int, TriggerObject> TriggerObjects = new Dictionary<int, TriggerObject>();
 #if HAS_AR_CORE
@@ -155,7 +155,7 @@ namespace com.arpoise.arpoiseapp
 
         private int _abEvolutionOfFishIndex = 0;
 
-        // Create ar object for a pois and link it
+        // Create ar object for a poi and link it
         public string CreateArObject(
             ArObjectState arObjectState,
             GameObject objectToAdd,
@@ -206,7 +206,7 @@ namespace com.arpoise.arpoiseapp
             var wrapper = Instantiate(Wrapper);
             if (wrapper == null)
             {
-                return "Instantiate(_wrapper) failed";
+                return "Instantiate(Wrapper) failed";
             }
             gameObject = wrapper;
             wrapper.transform.parent = parentTransform;
@@ -216,7 +216,7 @@ namespace com.arpoise.arpoiseapp
             var scaleWrapper = Instantiate(Wrapper);
             if (scaleWrapper == null)
             {
-                return "Instantiate(_wrapper) failed";
+                return "Instantiate(Wrapper) failed";
             }
             scaleWrapper.transform.parent = parentTransform;
             parentTransform = scaleWrapper.transform;
@@ -227,7 +227,7 @@ namespace com.arpoise.arpoiseapp
                 var billboardWrapper = Instantiate(Wrapper);
                 if (billboardWrapper == null)
                 {
-                    return "Instantiate(_wrapper) failed";
+                    return "Instantiate(Wrapper) failed";
                 }
                 billboardWrapper.transform.parent = parentTransform;
                 parentTransform = billboardWrapper.transform;
@@ -241,7 +241,7 @@ namespace com.arpoise.arpoiseapp
                 rotationWrapper = Instantiate(Wrapper);
                 if (rotationWrapper == null)
                 {
-                    return "Instantiate(_wrapper) failed";
+                    return "Instantiate(Wrapper) failed";
                 }
                 rotationWrapper.transform.parent = parentTransform;
                 parentTransform = rotationWrapper.transform;
@@ -258,7 +258,7 @@ namespace com.arpoise.arpoiseapp
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(_wrapper) failed";
+                            return "Instantiate(Wrapper) failed";
                         }
                         arObjectState.AddOnCreateAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, true));
                         animationWrapper.transform.parent = parentTransform;
@@ -274,7 +274,7 @@ namespace com.arpoise.arpoiseapp
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(_wrapper) failed";
+                            return "Instantiate(Wrapper) failed";
                         }
                         arObjectState.AddOnFocusAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                         animationWrapper.transform.parent = parentTransform;
@@ -290,7 +290,7 @@ namespace com.arpoise.arpoiseapp
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(_wrapper) failed";
+                            return "Instantiate(Wrapper) failed";
                         }
                         arObjectState.AddInFocusAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                         animationWrapper.transform.parent = parentTransform;
@@ -306,7 +306,7 @@ namespace com.arpoise.arpoiseapp
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(_wrapper) failed";
+                            return "Instantiate(Wrapper) failed";
                         }
                         arObjectState.AddOnClickAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                         animationWrapper.transform.parent = parentTransform;
@@ -322,7 +322,7 @@ namespace com.arpoise.arpoiseapp
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(_wrapper) failed";
+                            return "Instantiate(Wrapper) failed";
                         }
                         arObjectState.AddOnFollowAnimation(new ArAnimation(poiId, animationWrapper, objectToAdd, poiAnimation, false));
                         animationWrapper.transform.parent = parentTransform;
@@ -1345,12 +1345,12 @@ namespace com.arpoise.arpoiseapp
                 var refreshInterval = RefreshInterval;
                 var doNotRefresh = refreshInterval < 1;
 
-                long now = DateTime.Now.Ticks;
-                long waitUntil = now + (long)refreshInterval * 10000000L;
+                long nowTicks = DateTime.Now.Ticks;
+                long waitUntil = nowTicks + (long)refreshInterval * 10000000L;
 
-                while (doNotRefresh || now < waitUntil)
+                while (doNotRefresh || nowTicks < waitUntil)
                 {
-                    now = DateTime.Now.Ticks;
+                    nowTicks = DateTime.Now.Ticks;
 
                     var refreshRequest = RefreshRequest;
                     RefreshRequest = null;

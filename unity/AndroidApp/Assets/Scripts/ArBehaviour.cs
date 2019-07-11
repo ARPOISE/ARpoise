@@ -47,15 +47,15 @@ namespace com.arpoise.arpoiseapp
     {
         private static readonly string _selectingText = "Please select a layer.";
         private static readonly string _loadingText = "Loading data, please wait";
-
-        protected float InitialCameraAngle = 0;
-
         private static readonly long _initialSecond = DateTime.Now.Ticks / 10000000L;
         private long _currentSecond = _initialSecond;
         private int _framesPerSecond = 30;
         private int _framesPerCurrentSecond = 1;
-
         private bool _headerButtonActivated = false;
+        private ArLayerScrollList _layerScrollList = null;
+
+        protected float InitialCameraAngle = 0;
+        protected bool InputPanelEnabled = true;
 
         #region Globals
 
@@ -66,15 +66,9 @@ namespace com.arpoise.arpoiseapp
         public GameObject PanelHeaderButton = null;
         public Transform ContentPanel;
         public SimpleObjectPool ButtonObjectPool;
-
         #endregion
 
-        protected bool InputPanelEnabled = true;
-
-        private ArLayerScrollList _layerScrollList = null;
-
         #region Buttons
-
         public void HandleInputPanelClosed(float? latitude, float? longitude)
         {
             Debug.Log("HandleInputPanelClosed lat " + latitude + " lon " + longitude);
@@ -189,11 +183,9 @@ namespace com.arpoise.arpoiseapp
                 }
             }
         }
-
         #endregion
 
         #region Start
-
         private void Start()
         {
 #if UNITY_EDITOR
@@ -214,26 +206,12 @@ namespace com.arpoise.arpoiseapp
 #endif
             // Start GetPosition() coroutine 
             StartCoroutine("GetPosition");
-            // Start GetData() function 
+            // Start GetData() coroutine 
             StartCoroutine("GetData");
         }
-
-        private GameObject FindGameObjectWithTag(string gameObjectTag)
-        {
-            try
-            {
-                return GameObject.FindGameObjectWithTag(gameObjectTag);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
         #endregion
 
         #region Update
-
         private void Update()
         {
             // Set any error text onto the canvas
@@ -243,16 +221,17 @@ namespace com.arpoise.arpoiseapp
                 return;
             }
 
-            long now = DateTime.Now.Ticks;
-            var second = now / 10000000L;
-
             if (WaitingForLayerSelection)
             {
                 InfoText.GetComponent<Text>().text = _selectingText;
                 return;
             }
 
-            if (StartTicks == 0 || ArObjectState == null)
+            long nowTicks = DateTime.Now.Ticks;
+            var second = nowTicks / 10000000L;
+
+            var arObjectState = ArObjectState;
+            if (StartTicks == 0 || arObjectState == null)
             {
                 string progress = string.Empty;
                 for (long s = _initialSecond; s < second; s++)
@@ -263,7 +242,6 @@ namespace com.arpoise.arpoiseapp
                 return;
             }
 
-            var arObjectState = ArObjectState;
             if (arObjectState.IsDirty)
             {
                 try
@@ -291,7 +269,7 @@ namespace com.arpoise.arpoiseapp
                 }
             }
 
-            var hit = arObjectState.HandleAnimations(StartTicks, now);
+            arObjectState.HandleAnimations(StartTicks, nowTicks);
 
             if (_currentSecond == second)
             {
@@ -457,7 +435,6 @@ namespace com.arpoise.arpoiseapp
                     //+ " R " + ray.ToString()
                     //+ " R " + ray.origin.x.ToString("F1") + " " + ray.origin.y.ToString("F1") + " " + ray.origin.z.ToString("F1")
                     //+ " " + ray.direction.x.ToString("F1") + " " + ray.direction.y.ToString("F1") + " " + ray.direction.z.ToString("F1")
-                    + (hit ? " h " : string.Empty)
                     ;
             }
         }

@@ -40,10 +40,8 @@ namespace com.arpoise.arpoiseapp
         #region Globals
 
         public GameObject ArCamera = null;
-
         public ArObjectState ArObjectState { get; protected set; }
         public string ErrorMessage { get; set; }
-
         #endregion
 
         #region Protecteds
@@ -203,7 +201,6 @@ namespace com.arpoise.arpoiseapp
                 }
             }
         }
-
         #endregion
         
         #region GetPosition

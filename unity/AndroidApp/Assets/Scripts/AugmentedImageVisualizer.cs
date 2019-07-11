@@ -19,7 +19,7 @@
 //-----------------------------------------------------------------------
 
 /*
-AugmentedImageVisualizer.cs - MonoBehaviour for handling detected image triggers of the Android image trigger application ARvos.
+AugmentedImageVisualizer.cs - MonoBehaviour for handling detected image triggers of the Android version of image trigger ARpoise, aka AR-vos.
 
 This file is part of Arpoise.
 

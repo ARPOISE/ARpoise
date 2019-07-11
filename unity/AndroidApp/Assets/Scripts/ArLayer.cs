@@ -1,5 +1,5 @@
 ﻿/*
-ArLayer.cs - Data description for Arpoise.
+ArLayer.cs - Data description for an Arpoise layer.
 
 Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 

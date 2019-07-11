@@ -64,13 +64,13 @@ namespace com.arpoise.arpoiseapp
 
         public ArAnimation(long poiId, GameObject wrapper, GameObject gameObject, PoiAnimation poiAnimation, bool isActive)
         {
-            IsActive = isActive;
             JustActivated = false;
             JustStopped = false;
 
             PoiId = poiId;
             Wrapper = wrapper;
             GameObject = gameObject;
+            IsActive = isActive;
             if (poiAnimation != null)
             {
                 Name = poiAnimation.name;
@@ -107,12 +107,12 @@ namespace com.arpoise.arpoiseapp
         {
             IsActive = true;
             _startTicks = 0;
-            Animate(worldStartTicks, nowTicks, true);
+            Animate(worldStartTicks, nowTicks);
         }
 
-        public void Animate(long worldStartTicks, long nowTicks, bool justActivated = false)
+        public void Animate(long worldStartTicks, long nowTicks)
         {
-            JustActivated = justActivated;
+            JustActivated = false;
             JustStopped = false;
 
             if (worldStartTicks <= 0 || !IsActive || _lengthTicks < 1 || _delayTicks < 0)
@@ -237,7 +237,6 @@ namespace com.arpoise.arpoiseapp
                     Wrapper.transform.localPosition = Vector3.zero;
                 }
             }
-            return;
         }
     }
 }

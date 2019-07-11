@@ -1,5 +1,5 @@
 ﻿/*
-ArBehaviour.cs - MonoBehaviour for Arpoise, image handling.
+ArBehaviourImage.cs - MonoBehaviour for Arpoise, image handling.
 
 Copyright (C) 2019, Tamiko Thiel and Peter Graf - All Rights Reserved
 
@@ -52,6 +52,7 @@ namespace com.arpoise.arpoiseapp
         private static readonly string _loadingText = "Loading data, please wait";
         private static readonly long _initialSecond = DateTime.Now.Ticks / 10000000L;
 
+        #region Start
         protected virtual void Start()
         {
 #if HAS_AR_CORE
@@ -84,10 +85,11 @@ namespace com.arpoise.arpoiseapp
 #endif
             // Start GetPosition() coroutine 
             StartCoroutine("GetPosition");
-            // Start GetData() function 
+            // Start GetData() coroutine 
             StartCoroutine("GetData");
         }
-
+        #endregion
+        #region Update
         protected virtual void Update()
         {
             // Set any error text onto the canvas
@@ -96,11 +98,12 @@ namespace com.arpoise.arpoiseapp
                 InfoText.GetComponent<Text>().text = ErrorMessage;
                 return;
             }
-            
-            long now = DateTime.Now.Ticks;
-            var second = now / 10000000L;
 
-            if (StartTicks == 0 || ArObjectState == null)
+            long nowTicks = DateTime.Now.Ticks;
+            var second = nowTicks / 10000000L;
+
+            var arObjectState = ArObjectState;
+            if (StartTicks == 0 || arObjectState == null)
             {
                 string progress = string.Empty;
                 for (long s = _initialSecond; s < second; s++)
@@ -111,7 +114,6 @@ namespace com.arpoise.arpoiseapp
                 return;
             }
 
-            var arObjectState = ArObjectState;
             if (arObjectState.IsDirty)
             {
                 try
@@ -139,7 +141,7 @@ namespace com.arpoise.arpoiseapp
                 }
             }
 
-            arObjectState.HandleAnimations(StartTicks, now);
+            arObjectState.HandleAnimations(StartTicks, nowTicks);
 
             // Set any error text onto the canvas
             if (InfoText != null)
@@ -147,19 +149,19 @@ namespace com.arpoise.arpoiseapp
                 if (!IsEmpty(ErrorMessage))
                 {
                     InfoText.GetComponent<Text>().text = ErrorMessage;
+                    return;
                 }
-                else
-                {
-                    InfoText.GetComponent<Text>().text =
-                        ""
-                        + " LA " + (UsedLatitude).ToString("F6")
-                        + " LO " + (UsedLongitude).ToString("F6")
-                        + " T " + TriggerObjects.Count
-                        + " N " + arObjectState.Count
-                        + " A " + arObjectState.NumberOfAnimations
-                        ;
-                }
+
+                InfoText.GetComponent<Text>().text =
+                    ""
+                    + "LA " + (UsedLatitude).ToString("F6")
+                    + " LO " + (UsedLongitude).ToString("F6")
+                    + " T " + TriggerObjects.Count
+                    + " N " + arObjectState.Count
+                    + " A " + arObjectState.NumberOfAnimations
+                    ;
             }
         }
+        #endregion
     }
 }

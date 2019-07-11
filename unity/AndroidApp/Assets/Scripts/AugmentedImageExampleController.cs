@@ -19,7 +19,7 @@
 //-----------------------------------------------------------------------
 
 /*
-AugmentedImageExampleController.cs - MonoBehaviour for setting image triggers of the Android image trigger application ARvos.
+AugmentedImageExampleController.cs - MonoBehaviour for setting image triggers of the Android version of image trigger ARpoise, aka AR-vos.
 
 This file is part of Arpoise.
 

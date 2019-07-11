@@ -1,5 +1,5 @@
 ﻿/*
-ArKitAnchorManager.cs - Anchor manager of the ARKit based version of image trigger ARpoise, i.e. ARvos.
+ArKitAnchorManager.cs - Anchor manager of the ARKit based version of image trigger ARpoise, aka AR-vos.
 
 ARPOISE - Augmented Reality Point Of Interest Service 
 
