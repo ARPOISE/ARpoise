@@ -407,9 +407,9 @@ namespace com.arpoise.arpoiseapp
                     //+ "CLT " + (_locationTimestamp).ToString("F3")
                     //+ " CA " + (_locationLatitude).ToString("F6")
                     //+ " A " + (_locationHorizontalAccuracy).ToString("F6")
-                    + "LA " + (UsedLatitude).ToString("F6")
+                    + "" + (UsedLatitude).ToString("F6")
                     //+ " CO " + (_locationLongitude).ToString("F6")
-                    + " LO " + (UsedLongitude).ToString("F6")
+                    + " " + (UsedLongitude).ToString("F6")
                     //+ " AS " + _areaSize
                     //+ " AV " + AnimationValue.ToString("F3")
                     //+ " F " + DisplayAnimationValueForward.ToString("F1")
@@ -423,14 +423,14 @@ namespace com.arpoise.arpoiseapp
                     //+ " Y " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).y.ToString("F1")
                     //+ " OH " + (firstArObject != null ? firstArObject.Latitude : 0).ToString("F6")
                     //+ " OL " + (firstArObject != null ? firstArObject.Longitude : 0).ToString("F6")
-                    + " D " + (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, firstArObject.Longitude) : 0).ToString("F1")
-                    + " F " + _framesPerSecond
                     //+ " C " + _cameraTransform.eulerAngles.y.ToString("F")
                     //+ " IC " + _initialCameraAngle.ToString("F")
                     //+ " SA " + _sceneAnchor.transform.eulerAngles.y.ToString("F")
+                    + " I " + (int)InitialHeading
                     + " H " + (int)HeadingShown
-                    //+ " IH " + _initialHeading.ToString("F")
+                    + " F " + _framesPerSecond
                     + " N " + arObjectState.ArObjects.Sum(x => x.GameObjects.Count)
+                    + " D " + (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, firstArObject.Longitude) : 0).ToString("F1")
                     //+ " O " + _onFocusAnimations.Count
                     //+ " R " + ray.ToString()
                     //+ " R " + ray.origin.x.ToString("F1") + " " + ray.origin.y.ToString("F1") + " " + ray.origin.z.ToString("F1")

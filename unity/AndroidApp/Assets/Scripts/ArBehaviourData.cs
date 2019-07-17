@@ -684,7 +684,7 @@ namespace com.arpoise.arpoiseapp
         {
             var build = "rel";
             var os = "Android";
-            var bundle = "190702";
+            var bundle = "190717";
 #if UNITY_IOS
             os = "iOS";
             bundle = "20" + bundle;
