@@ -51,6 +51,9 @@ namespace com.arpoise.arpoiseapp
 
         private static readonly string _loadingText = "Loading data, please wait";
         private static readonly long _initialSecond = DateTime.Now.Ticks / 10000000L;
+        private long _currentSecond = _initialSecond;
+        private int _framesPerSecond = 30;
+        private int _framesPerCurrentSecond = 1;
 
         #region Start
         protected virtual void Start()
@@ -143,21 +146,52 @@ namespace com.arpoise.arpoiseapp
 
             arObjectState.HandleAnimations(StartTicks, nowTicks);
 
+            if (_currentSecond == second)
+            {
+                _framesPerCurrentSecond++;
+            }
+            else
+            {
+                if (_currentSecond == second - 1)
+                {
+                    _framesPerSecond = _framesPerCurrentSecond;
+                }
+                else
+                {
+                    _framesPerSecond = 1;
+                }
+                _framesPerCurrentSecond = 1;
+                _currentSecond = second;
+            }
+
             // Set any error text onto the canvas
+            if (!IsEmpty(ErrorMessage) && InfoText != null)
+            {
+                InfoText.GetComponent<Text>().text = ErrorMessage;
+                return;
+            }
+
             if (InfoText != null)
             {
-                if (!IsEmpty(ErrorMessage))
+                // Set info text
+                if (!ShowInfo)
                 {
-                    InfoText.GetComponent<Text>().text = ErrorMessage;
+                    InfoText.GetComponent<Text>().text = string.Empty;
+                    return;
+                }
+                if (!IsEmpty(InformationMessage))
+                {
+                    InfoText.GetComponent<Text>().text = InformationMessage;
                     return;
                 }
 
                 InfoText.GetComponent<Text>().text =
                     ""
-                    + "LA " + (UsedLatitude).ToString("F6")
-                    + " LO " + (UsedLongitude).ToString("F6")
-                    + " T " + TriggerObjects.Count
+                    + "" + (UsedLatitude).ToString("F6")
+                    + " " + (UsedLongitude).ToString("F6")
+                    + " F " + _framesPerSecond
                     + " N " + arObjectState.Count
+                    + " T " + TriggerObjects.Count
                     + " A " + arObjectState.NumberOfAnimations
                     ;
             }

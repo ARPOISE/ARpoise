@@ -426,8 +426,14 @@ namespace com.arpoise.arpoiseapp
                     //+ " C " + _cameraTransform.eulerAngles.y.ToString("F")
                     //+ " IC " + _initialCameraAngle.ToString("F")
                     //+ " SA " + _sceneAnchor.transform.eulerAngles.y.ToString("F")
+#if HAS_AR_CORE
+#else
+#if HAS_AR_KIT
+#else
                     + " I " + (int)InitialHeading
                     + " H " + (int)HeadingShown
+#endif
+#endif
                     + " F " + _framesPerSecond
                     + " N " + arObjectState.ArObjects.Sum(x => x.GameObjects.Count)
                     + " D " + (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, firstArObject.Longitude) : 0).ToString("F1")
@@ -444,6 +450,6 @@ namespace com.arpoise.arpoiseapp
         public static float DisplayAnimationValueRight;
         public static float DisplayPercentage;
 
-        #endregion
+#endregion
     }
 }
