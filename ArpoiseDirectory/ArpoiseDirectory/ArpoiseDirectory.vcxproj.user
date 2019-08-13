@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>lang=en&amp;lat=48.158760&amp;lon=11.579120&amp;layerName=Arpoise-Directory&amp;userId=XXXX&amp;client=Arpoise&amp;version=1&amp;radius=1500&amp;accuracy=100&amp;os=Android</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>lang=en&amp;lat=49.158510&amp;lon=11.578550&amp;layerName=Arpoise-Directory&amp;userId=1dde3dcdbaccd19c1f972a174a717e84&amp;client=Arvos&amp;version=1&amp;radius=1500&amp;accuracy=100&amp;bundle=190208&amp;os=Android&amp;count=1&amp;build=rel</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
