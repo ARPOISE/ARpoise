@@ -1,0 +1,8 @@
+.vs
+Library
+obj
+AndroidArpoiseApp.apk
+Temp
+AndroidArpoiseApp*.zip
+Android*.apk
+Android*.zip
