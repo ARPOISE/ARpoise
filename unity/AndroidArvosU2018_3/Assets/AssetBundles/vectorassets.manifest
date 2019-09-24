@@ -1,0 +1,37 @@
+ManifestFileVersion: 0
+CRC: 3793583978
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: abfc11fedf967264c44f54932b336965
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: b74558a0ec7a156c1c257f4404504ba1
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 111
+  Script: {instanceID: 0}
+Assets:
+- Assets/Prefabs/vector_bottlesWiggle3.prefab
+- Assets/Prefabs/vector_bottleWaterlilyBush.prefab
+- Assets/Materials/grey25p_C5C2C2.mat
+- Assets/Prefabs/vector_imagePlaneStandingBottles.prefab
+Dependencies: []
