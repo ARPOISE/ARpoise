@@ -1,4 +1,15 @@
-# Unity-ARKit-Plugin #
+![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
+# ARpoise -Mobile- Client App
+
+## Overview
+This directory contains the Unity 3D project used to build the iOs AR-vos Client App with Unity 3D version 2018.2.2.
+If you clone and open this project with Unity 3D, version 2018.2.2, you should be able to build AR-vos.
+
+The ARpoise Client App has been submitted to the Google Play Store and the Apple App Store. 
+You do not need to build it yourself.
+
+
+## Unity-ARKit-Plugin #
 
 [**Latest Update:** This plugin now supports new ARKit functionality exposed in ARKit 2.0.  See [Whats New In ARKit 2.0](./docs/WhatsNewInARKit2_0.md) for details.]
 
