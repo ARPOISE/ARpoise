@@ -1,0 +1,26 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio for Mac
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOsArpoiseApp", "Assembly-CSharp.csproj", "{A60DA9EF-29DB-2479-58DA-04F7E98F75DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOsArpoiseApp", "Assembly-CSharp-Editor.csproj", "{A2E88526-C9EF-7B2C-F643-0BCE58C2A0F5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A60DA9EF-29DB-2479-58DA-04F7E98F75DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A60DA9EF-29DB-2479-58DA-04F7E98F75DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A60DA9EF-29DB-2479-58DA-04F7E98F75DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A60DA9EF-29DB-2479-58DA-04F7E98F75DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2E88526-C9EF-7B2C-F643-0BCE58C2A0F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2E88526-C9EF-7B2C-F643-0BCE58C2A0F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2E88526-C9EF-7B2C-F643-0BCE58C2A0F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2E88526-C9EF-7B2C-F643-0BCE58C2A0F5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -44,8 +44,9 @@ namespace com.arpoise.arpoiseapp
     {
         #region Globals
 
-        public GameObject ArCoreDevice = null;
-        public GameObject InfoText = null;
+        public GameObject ArCoreDevice;
+        public GameObject InfoText;
+        public GameObject FitToScanOverlay;
 
         #endregion
 
@@ -136,7 +137,7 @@ namespace com.arpoise.arpoiseapp
                     arObjectState.IsDirty = false;
                 }
             }
-            SceneAnchor.transform.eulerAngles = new Vector3(0, DeviceAngle - InitialHeading, 0);
+            SceneAnchor.transform.localEulerAngles = new Vector3(0, DeviceAngle - InitialHeading, 0);
             arObjectState.HandleAnimations(StartTicks, nowTicks);
 
             if (_currentSecond == second)
@@ -155,6 +156,13 @@ namespace com.arpoise.arpoiseapp
                 }
                 _framesPerCurrentSecond = 1;
                 _currentSecond = second;
+            }
+
+            // Set any error text onto the canvas
+            if (!IsEmpty(ErrorMessage) && InfoText != null)
+            {
+                InfoText.GetComponent<Text>().text = ErrorMessage;
+                return;
             }
 
             // Calculate heading
@@ -176,13 +184,6 @@ namespace com.arpoise.arpoiseapp
                 HeadingShown -= 360;
             }
 
-            // Set any error text onto the canvas
-            if (!IsEmpty(ErrorMessage) && InfoText != null)
-            {
-                InfoText.GetComponent<Text>().text = ErrorMessage;
-                return;
-            }
-
             if (InfoText != null)
             {
                 // Set info text
@@ -191,6 +192,7 @@ namespace com.arpoise.arpoiseapp
                     InfoText.GetComponent<Text>().text = string.Empty;
                     return;
                 }
+
                 var firstArObject = arObjectState.ArObjects.FirstOrDefault();
                 var firstGameObject = firstArObject?.GameObjects.FirstOrDefault();
 
@@ -226,15 +228,15 @@ namespace com.arpoise.arpoiseapp
 
                 InfoText.GetComponent<Text>().text =
                     ""
-                    + "" + (UsedLatitude).ToString("F6")
-                    + " " + (UsedLongitude).ToString("F6")
+                    //+ "" + (UsedLatitude).ToString("F6")
+                    //+ " " + (UsedLongitude).ToString("F6")
                     + "F " + _framesPerSecond
                     + " N " + arObjectState.Count
                     + " T " + TriggerObjects.Count
                     + " A " + arObjectState.NumberOfAnimations
-                    //+ " Z " + (firstGameObject != null ? firstGameObject.transform.position : Vector3.zero).z.ToString("F1")
-                    //+ " X " + (firstGameObject != null ? firstGameObject.transform.position : Vector3.zero).x.ToString("F1")
-                    //+ " Y " + (firstGameObject != null ? firstGameObject.transform.position : Vector3.zero).y.ToString("F1")
+                    + " Z " + (firstGameObject != null ? firstGameObject.transform.position : Vector3.zero).z.ToString("F1")
+                    + " X " + (firstGameObject != null ? firstGameObject.transform.position : Vector3.zero).x.ToString("F1")
+                    + " Y " + (firstGameObject != null ? firstGameObject.transform.position : Vector3.zero).y.ToString("F1")
                     ;
             }
         }

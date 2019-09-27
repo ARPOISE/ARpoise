@@ -46,6 +46,7 @@ Arpoise, see www.Arpoise.com/
 
 using com.arpoise.arpoiseapp;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 #if HAS_AR_KIT
@@ -58,6 +59,7 @@ public class ArKitAnchorManager : MonoBehaviour
 #endif
     public Dictionary<int, TriggerObject> TriggerObjects { get; set; }
     public ArBehaviourImage ArBehaviour { get; set; }
+    public GameObject FitToScanOverlay { get; set; }
 
     // Use this for initialization
     private void Start()
@@ -90,7 +92,7 @@ public class ArKitAnchorManager : MonoBehaviour
                 {
                     lock (arObjectState)
                     {
-                        GameObject gameObject;
+                        GameObject newGameObject;
                         var result = ArBehaviour.CreateArObject(
                             arObjectState,
                             triggerObject.gameObject,
@@ -98,14 +100,15 @@ public class ArKitAnchorManager : MonoBehaviour
                             transform,
                             triggerObject.poi,
                             triggerObject.poi.id,
-                            out gameObject
+                            out newGameObject
                             );
                         if (!ArBehaviourPosition.IsEmpty(result))
                         {
                             ArBehaviour.ErrorMessage = result;
                             return;
                         }
-                        _gameObjects[index] = gameObject;
+                        _gameObjects[index] = newGameObject;
+                        newGameObject.SetActive(true);
                     }
                 }
             }
@@ -118,25 +121,25 @@ public class ArKitAnchorManager : MonoBehaviour
         int index;
         if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
         {
-            GameObject gameObject = null;
+            GameObject gameObjectToAHandle = null;
             if (index < _gameObjects.Count)
             {
-                gameObject = _gameObjects[index];
+                gameObjectToAHandle = _gameObjects[index];
             }
-            if (gameObject != null)
+            if (gameObjectToAHandle != null)
             {
                 if (arImageAnchor.IsTracked)
                 {
-                    gameObject.transform.position = UnityARMatrixOps.GetPosition(arImageAnchor.Transform);
-                    gameObject.transform.rotation = UnityARMatrixOps.GetRotation(arImageAnchor.Transform);
-                    if (!gameObject.activeSelf)
+                    gameObjectToAHandle.transform.position = UnityARMatrixOps.GetPosition(arImageAnchor.Transform);
+                    gameObjectToAHandle.transform.rotation = UnityARMatrixOps.GetRotation(arImageAnchor.Transform);
+                    if (!gameObjectToAHandle.activeSelf)
                     {
-                        gameObject.SetActive(true);
+                        gameObjectToAHandle.SetActive(true);
                     }
                 }
-                else if (gameObject.activeSelf)
+                else if (gameObjectToAHandle.activeSelf)
                 {
-                    //_imageAnchorGO.SetActive(false);
+                    //gameObjectToAHandle.SetActive(false);
                 }
             }
         }
@@ -148,15 +151,19 @@ public class ArKitAnchorManager : MonoBehaviour
         int index;
         if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
         {
-            GameObject gameObject = null;
+            GameObject gameObjectToAHandle = null;
             if (index < _gameObjects.Count)
             {
-                gameObject = _gameObjects[index];
+                gameObjectToAHandle = _gameObjects[index];
+                _gameObjects[index] = null;
             }
-            if (gameObject != null)
+            if (gameObjectToAHandle != null)
             {
-                GameObject.Destroy(gameObject);
-                gameObject = null;
+                if (gameObjectToAHandle.activeSelf)
+                {
+                    gameObjectToAHandle.SetActive(false);
+                }
+                Destroy(gameObjectToAHandle);
             }
         }
     }
@@ -170,6 +177,17 @@ public class ArKitAnchorManager : MonoBehaviour
 
     private void Update()
     {
+        var fitToScanOverlay = FitToScanOverlay;
+        if (fitToScanOverlay != null)
+        {
+            var hasActiveObjects = false;
+            var hasTriggerObjects = TriggerObjects != null && TriggerObjects.Any();
+            if (hasTriggerObjects)
+            {
+                hasActiveObjects = _gameObjects.Any(x => x != null && x.activeSelf);
+            }
+            fitToScanOverlay.SetActive(hasTriggerObjects && !hasActiveObjects);
+        }
     }
 #endif
 }
