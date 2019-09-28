@@ -19,17 +19,3 @@ This directory contains the Unity 3D projects used to build the ARpoise and AR-v
 - Downloads the Unity asset bundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
 
 - Places the **POI**s' Unity prefabs into the 3D scene and shows the camera image as the background of the scene.
-
-## Building the App
-If you want to build the app you should, 
-
-- get a version of Unity, including Android and iOS build capabilities and Vuforia. We tested it on 2018.2.2 and 2018.3.3.
-- start a new Unity project and replace the main camera in the default scene with a Vuforia ArCamera.
-- change the Build properties so that the build either builds Android or iOS, depending on your goals.
-- make the app work! So you can see the camera image when running on your test device. Note, emulators will not work!
-- close Unity.
-- copy the Assets from this repository to your local assets folder.
-- start Unity again.
-- replace your scene with the ArScene from the assets.
-- once more, make the app work! So you can see the camera image and some artifacts or messages from ARpoise.
-
