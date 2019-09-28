@@ -50,7 +50,7 @@ Currently Tamiko Thiel's
 [*Lotus Meditation*](http://www.tamikothiel.com/AR/lotus-meditation.html).
 ## Components
 ### iOS- and Android-Client Application
-See [unity](unity/Readme.md).
+See [unity](unity/).
 This folder contains Unity projects for the different version of ARpoise..
 ### ARpoise-Directory Front End
 See [ARpoiseDirectory](ArpoiseDirectory/README.md).
