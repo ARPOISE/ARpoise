@@ -1,6 +1,8 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
 # ARpoise -Mobile- Client App
 
+## This folder is actually obsolete, use the Unity project folders instead.
+
 ## Overview
 The ARpoise Client App has been submitted to the Google Play Store and the Apple App Store. 
 You do not need to build it yourself.
