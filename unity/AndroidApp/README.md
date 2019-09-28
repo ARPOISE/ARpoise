@@ -2,8 +2,6 @@
 # ARpoise -Mobile- Client App
 
 ## Overview
-The Android and iOS applications do not differ in script code or assets. Therefore only one version is kept here on GitHub.
-
 The ARpoise Client App has been submitted to the Google Play Store and the Apple App Store. 
 You do not need to build it yourself.
 
