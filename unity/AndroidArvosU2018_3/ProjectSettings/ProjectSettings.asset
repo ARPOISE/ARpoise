@@ -155,7 +155,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.arpoise.ARvos
   buildNumber: {}
-  AndroidBundleVersionCode: 190923
+  AndroidBundleVersionCode: 191004
   AndroidMinSdkVersion: 24
   AndroidTargetSdkVersion: 27
   AndroidPreferredInstallLocation: 1

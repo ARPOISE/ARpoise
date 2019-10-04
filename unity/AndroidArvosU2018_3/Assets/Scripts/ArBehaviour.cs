@@ -423,14 +423,12 @@ namespace com.arpoise.arpoiseapp
                 InfoText.GetComponent<Text>().text =
                     ""
                     //+ "B " + _bleachingValue
-                    //+ "CLT " + (_locationTimestamp).ToString("F3")
                     //+ " CA " + (_locationLatitude).ToString("F6")
                     //+ " A " + (_locationHorizontalAccuracy).ToString("F6")
                     //+ "" + (UsedLatitude).ToString("F6")
                     //+ " CO " + (_locationLongitude).ToString("F6")
                     //+ " " + (UsedLongitude).ToString("F6")
                     //+ " AS " + _areaSize
-                    //+ " AV " + AnimationValue.ToString("F3")
                     //+ " F " + DisplayAnimationValueForward.ToString("F1")
                     //+ " R " + DisplayAnimationValueRight.ToString("F1")
                     //+ " % " + DisplayPercentage.ToString("F1")

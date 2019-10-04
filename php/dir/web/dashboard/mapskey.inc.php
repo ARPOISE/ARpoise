@@ -17,9 +17,7 @@ For more information please see: http://www.arpoise.com/.
 /**
  * mapskey.inc.php - Arpoise include file with the google maps access key
  *
- * You need to add your own key for google maps in order for the it to work
- * 
  * @package PorPOISe
  * @subpackage Dashboard
  */
-$_googleMapsKey = '';
+$_googleMapsKey = 'AIzaSyDFyHIm77knmp5A7qNyY1gZNhz814SlFaM';

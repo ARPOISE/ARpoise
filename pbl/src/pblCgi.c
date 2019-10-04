@@ -24,6 +24,9 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblCgi.c,v $
+ Revision 1.4  2019/07/13 18:41:42  peter
+ Improved handling of append
+
  Revision 1.3  2019/02/07 21:15:35  peter
  Cleaning up after tests of ARpoise
 
@@ -76,7 +79,7 @@
  /*
   * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
   */
-char* pblCgi_c_id = "$Id: pblCgi.c,v 1.3 2019/02/07 21:15:35 peter Exp $";
+char* pblCgi_c_id = "$Id: pblCgi.c,v 1.4 2019/07/13 18:41:42 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -218,10 +221,7 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 
 	if (!map)
 	{
-		if (!(map = pblMapNewHashMap()))
-		{
-			pblCgiExitOnError("%s: Failed to create a map, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
-		}
+		map = pblCgiNewMap();
 	}
 
 	FILE * stream = pblCgiFopen(filePath, "r");
@@ -257,12 +257,15 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 		if (pblMapGetStr(map, key))
 		{
 			// Multiple lines are comma separated
-			if (pblMapAppendStrStr(map, key, ", ") < 0)
+			char * newValue = pbl_mem2dup(NULL, ", ", 2, value, strlen(value) + 1);
+			int rc = pblMapAppendStrStr(map, key, newValue);
+			PBL_FREE(newValue)
+			if (rc < 0)
 			{
-				pblCgiExitOnError("%s: Failed to append a comma, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+				pblCgiExitOnError("%s: Failed to append a string, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 			}
 		}
-		if (pblMapAppendStrStr(map, key, value) < 0)
+ 		else if (pblMapAddStrStr(map, key, value) < 0)
 		{
 			pblCgiExitOnError("%s: Failed to append a string, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
@@ -340,10 +343,7 @@ static void pblCgiSetQueryValue(char * key, char * value)
 
 	if (!queryMap)
 	{
-		if (!(queryMap = pblMapNewHashMap()))
-		{
-			pblCgiExitOnError("%s: Failed to create a map, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
-		}
+		queryMap = pblCgiNewMap();
 	}
 	if (!key || !*key)
 	{
@@ -1726,6 +1726,10 @@ PblMap * pblCgiNewMap(void)
 	{
 		pblCgiExitOnError("Failed to create a map, pbl_errno = %d\n", pbl_errno);
 	}
+	if (pblSetEnsureCapacity((PblSet *)map, 16) < 0)
+	{
+		pblCgiExitOnError("Failed to set initial capacity of map, pbl_errno = %d, message='%s'\n", pbl_errno, pbl_errstr);
+	}
 	return map;
 }
 
@@ -1754,10 +1758,7 @@ PblMap * pblCgiValueMap()
 {
 	if (!valueMap)
 	{
-		if (!(valueMap = pblMapNewHashMap()))
-		{
-			pblCgiExitOnError("Failed to create value map, pbl_errno = %d\n", pbl_errno);
-		}
+		valueMap = pblCgiNewMap();
 	}
 	return valueMap;
 }

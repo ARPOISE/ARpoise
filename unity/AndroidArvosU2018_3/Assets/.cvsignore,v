@@ -1,0 +1,29 @@
+head	1.1;
+access;
+symbols
+	v191002_1:1.1
+	v190929_BtS_gai_and_BtS_nai_prefabs:1.1
+	v190925:1.1
+	v190923_1st_U2018_3:1.1;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2019.09.23.15.52.22;	author peter;	state Exp;
+branches;
+next	;
+commitid	44e25d88ea114567;
+
+
+desc
+@@
+
+
+1.1
+log
+@First version of android arvos for Unity 2018.3
+@
+text
+@
+@

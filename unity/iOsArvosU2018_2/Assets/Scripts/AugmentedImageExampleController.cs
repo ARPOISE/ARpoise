@@ -57,11 +57,6 @@ namespace GoogleARCore.Examples.AugmentedImage
         /// </summary>
         public AugmentedImageVisualizer AugmentedImageVisualizerPrefab;
 
-        /// <summary>
-        /// The overlay containing the fit to scan user guide.
-        /// </summary>
-        public GameObject FitToScanOverlay;
-
         private Dictionary<int, AugmentedImageVisualizer> _visualizers = new Dictionary<int, AugmentedImageVisualizer>();
 
         private readonly List<AugmentedImage> _tempAugmentedImages = new List<AugmentedImage>();

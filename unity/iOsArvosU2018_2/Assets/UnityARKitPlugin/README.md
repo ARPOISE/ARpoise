@@ -171,4 +171,3 @@ You may submit [issues](https://bitbucket.org/Unity-Technologies/unity-arkit-plu
 You may submit a [pull request](https://bitbucket.org/Unity-Technologies/unity-arkit-plugin/pull-requests/) if you believe you have a useful enhancement for this plugin.
 
 Follow [@jimmyjamjam](https://twitter.com/jimmy_jam_jam) for various AR related tweets, and showcase your creation there as well.
-

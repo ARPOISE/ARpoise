@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.30  2019/09/02 20:29:34  peter
+Some cleanup
+
 Revision 1.29  2019/08/13 21:23:02  peter
 Removed potential null reference crash.
 
@@ -120,7 +123,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.29 2019/08/13 21:23:02 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.30 2019/09/02 20:29:34 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -496,7 +499,7 @@ static char * getHttpResponseBody(char * response, char ** cookiePtr)
 
 	if (ptr)
 	{
-		char* end = strstr(ptr, "\r\n\r\n");
+		char * end = strstr(ptr, "\r\n\r\n");
 		if (!end)
 		{
 			end = strstr(ptr, "\n\n");

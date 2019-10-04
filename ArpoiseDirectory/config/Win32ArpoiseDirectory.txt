@@ -2,11 +2,32 @@
 #
 HostName				www.arpoise.com
 Port					80
-BaseUri					/dir/web/porpoise.php
+DirectoryUri			/php/dir/web/porpoise.php
+PorpoiseUri			    /php/porpoise/web/porpoise.php
+
+DefaultLayerUrl         /php/porpoise/web/porpoise.php
+DefaultLayerName        Default-lotus-meditation
+
+## Default layer for the arvos app, image triggered
+#
+ArvosDefaultLayerUrl    /php/porpoise/web/porpoise.php
+ArvosDefaultLayerName   Default-ImageTrigger
 
 ## Traces are only written if the file exists, the file needs to be writable by the cgi program
 #
 TraceFilePath           D:/Temp/ArpoiseDirectory.txt
+
+## Directory to store version files to
+#
+VersionsDirectory       D:/Temp/Versions/
+
+## Directory to store the layer name files to
+#
+LayersDirectory         D:/Temp/Layers/
+
+## Directory to store the served layer name files to
+#
+LayersServedDirectory   D:/Temp/LayersServed/
 
 ## Set fixed position of certain devices
 #
@@ -26,7 +47,7 @@ TraceFilePath           D:/Temp/ArpoiseDirectory.txt
 # Whitney 40.739540, -74.008522
 # Wing Luke 47.598116,-122.322825
 #
-DevicePosition 2ec8b480fec1b4c8aa0c558b265c6118, 40.739540, -74.008522
-DevicePosition 694B2C29-EDE5-4FFB-B825-213F48622466, 40.739582, -74.008585,  
+#DevicePosition 1dde3dcdbaccd19c1f972a174a717e84, 40.739540, -74.008522
+#DevicePosition 694B2C29-EDE5-4FFB-B825-213F48622466, 40.739582, -74.008585,  
 
 

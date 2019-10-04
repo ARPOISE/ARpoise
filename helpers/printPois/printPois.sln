@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "printPois", "printPois.csproj", "{350A6825-C711-416F-A914-59A7610E7EEF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{350A6825-C711-416F-A914-59A7610E7EEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{350A6825-C711-416F-A914-59A7610E7EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{350A6825-C711-416F-A914-59A7610E7EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{350A6825-C711-416F-A914-59A7610E7EEF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6FDFF11D-A286-4794-8433-BEEB8DDD4676}
+	EndGlobalSection
+EndGlobal

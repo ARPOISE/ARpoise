@@ -157,7 +157,7 @@ PlayerSettings:
     iOS: com.arpoise.arvos
     tvOS: com.Company.ProductName
   buildNumber:
-    iOS: 20190927
+    iOS: 20191004
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
@@ -232,7 +232,7 @@ PlayerSettings:
   metalEditorSupport: 1
   metalAPIValidation: 1
   iOSRenderExtraFrameOnPause: 0
-  appleDeveloperTeamID: J
+  appleDeveloperTeamID: J6ABGK3TM6
   iOSManualSigningProvisioningProfileID: 
   tvOSManualSigningProvisioningProfileID: 
   iOSManualSigningProvisioningProfileType: 0
