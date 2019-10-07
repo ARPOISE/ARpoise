@@ -20,4 +20,4 @@ For more information please see: http://www.arpoise.com/.
  * @package PorPOISe
  * @subpackage Dashboard
  */
-$_googleMapsKey = '';
+$_googleMapsKey = 'AIzaSyDFyHIm77knmp5A7qNyY1gZNhz814SlFaM';

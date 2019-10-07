@@ -155,9 +155,9 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.arpoise.ARvos
   buildNumber: {}
-  AndroidBundleVersionCode: 191004
+  AndroidBundleVersionCode: 191008
   AndroidMinSdkVersion: 24
-  AndroidTargetSdkVersion: 27
+  AndroidTargetSdkVersion: 28
   AndroidPreferredInstallLocation: 1
   aotOptions: 
   stripEngineCode: 0
@@ -244,7 +244,7 @@ PlayerSettings:
   AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: 
+  AndroidKeystoreName: C:/Users/user/eclipse-workspace/CvsArpoise/unity/AndroidArpoiseU2018_3/user.keystore
   AndroidKeyaliasName: 
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0

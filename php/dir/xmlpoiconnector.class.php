@@ -186,9 +186,6 @@ class XMLPOIConnector extends POIConnector
         $lon = $filter->lon;
         $radius = $filter->radius;
         $accuracy = $filter->accuracy;
-        // calculate here to prevent recalculation on each foreach loop later
-        $dlat = GeoUtil::getLatitudinalDistance(($radius + $accuracy) * 1.25, $lat);
-        $dlon = GeoUtil::getLongitudinalDistance(($radius + $accuracy) * 1.25, $lat);
 
         $simpleXML = $this->getSimpleXMLFromSource();
 
@@ -263,41 +260,25 @@ class XMLPOIConnector extends POIConnector
                 }
             }
 
-            if (empty($filter)) {
+            if (empty($filter))
+            {
                 $result[] = $poi;
-            } else {
-                if (! empty($filter->requestedPoiId) && $filter->requestedPoiId == $poi->id) {
+            }
+            else
+            {
+                if (! empty($filter->requestedPoiId) && $filter->requestedPoiId == $poi->id)
+                {
                     // always return the requested POI at the top of the list to
                     // prevent cutoff by the 50 POI response limit
                     $poi->distance = GeoUtil::getGreatCircleDistance(deg2rad($lat), deg2rad($lon), deg2rad($poi->lat), deg2rad($poi->lon));
                     $requestedPOI = $poi;
-                } else if ($this->passesFilter($poi, $filter)) {
-                    if (empty($radius)) {
-                        $poi->distance = GeoUtil::getGreatCircleDistance(deg2rad($lat), deg2rad($lon), deg2rad($poi->lat), deg2rad($poi->lon));
+                }
+                else if ($this->passesFilter($poi, $filter))
+                {
+                    $poi->distance = GeoUtil::getGreatCircleDistance(deg2rad($lat), deg2rad($lon), deg2rad($poi->lat), deg2rad($poi->lon));
+                    if ($poi->visibilityRange <= 0 || $poi->visibilityRange >= $poi->distance)
+                    {
                         $result[] = $poi;
-                    } else {
-                        // verify if POI falls in bounding box (with 25% margin)
-                        /**
-                         *
-                         * @todo handle wraparound
-                         */
-                        if ($poi->lat >= $lat - $dlat && $poi->lat <= $lat + $dlat && $poi->lon >= $lon - $dlon && $poi->lon <= $lon + $dlon) {
-                            $poi->distance = GeoUtil::getGreatCircleDistance(deg2rad($lat), deg2rad($lon), deg2rad($poi->lat), deg2rad($poi->lon));
-                            // filter passed, see if radius allows for inclusion
-                            if ($poi->distance < $radius + $accuracy) {
-                                $result[] = $poi;
-                            }
-                            else if ($poi->visibilityRange > 0 && $poi->visibilityRange >= $poi->distance) {
-                                $result[] = $poi;
-                            }
-                        }
-                        else if ($poi->visibilityRange > 0 && $poi->visibilityRange >= $radius + $accuracy) {
-                            $poi->distance = GeoUtil::getGreatCircleDistance(deg2rad($lat), deg2rad($lon), deg2rad($poi->lat), deg2rad($poi->lon));
-                            
-                            if ($poi->visibilityRange >= $poi->distance){
-                                $result[] = $poi;
-                            }
-                        }
                     }
                 }
             }

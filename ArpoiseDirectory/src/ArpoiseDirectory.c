@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.31  2019/10/07 14:46:18  peter
+Allowing menu button for default layers
+
 Revision 1.30  2019/09/02 20:29:34  peter
 Some cleanup
 
@@ -123,7 +126,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.30 2019/09/02 20:29:34 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.31 2019/10/07 14:46:18 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -1279,7 +1282,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 				uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
 				char * agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
 				char * response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
-				response = changeShowMenuOption(response, "false");
+				//response = changeShowMenuOption(response, "false");
 				handleResponse(response, latDifference, lonDifference);
 			}
 		}
