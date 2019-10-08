@@ -7,3 +7,18 @@ If you clone and open this project with Unity 3D, version 2018.3.14, you should 
 
 The AR-vos Client App has been submitted to the Google Play Store and the Apple App Store. 
 You do not need to build it yourself.
+
+## Functionality
+- Connects to the ARpoise-Directory front-end and supplies the location of the user's device.
+
+- AR-vos currently only has one default layer shown everywhere in the world.
+
+- Downloads the list of **POI**s of the default layer.
+
+- Downloads the trigger image for each **POI** and registers the image with Android's ARCore as trigger image.
+
+- Downloads the Unity asset bundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
+
+- Displays a 'Fit the image you're scanning' frame and shows the camera image as the background of the scene.
+
+- Once Android's ARCore reports back that an trigger image has been found in the camera view, the app shows the Unity prefab of the **POI** at the trigger image location.
