@@ -2,15 +2,15 @@
 # AR-vos -Android- App
 
 ## Overview
-This directory contains the Unity 3D project used to build the AR-vos -Android- App with Unity 3D version 2018.3.14.
-If you clone and open this project with Unity 3D, version 2018.3.14, you should be able to build AR-vos.
+This directory contains the Unity 3D project used to build the **AR-vos** -Android- App with Unity 3D version 2018.3.14.
+If you clone and open this project with Unity 3D, version 2018.3.14, you should be able to build **AR-vos**.
 
-The AR-vos -Android- App has been submitted to the Google Play Store. You do not need to build it yourself.
+The **AR-vos** -Android- App has been submitted to the Google Play Store. You do not need to build it yourself.
 
 ## Functionality
 - Connects to the ARpoise-Directory front-end and supplies the location of the user's device.
 
-- AR-vos currently only has one default layer shown everywhere in the world.
+- **AR-vos** currently only has one default layer shown everywhere in the world.
 
 - Downloads the list of **POI**s of the default layer.
 
