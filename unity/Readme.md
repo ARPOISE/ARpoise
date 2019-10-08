@@ -1,21 +1,15 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# ARpoise -Mobile- Client App
+# ARpoise and AR-vos -Mobile- Apps
 
 ## Overview
-This directory contains the Unity 3D projects used to build the ARpoise and AR-vos Client Apps.
+This directory contains the Unity 3D projects used to build the **ARpoise** and **AR-vos** Apps for Android and iOS.
 
 ## Functionality
-- Connects to the ARpoise-Directory front-end and supplies the location of the user's device.
+- **ARpoise** is a location based AR application.
 
-- Receives the response from the ARpoise-Directory service.
+- **ARpoise** allows the prefabs shown to be either purely location based or to be relative to the user.
 
-- If there are two or more layers available at the user's location, the list of layers is shown to the user
-  in order for the user to select a layer to be shown.
-  
-- If there is exactly one layer, this layer is selected, or if there is no layer at all, a default layer is selected.
+- **AR-vos** is an image trigger AR application. It uses ARCore on Android and ARKit on iOS.
 
-- Connects to the porpoise service of the selected layer and downloads the list of **POI**s of the layer.
+- **AR-vos** dynamically downloads the trigger images used and the Unity 3d prefabs shown once the image triggers.
 
-- Downloads the Unity asset bundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
-
-- Places the **POI**s' Unity prefabs into the 3D scene and shows the camera image as the background of the scene.
