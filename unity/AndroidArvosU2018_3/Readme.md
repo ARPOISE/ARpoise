@@ -15,10 +15,10 @@ You do not need to build it yourself.
 
 - Downloads the list of **POI**s of the default layer.
 
-- Downloads the trigger image for each **POI** and registers the image with Android's ARCore as trigger image.
+- Downloads the trigger image for each **POI** and registers the image with Android's ARCore as image trigger.
 
 - Downloads the Unity asset bundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
 
-- Displays a 'Fit the image you're scanning' frame and shows the camera image as the background of the scene.
+- Displays a 'Fit the image you're scanning' frame and shows the camera image as the background of the frame.
 
-- Once Android's ARCore reports back that an trigger image has been found in the camera view, the app shows the Unity prefab of the **POI** at the trigger image location.
+- Once Android's ARCore reports back that an trigger image has been found in the camera view, the app shows the Unity prefab of the **POI** at the image trigger location.
