@@ -2,10 +2,10 @@
 # ARpoise -iOS- App
 
 ## Overview
-This directory contains the Unity 3D project used to build the ARpoise -iOS- App with Unity 3D version 2018.2.2.
-If you clone and open this project with Unity 3D, version 2018.2.2, you should be able to build ARpoise.
+This directory contains the Unity 3D project used to build the **ARpoise** -iOS- App with Unity 3D version 2018.2.2.
+If you clone and open this project with Unity 3D, version 2018.2.2, you should be able to build **ARpoise**.
 
-The ARpoise -iOS- App has been submitted to the Apple App Store. You do not need to build it yourself.
+The **ARpoise** -iOS- App has been submitted to the Apple App Store. You do not need to build it yourself.
 
 ## Functionality
 - Connects to the ARpoise-Directory front-end and supplies the location of the user's device.
