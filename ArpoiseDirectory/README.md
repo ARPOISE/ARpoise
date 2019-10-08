@@ -1,3 +1,4 @@
+![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
 # ArpoiseDirectory
 
 ArpoiseDirectory is a cgi-bin program written in C. It acts as a cgi filter between the Layar app and the porpoise.php poi provider.
