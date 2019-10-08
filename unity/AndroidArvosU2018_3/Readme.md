@@ -1,5 +1,5 @@
 ![ARpoise Logo](/images/arvos_logo_rgb-weiss128.png)
-# AR-vos -Mobile- Client App
+# AR-vos -Android- App
 
 ## Overview
 This directory contains the Unity 3D project used to build the Android AR-vos Client App with Unity 3D version 2018.3.14.
