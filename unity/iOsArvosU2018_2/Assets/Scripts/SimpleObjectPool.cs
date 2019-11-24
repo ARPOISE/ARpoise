@@ -11,7 +11,7 @@ namespace com.arpoise.arpoiseapp
         // the prefab that this object pool returns instances of
         public GameObject prefab;
         // collection of currently inactive instances of the prefab
-        private Stack<GameObject> _inactiveInstances = new Stack<GameObject>();
+        private readonly Stack<GameObject> _inactiveInstances = new Stack<GameObject>();
 
         // Returns an instance of the prefab
         public GameObject GetObject()

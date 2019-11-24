@@ -44,8 +44,11 @@ Arpoise, see www.Arpoise.com/
 
 */
 using com.arpoise.arpoiseapp;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.iOS;
 
 public class UnityARCameraManager : ArBehaviourSlam
@@ -54,6 +57,7 @@ public class UnityARCameraManager : ArBehaviourSlam
 #else
     public GameObject AnchorManager;
 #endif
+    private bool _sessionStarted = false;
 
     public Camera m_camera;
     private UnityARSessionNativeInterface m_session;
@@ -73,7 +77,7 @@ public class UnityARCameraManager : ArBehaviourSlam
 
     [Header("Object Tracking")]
     public ARReferenceObjectsSetAsset detectionObjects = null;
-    private bool sessionStarted = false;
+
 
     public ARKitWorldTrackingSessionConfiguration sessionConfiguration
     {
@@ -115,7 +119,6 @@ public class UnityARCameraManager : ArBehaviourSlam
         StartArSession();
 #else
 #endif
-
         if (m_camera == null)
         {
             m_camera = Camera.main;
@@ -123,7 +126,11 @@ public class UnityARCameraManager : ArBehaviourSlam
     }
 
     protected void StartArSession()
-    {
+    { 
+        if (_sessionStarted)
+        {
+            return;
+        }
         var config = sessionConfiguration;
         if (config.IsSupported)
         {
@@ -134,6 +141,10 @@ public class UnityARCameraManager : ArBehaviourSlam
 
     protected void StartArSession(Texture2D texture)
     {
+        if (_sessionStarted)
+        {
+            return;
+        }
         if (texture != null)
         {
             var config = sessionConfiguration;
@@ -146,14 +157,25 @@ public class UnityARCameraManager : ArBehaviourSlam
         }
     }
 
+    private Dictionary<string, TriggerObject> _storedObjects = new Dictionary<string, TriggerObject>();
+
     protected void StartArSession(Dictionary<int, TriggerObject> triggerObjects)
     {
+        if (_sessionStarted)
+        {
+            return;
+        }
         var config = sessionConfiguration;
         if (config.IsSupported)
         {
             foreach (var key in triggerObjects.Keys)
             {
                 var triggerObject = triggerObjects[key];
+                if (_storedObjects.ContainsKey(triggerObject.triggerImageURL))
+                {
+                    continue;
+                }
+                _storedObjects[triggerObject.triggerImageURL] = triggerObject;
                 byte[] bytes = triggerObject.texture.EncodeToJPG();
                 m_session.StoreTriggerImage("" + key, bytes.Length, bytes, triggerObject.width);
             }
@@ -169,7 +191,7 @@ public class UnityARCameraManager : ArBehaviourSlam
 
     private void FirstFrameUpdate(UnityARCamera cam)
     {
-        sessionStarted = true;
+        _sessionStarted = true;
         UnityARSessionNativeInterface.ARFrameUpdatedEvent -= FirstFrameUpdate;
     }
 
@@ -204,15 +226,66 @@ public class UnityARCameraManager : ArBehaviourSlam
         }
     }
 
+    private long? _fitToScanOverlayActivationSecond = null;
+
     protected override void Update()
     {
+        if (IsNewLayer)
+        {
+            _sessionStarted = false;
+        }
         base.Update();
+
+        var layerItemList = LayerItemList;
+        if (MenuEnabled.HasValue && MenuEnabled.Value && layerItemList != null && layerItemList.Any())
+        {
+            var fitToScanOverlay = FitToScanOverlay;
+            if (fitToScanOverlay != null && fitToScanOverlay.activeSelf)
+            {
+                long nowTicks = DateTime.Now.Ticks;
+                var second = nowTicks / 10000000L;
+                if (!_fitToScanOverlayActivationSecond.HasValue)
+                {
+                    _fitToScanOverlayActivationSecond = second;
+                    //Debug.LogFormat("FTS value {0}", _fitToScanOverlayActivationSecond.Value);
+                }
+                else
+                {
+                    var value = _fitToScanOverlayActivationSecond.Value;
+                    if (value + 30 < second)
+                    {
+                        //Debug.LogFormat("FTS value {0}, second {1}", _fitToScanOverlayActivationSecond.Value, second);
+
+                        var triggerObjects = TriggerObjects;
+                        if (triggerObjects != null)
+                        {
+                            foreach (var t in triggerObjects.Values)
+                            {
+                                t.isActive = false;
+                            }
+                        }
+                        _fitToScanOverlayActivationSecond = null;
+                        MenuButtonClick = new MenuButtonClickActivity { ArBehaviour = this };
+                    }
+                    else
+                    {
+                        SetInfoText($"Timeout in {value + 30 - second} seconds.");
+                    }
+                }
+            }
+            else
+            {
+                _fitToScanOverlayActivationSecond = null;
+            }
+        }
+
 #if IS_SLAM_APP
 #else
-        if (!sessionStarted)
+        if (!_sessionStarted)
         {
             if (!HasTriggerImages)
             {
+                StartArSession();
                 return;
             }
             var anchorManager = AnchorManager.GetComponent<ArKitAnchorManager>();
@@ -222,7 +295,7 @@ public class UnityARCameraManager : ArBehaviourSlam
             StartArSession(anchorManager.TriggerObjects);
         }
 #endif
-        if (m_camera != null && sessionStarted)
+        if (m_camera != null && _sessionStarted)
         {
             // JUST WORKS!
             Matrix4x4 matrix = m_session.GetCameraPose();

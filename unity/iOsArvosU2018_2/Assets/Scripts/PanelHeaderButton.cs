@@ -35,18 +35,31 @@ namespace com.arpoise.arpoiseapp
     public class PanelHeaderButton : MonoBehaviour
     {
         public Button Button;
-        public GameObject Anchor;
+        private bool _started;
 
         // Use this for initialization
-        private void Start()
+        protected void Start()
         {
-            Button.onClick.AddListener(HandleClick);
+            if (!_started)
+            {
+                _started = true;
+                Button.onClick.AddListener(HandleClick);
+                //Debug.Log("PanelHeaderButton Start.");
+            }
+        }
+
+        private ArBehaviourUserInterface _behaviour;
+        public void Setup(ArBehaviourUserInterface behaviour)
+        {
+            Start();
+            _behaviour = behaviour;
+            //Debug.Log("PanelHeaderButton Setup.");
         }
 
         public void HandleClick()
         {
-            ArBehaviour behaviour = Anchor.GetComponent<ArBehaviour>();
-            behaviour.HandlePanelHeaderButtonClick();
+            _behaviour?.HandlePanelHeaderButtonClick();
+            //Debug.Log("PanelHeaderButton HandleClick.");
         }
     }
 }

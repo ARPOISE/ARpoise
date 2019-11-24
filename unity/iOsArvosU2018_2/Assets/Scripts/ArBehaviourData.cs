@@ -44,6 +44,11 @@ using GoogleARCore;
 
 namespace com.arpoise.arpoiseapp
 {
+    public interface IActivity
+    {
+        void Execute();
+    }
+
     public class ArpoiseCertificateHandler : CertificateHandler
     {
         protected override bool ValidateCertificate(byte[] certificateData)
@@ -62,6 +67,7 @@ namespace com.arpoise.arpoiseapp
 
     public class TriggerObject
     {
+        public bool isActive;
         public int index;
         public string triggerImageURL;
         public Texture2D texture;
@@ -70,35 +76,69 @@ namespace com.arpoise.arpoiseapp
         public Poi poi;
     }
 
+    public class HeaderSetActiveActivity : IActivity
+    {
+        public ArBehaviourData ArBehaviour;
+        public string LayerTitle;
+
+        public void Execute()
+        {
+            ArBehaviour.SetHeaderActive(LayerTitle);
+        }
+    }
+
+    public class MenuButtonClickActivity : IActivity
+    {
+        public ArBehaviourData ArBehaviour;
+
+        public void Execute()
+        {
+            ArBehaviour.HandleMenuButtonClick();
+        }
+    }
+
+    public class MenuButtonSetActiveActivity : IActivity
+    {
+        public ArBehaviourData ArBehaviour;
+        public List<ArLayer> Layers;
+
+        public void Execute()
+        {
+            ArBehaviour.SetMenuButtonActive(Layers);
+        }
+    }
+
     public class ArBehaviourData : ArBehaviourPosition
     {
-        public static string ArvosApplicationName = "Arvos";
-        public static string ArpoiseApplicationName = "Arpoise";
-        public static string ArslamApplicationName = "Arslam";
+        public const string ArvosApplicationName = "Arvos";
+        public const string ArpoiseApplicationName = "Arpoise";
+        public const string ArslamApplicationName = "Arslam";
 
         #region Globals
 
         public GameObject SceneAnchor = null;
         public GameObject Wrapper = null;
-        public GameObject InputPanel;
-        public GameObject MenuButton = null;
+
         #endregion
 
         #region Protecteds
 
+        protected List<ArItem> LayerItemList = null;
         protected bool IsNewLayer = false;
         protected bool HasTriggerImages = false;
         protected Dictionary<int, TriggerObject> TriggerObjects = new Dictionary<int, TriggerObject>();
 #if HAS_AR_CORE
         protected AugmentedImageDatabase AugmentedImageDatabase;
 #endif
-        protected List<ArItem> LayerItemList = null;
         protected bool? MenuEnabled = null;
-        protected bool WaitingForLayerSelection = false;
         protected string InformationMessage = null;
         protected bool ShowInfo = false;
         protected volatile RefreshRequest RefreshRequest = null;
         protected float RefreshInterval = 0;
+
+        protected MenuButtonSetActiveActivity MenuButtonSetActive;
+        protected HeaderSetActiveActivity HeaderSetActive;
+        protected MenuButtonClickActivity MenuButtonClick;
 
 #if DEVEL
         protected static readonly string ArpoiseDirectoryLayer = "Arpoise-Directory";
@@ -112,13 +152,13 @@ namespace com.arpoise.arpoiseapp
         #region ArObjects
 
 #if HAS_AR_CORE
-        private string _clientApplicationName = ArvosApplicationName;
+        private readonly string _clientApplicationName = ArvosApplicationName;
 #else
 #if HAS_AR_KIT
 #if IS_SLAM_APP
-        private string _clientApplicationName = ArslamApplicationName;
+        private readonly string _clientApplicationName = ArslamApplicationName;
 #else
-        private string _clientApplicationName = ArvosApplicationName;
+        private readonly string _clientApplicationName = ArvosApplicationName;
 #endif
 #else
         private readonly string _clientApplicationName = ArpoiseApplicationName;
@@ -344,7 +384,7 @@ namespace com.arpoise.arpoiseapp
             objectToAdd.name = poi.title;
 
             // Scale the scaleWrapper
-            if (poi.transform != null && poi.transform.scale != 0)
+            if (poi.transform != null && poi.transform.scale != 0.0)
             {
                 scaleWrapper.transform.localScale = new Vector3(poi.transform.scale, poi.transform.scale, poi.transform.scale);
             }
@@ -371,7 +411,7 @@ namespace com.arpoise.arpoiseapp
                 }
                 var parts = relativePosition.Split(',');
 
-                double value = 0;
+                double value;
                 var xOffset = (float)(parts.Length > 0 && double.TryParse(parts[0].Trim(), out value) ? value : 0);
                 var yOffset = (float)(parts.Length > 1 && double.TryParse(parts[1].Trim(), out value) ? value : 0);
                 var zOffset = (float)(parts.Length > 2 && double.TryParse(parts[2].Trim(), out value) ? value : 0);
@@ -467,31 +507,49 @@ namespace com.arpoise.arpoiseapp
                         }
 #if HAS_AR_CORE
                         var width = poi.poiObject.triggerImageWidth;
-                        var t = new TriggerObject
+                        var t = TriggerObjects.Values.FirstOrDefault(x => x.triggerImageURL == triggerImageURL);
+                        if (t == null)
                         {
-                            index = AugmentedImageDatabase.Count,
-                            triggerImageURL = triggerImageURL,
-                            texture = texture,
-                            width = width,
-                            gameObject = objectToAdd,
-                            poi = poi
-                        };
-                        TriggerObjects[t.index] = t;
+                            t = new TriggerObject
+                            {
+                                isActive = true,
+                                index = AugmentedImageDatabase.Count,
+                                triggerImageURL = triggerImageURL,
+                                texture = texture,
+                                width = width,
+                                gameObject = objectToAdd,
+                                poi = poi
+                            };
+                            TriggerObjects[t.index] = t;
+                        }
+                        else
+                        {
+                            t.isActive = true;
+                        }
 
                         AugmentedImageDatabase.AddImage(triggerImageURL, texture, width);
 #endif
 #if HAS_AR_KIT
                         var width = poi.poiObject.triggerImageWidth;
-                        var t = new TriggerObject
+                        var t = TriggerObjects.Values.FirstOrDefault(x => x.triggerImageURL == triggerImageURL);
+                        if (t == null)
                         {
-                            index = TriggerObjects.Count,
-                            triggerImageURL = triggerImageURL,
-                            texture = texture,
-                            width = width,
-                            gameObject = objectToAdd,
-                            poi = poi
-                        };
-                        TriggerObjects[TriggerObjects.Count] = t;
+                            t = new TriggerObject
+                            {
+                                isActive = true,
+                                index = TriggerObjects.Count,
+                                triggerImageURL = triggerImageURL,
+                                texture = texture,
+                                width = width,
+                                gameObject = objectToAdd,
+                                poi = poi
+                            };
+                            TriggerObjects[TriggerObjects.Count] = t;
+                        }
+                        else
+                        {
+                            t.isActive = true;
+                        }
 #endif
                     }
                     catch (Exception ex)
@@ -517,7 +575,7 @@ namespace com.arpoise.arpoiseapp
                     }
                 }
             }
-            HasTriggerImages = TriggerObjects.Count > 0;
+            HasTriggerImages = TriggerObjects.Values.Any(x => x.isActive);
 
             return null;
         }
@@ -690,7 +748,7 @@ namespace com.arpoise.arpoiseapp
         {
             var build = "rel";
             var os = "Android";
-            var bundle = "191008";
+            var bundle = "191124";
 #if UNITY_IOS
             os = "iOS";
             bundle = "20" + bundle;
@@ -707,6 +765,11 @@ namespace com.arpoise.arpoiseapp
             while (OriginalLatitude == 0.0 && OriginalLongitude == 0.0)
             {
                 // wait for the position to be determined
+                yield return new WaitForSeconds(.01f);
+            }
+
+            while (InfoPanelIsActive())
+            {
                 yield return new WaitForSeconds(.01f);
             }
 
@@ -823,22 +886,7 @@ namespace com.arpoise.arpoiseapp
                 #endregion
 
                 #region Handle the showMenuButton of the layers
-                if (InputPanel != null && !MenuEnabled.HasValue)
-                {
-                    var inputPanel = InputPanel.GetComponent<InputPanel>();
-                    if (inputPanel.IsActivated())
-                    {
-                        MenuEnabled = true;
-                    }
-                    else
-                    {
-                        MenuEnabled = !layers.Any(x => !x.showMenuButton);
-                    }
-                }
-                if (MenuButton != null)
-                {
-                    MenuButton.SetActive(MenuEnabled.HasValue && MenuEnabled.Value);
-                }
+                MenuButtonSetActive = new MenuButtonSetActiveActivity { ArBehaviour = this, Layers = layers.ToList() };
                 #endregion
 
                 #region Download the asset bundle for icons
@@ -923,7 +971,7 @@ namespace com.arpoise.arpoiseapp
                     var itemList = new List<ArItem>();
                     foreach (var layer in layers.Where(x => x.hotspots != null))
                     {
-                        if ("Arpoise-Directory".Equals(layer.layer))
+                        if ("Arpoise-Directory".Equals(layer.layer) || "AR-vos-Directory".Equals(layer.layer))
                         {
                             foreach (var poi in layer.hotspots)
                             {
@@ -938,7 +986,7 @@ namespace com.arpoise.arpoiseapp
                                     }
                                 }
 
-                                var sprite = spriteObject != null ? spriteObject.GetComponent<SpriteRenderer>().sprite : null;
+                                var sprite = spriteObject?.GetComponent<SpriteRenderer>().sprite;
 
                                 itemList.Add(new ArItem
                                 {
@@ -956,33 +1004,26 @@ namespace com.arpoise.arpoiseapp
 
                     if (itemList.Any())
                     {
-                        // There are different layers to show
                         LayerItemList = itemList;
-                        HandleMenuButtonClick();
+                        //Debug.Log("Showing layer panel with " + itemList.Count + " panels.");
+                        // There are different layers to show
+                        MenuButtonClick = new MenuButtonClickActivity { ArBehaviour = this };
 
                         // Wait for the user to select a layer
-                        try
+                        for (; ; )
                         {
-                            WaitingForLayerSelection = true;
-                            for (; ; )
+                            var refreshRequest = RefreshRequest;
+                            RefreshRequest = null;
+                            if (refreshRequest != null)
                             {
-                                var refreshRequest = RefreshRequest;
-                                RefreshRequest = null;
-                                if (refreshRequest != null)
-                                {
-                                    count = 0;
-                                    layerName = refreshRequest.layerName;
-                                    uri = refreshRequest.url;
-                                    FixedDeviceLatitude = refreshRequest.latitude;
-                                    FixedDeviceLongitude = refreshRequest.longitude;
-                                    break;
-                                }
-                                yield return new WaitForSeconds(.1f);
+                                count = 0;
+                                layerName = refreshRequest.layerName;
+                                uri = refreshRequest.url;
+                                FixedDeviceLatitude = refreshRequest.latitude;
+                                FixedDeviceLongitude = refreshRequest.longitude;
+                                break;
                             }
-                        }
-                        finally
-                        {
-                            WaitingForLayerSelection = false;
+                            yield return new WaitForSeconds(.1f);
                         }
                         continue;
                     }
@@ -1261,8 +1302,10 @@ namespace com.arpoise.arpoiseapp
                 }
                 #endregion
 
+                #region Activate the Header
                 var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !IsEmpty(x));
-                SetHeaderActive(layerTitle);
+                HeaderSetActive = new HeaderSetActiveActivity { LayerTitle = layerTitle, ArBehaviour = this };
+                #endregion
 
                 List<ArObject> existingArObjects = null;
                 var arObjectState = ArObjectState;
@@ -1336,6 +1379,12 @@ namespace com.arpoise.arpoiseapp
                         uri = refreshRequest.url;
                         FixedDeviceLatitude = refreshRequest.latitude;
                         FixedDeviceLongitude = refreshRequest.longitude;
+                        ErrorMessage = string.Empty;
+                        foreach (var triggerObject in TriggerObjects.Values)
+                        {
+                            triggerObject.isActive = false;
+                        }
+                        HasTriggerImages = false;
                         break;
                     }
                     yield return new WaitForSeconds(.1f);
@@ -1346,11 +1395,19 @@ namespace com.arpoise.arpoiseapp
         #endregion
 
         #region Misc
+        public virtual void SetMenuButtonActive(List<ArLayer> layers)
+        {
+        }
+
+        public virtual void HandleInfoPanelClosed()
+        {
+        }
+
         public virtual void HandleMenuButtonClick()
         {
         }
 
-        protected virtual void SetHeaderActive(string layerTitle)
+        public virtual void SetHeaderActive(string layerTitle)
         {
         }
 
@@ -1385,14 +1442,16 @@ namespace com.arpoise.arpoiseapp
             {
                 url = url.Replace("\\", string.Empty);
             }
-            //if (url.StartsWith("http://"))
-            //{
-            //    url = url.Substring(7);
-            //}
-            //if (!url.StartsWith("https://"))
-            //{
-            //    url = "https://" + url;
-            //}
+#if HAS_AR_CORE
+            if (url.StartsWith("http://"))
+            {
+                url = url.Substring(7);
+            }
+            if (!url.StartsWith("https://"))
+            {
+                url = "https://" + url;
+            }
+#endif
             return url;
         }
         #endregion

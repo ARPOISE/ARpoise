@@ -38,15 +38,15 @@ namespace com.arpoise.arpoiseapp
     {
         public volatile bool IsDirty = false;
 
-        private List<ArAnimation> _onCreateAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _onFollowAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _onFocusAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _inFocusAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _onClickAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _billboardAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _onCreateAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _onFollowAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _onFocusAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _inFocusAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _onClickAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _billboardAnimations = new List<ArAnimation>();
         private List<ArAnimation> _allAnimations = null;
 
-        private List<ArObject> _arObjects = new List<ArObject>();
+        private readonly List<ArObject> _arObjects = new List<ArObject>();
         public IEnumerable<ArObject> ArObjects { get { return _arObjects; } }
         public List<ArObject> ArObjectsToDelete { get; private set; }
         public List<ArObject> ArObjectsToPlace { get; private set; }
