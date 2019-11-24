@@ -27,6 +27,12 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.33  2019/11/15 21:50:03  peter
+Layer lists for AR-vos on iOs
+
+Revision 1.32  2019/11/15 19:32:26  peter
+Allowing the menu button in AR-vos
+
 Revision 1.31  2019/10/07 14:46:18  peter
 Allowing menu button for default layers
 
@@ -126,7 +132,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.31 2019/10/07 14:46:18 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.33 2019/11/15 21:50:03 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -770,7 +776,7 @@ static char * changeShowMenuOption(char * string, char * value)
 
 static PblList * devicePositionList = NULL;
 
-static char * handleDevicePosition(char * deviceId, char * queryString, int * latDifference, int * lonDifference)
+static char * handleDevicePosition(char * deviceId, char* client, char * queryString, int * latDifference, int * lonDifference)
 {
 	if (pblCgiStrIsNullOrWhiteSpace(deviceId))
 	{
@@ -779,6 +785,12 @@ static char * handleDevicePosition(char * deviceId, char * queryString, int * la
 
 	char * lat = NULL;
 	char * lon = NULL;
+
+	if (pblCgiStrEquals("Arvos", client))
+	{
+		lat = lon = "0.000000";
+		return changeLatAndLon(queryString, lat, lon, latDifference, lonDifference);
+	}
 
 	if (!devicePositionList)
 	{
@@ -1133,6 +1145,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 
 	// read query values
 	//
+	char * client = pblCgiQueryValue("client");
 	char * userId = pblCgiQueryValue("userId");
 	if (!userId || !*userId)
 	{
@@ -1143,7 +1156,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 	//
 	int latDifference = 0;
 	int lonDifference = 0;
-	char * deviceQueryString = handleDevicePosition(userId, queryString, &latDifference, &lonDifference);
+	char * deviceQueryString = handleDevicePosition(userId, client, queryString, &latDifference, &lonDifference);
 	if (deviceQueryString != NULL)
 	{
 		queryString = deviceQueryString;
@@ -1156,38 +1169,50 @@ static int arpoiseDirectory(int argc, char * argv[])
 	int isDirectoryRequest = pblCgiStrEquals(layerName, "Arpoise-Directory");
 	if (isDirectoryRequest)
 	{
+		// See what operating system it is
+		char* os = pblCgiQueryValue("os");
+		if (!os || !*os)
+		{
+			os = "UnknownOperatingSystem";
+		}
+
 		// This is a request for the Arpoise-Directory layer
 
 		PBL_CGI_TRACE("-------> Directory Request\n");
 
 		// See what client it is
-		char * client = pblCgiQueryValue("client");
 		if (pblCgiStrEquals("Arvos", client))
 		{
-			// Request the default layer from porpoise and return it to the client
+			if (pblCgiStrEquals("Android", os))
+			{
+				// Request the default layer from porpoise and return it to the client
 
-			layerUrl = pblCgiConfigValue("ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
-			layerName = pblCgiConfigValue("ArvosDefaultLayerName", "Default-ImageTrigger");
+				layerUrl = pblCgiConfigValue("ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
+				layerName = pblCgiConfigValue("ArvosDefaultLayerName", "Default-ImageTrigger");
 
-			layerServed = 1;
-			PBL_CGI_TRACE("-------> Arvos Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
+				layerServed = 1;
+				PBL_CGI_TRACE("-------> Arvos Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
 
-			char * ptr = changeLayerName(queryString, layerName);
+				char* ptr = changeLayerName(queryString, layerName);
 
-			int myLatDifference = 0;
-			int myLonDifference = 0;
-			ptr = changeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
-			latDifference += myLatDifference;
-			lonDifference += myLonDifference;
+				int myLatDifference = 0;
+				int myLonDifference = 0;
+				ptr = changeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
+				latDifference += myLatDifference;
+				lonDifference += myLonDifference;
 
-			uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
-			char * agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-			char * response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
-			response = changeShowMenuOption(response, "false");
-			handleResponse(response, latDifference, lonDifference);
+				uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
+				char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
+				char* response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
+				handleResponse(response, latDifference, lonDifference);
 
-			createStatisticsHits(layer, layerName, layerServed);
-			return 0;
+				createStatisticsHits(layer, layerName, layerServed);
+				return 0;
+			}
+
+			// Request the AR-vos-Directory
+
+			queryString = changeLayerName(queryString, "AR-vos-Directory");
 		}
 		if (pblCgiStrEquals("Arslam", client))
 		{
@@ -1217,13 +1242,6 @@ static int arpoiseDirectory(int argc, char * argv[])
 			return 0;
 		}
 
-		// See what operating system it is
-		char * os = pblCgiQueryValue("os");
-		if (!os || !*os)
-		{
-			os = "UnknownOperatingSystem";
-		}
-
 		int bundleInteger = 0;
 		char * bundle = pblCgiQueryValue("bundle");
 		if (bundle && isdigit(*bundle))
@@ -1249,6 +1267,32 @@ static int arpoiseDirectory(int argc, char * argv[])
 				printHeader(cookie);
 				fputs(response, stdout);
 				PBL_CGI_TRACE("Response does not start with %s, no handling", start);
+			}
+			else if (pblCgiStrEquals("Arvos", client))
+			{
+				// Request the default layer from porpoise and return it to the client
+
+				layerUrl = pblCgiConfigValue("ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
+				layerName = pblCgiConfigValue("ArvosDefaultLayerName", "Default-ImageTrigger");
+
+				layerServed = 1;
+				PBL_CGI_TRACE("-------> Arvos Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
+
+				char* ptr = changeLayerName(queryString, layerName);
+
+				int myLatDifference = 0;
+				int myLonDifference = 0;
+				ptr = changeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
+				latDifference += myLatDifference;
+				lonDifference += myLonDifference;
+
+				uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
+				char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
+				char* response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
+				handleResponse(response, latDifference, lonDifference);
+
+				createStatisticsHits(layer, layerName, layerServed);
+				return 0;
 			}
 			else
 			{
