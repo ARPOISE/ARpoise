@@ -54,7 +54,7 @@ Currently Tamiko Thiel's
 ## Components
 ### iOS- and Android-Client Application
 See [unity](unity/).
-This folder contains Unity projects for the different clients **ARpoise** and **AR-vos**.
+This folder contains Unity projects for the different clients, **ARpoise** and **AR-vos**.
 ### ARpoise-Directory Front End
 See [ARpoiseDirectory](ArpoiseDirectory/README.md).
 ### ARpoise-Directory Back End
