@@ -19,7 +19,7 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content,
 you should start by reading this document.
 As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read
-the documentation [/php/porpoise](php/porpoise/README.md) for it.
+the documentation for it in [/php/porpoise](php/porpoise/README.md).
 
 ## Functionality
 - Content designers can create image trigger or location-based AR experiences in Unity3d and add them as project layers to a general directory. This AR experiences can either be visible all over the world, or geo-fenced to be viewable only within areas defined by specific GPS coordinates.
