@@ -2,7 +2,7 @@
 # ARpoise and AR-vos -Mobile- Apps
 
 ## Overview
-This directory contains the Unity 3D projects used to build the **ARpoise** and **AR-vos** Apps for Android and iOS.
+This directory contains the Unity 3D projects used to build the **ARpoise** and **AR-vos** apps for Android and iOS.
 
 ## Functionality
 - **ARpoise** is a location based AR application.
