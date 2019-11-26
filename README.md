@@ -8,7 +8,8 @@ Two different client applications have been implemented for Android in the
 [Google Play](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store, and iOS in the 
 Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843).
 
-- The **ARpoise** client is a geolocative AR app running on most available phones.
+- The **ARpoise** client is a geolocative AR app running on most available phones. [Google Play](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store, Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843).
+
 - The **AR-vos** client is an image trigger and a geolocative AR app using ARKit on iOS and ARCore on Android.
 
 The goal of ARpoise is to provide an open-source, community-supported, location-based AR app as a replacement for the 
