@@ -57,7 +57,7 @@ Currently Tamiko Thiel's
 See [unity](unity/).
 This folder contains Unity projects for the different clients, **ARpoise** and **AR-vos**.
 ### ARpoise-Directory Front End
-See [ARpoiseDirectory](ArpoiseDirectory/README.md).
+See [ARpoiseDirectory](ArpoiseDirectory).
 ### ARpoise-Directory Back End
 See [/php/dir](php/dir/README.md).
 ### ARpoise-PorPOISe Back End
