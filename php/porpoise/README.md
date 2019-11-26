@@ -28,6 +28,9 @@ The name of the iOS asset bundle has to be the Android name followed by the lett
 Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle",
 you also need to avail the iOS asset bundle with the url ".../MyAssetBundlei". 
 
+**Note**: The asset bundles and trigger images you make available on the web and reference in the **POI** definitions
+eed to accessable via **https**.
+
 ## Functionality
 The ARpoise client contacts this web service with the client location and the layer name as parameter.
 
