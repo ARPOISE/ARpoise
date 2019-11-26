@@ -8,26 +8,22 @@ Two different client applications have been implemented for Android in the
 [Google Play](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store, and iOS in the 
 Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843).
 
-- The ARpoise client is a geolocative AR app running on most available phones.
-- The AR-vos client is an image trigger and a geolocative AR app using ARKit on iOS and ARCore on Android.
+- The **ARpoise** client is a geolocative AR app running on most available phones.
+- The **AR-vos** client is an image trigger and a geolocative AR app using ARKit on iOS and ARCore on Android.
 
-The goal of ARpoise is to provide an open-source, community-supported, location-based AR App as a replacement for the 
+The goal of ARpoise is to provide an open-source, community-supported, location-based AR app as a replacement for the 
 [Layar app](https://www.layar.com/) and other commercial geolocative AR platforms.
 
 ## Functionality
-- Content designers can create location-based AR experiences in Unity3d and add them as project layers to a general directory. This AR experiences can either be visible all over the world, or geo-fenced to be viewable only within areas defined by specific GPS coordinates.
+- Content designers can create image trigger or location-based AR experiences in Unity3d and add them as project layers to a general directory. This AR experiences can either be visible all over the world, or geo-fenced to be viewable only within areas defined by specific GPS coordinates.
 
-- These AR experiences can be viewed by anyone who downloads the free ARpoise client onto Android and iOS devices. Since the AR experiences are individual project layers within an existing app, content designers do not have to create individual apps for each project and bring each project into the App and Play stores themselves.
+- These AR experiences can be viewed by anyone who downloads one of the free client apps, **ARpoise** or **AR-vos**, onto Android and iOS devices. Since the AR experiences are individual project layers within an existing app, content designers do not have to create individual apps for each project and bring each project into the App and Play stores themselves.
 
 - Artist define layers of points of interest, (**POI**)s, can be added to,
 removed from, or placed within the world coordinates of ARpoise dynamically.
 
-- The 3D content visible in ARpoise is independent of the ARpoise app downloaded from the
-[Google Play](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store
-or the
-Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843).
-The **POI**s specified in an ARpoise layer definition contain the URL of an
-Unity AssetBundle.
+- The 3D content visible in ARpoise is independent of the app downloaded from the Google Play Store or the Apple App Store.
+The **POI**s specified in an ARpoise layer definition contain the URL of an Unity AssetBundle.
 When showing a **POI**, the ARpoise app downloads this asset bundle
 and loads the 3D Unity prefab of the **POI** from it.
 
@@ -35,7 +31,9 @@ and loads the 3D Unity prefab of the **POI** from it.
 ARpoise level animations like scale, rotation, and transformation to be started
 'on create', 'on focus', 'in focus', or 'on click' of a **POI**.
 
-- **POI**s can have an absolute world location defined by longitude and latitude
+- Image trigger based **POI**s are shown to the user once the app discovers a trigger image.
+
+- Geolocative **POI**s can have an absolute world location defined by longitude and latitude
 or they can have a position relative to the user's device defined in meters of distance in the X, Y, and Z directions.
 **POI**s with an absolute location can additionally be confined into an area around the user,
 so they will always be around the user.
@@ -56,7 +54,7 @@ Currently Tamiko Thiel's
 ## Components
 ### iOS- and Android-Client Application
 See [unity](unity/).
-This folder contains Unity projects for the different version of ARpoise..
+This folder contains Unity projects for the different clients **ARpoise** and **AR-vos**.
 ### ARpoise-Directory Front End
 See [ARpoiseDirectory](ArpoiseDirectory/README.md).
 ### ARpoise-Directory Back End
