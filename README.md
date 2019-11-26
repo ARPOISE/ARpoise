@@ -2,9 +2,14 @@
 # *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
 
 ## Overview
-ARpoise is an open-source Augmented Reality service environment that allows AR content designers to create and distribute and AR users to view location based AR content that is created in [Unity](http://unity3d.com). Client applications have been implemented for Android in the 
+ARpoise is an open-source Augmented Reality service environment that allows AR content designers to create and distribute and AR users to view location based AR content that is created in [Unity](http://unity3d.com). 
+
+Two different client applications have been implemented for Android in the 
 [Google Play](http://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store, and iOS in the 
 Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843).
+
+- The ARpoise client is a geolocative AR app running on most available phones.
+- The AR-vos client is an image trigger and a geolocative AR app using ARKit on iOS and ARCore on Android.
 
 The goal of ARpoise is to provide an open-source, community-supported, location-based AR App as a replacement for the 
 [Layar app](https://www.layar.com/) and other commercial geolocative AR platforms.
