@@ -18,7 +18,7 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 ## Getting Started
 If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content,
 you should start by reading this document.
-As you also will have to run you won version of the **ARpoise-PorPOISe Back End** you should also read
+As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read
 the documentation [/php/porpoise](php/porpoise/README.md) for it.
 
 ## Functionality
