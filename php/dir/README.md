@@ -6,6 +6,7 @@ This is an ARpoise internal version of PorPOISe used for the placing of artist's
 
 The ARpoise directory has to be maintaned on www.arpoise.com. It contains a single "meta" layer, the Arpoise-Directory.
 The "**POI**s" of this layer define the name, url, attributes, and location of all the layers visible in ARpoise.
+Content creators who want to use ARpoise or AR-vos to deliver their 3D content via the apps, do not need to run this service.
 
 ## Functionality
 The ARpoise directory front end contacts this web service with the client's location as parameter.
