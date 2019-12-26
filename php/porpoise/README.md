@@ -3,33 +3,25 @@
 
 ## Overview
 This is the version of PorPOISe used for placing and delivering the **POI**s of **your own** layers.
+- A **POI** (Point Of Interest) is one or more individual augments such as a 3D model, that make up your AR experience.
+- Each individual AR experience or project exists on a separate ARpoise "layer". A single location could have multiple projects at exactly the same site, but if each one is in a separate layer, they will not interfere with each other and will show up in the client app as separate entries in a list of available projects.
 
-In order to add your layers to ARpoise you need to download and install this package onto **your own** web server!
+In order to create a project layer for ARpoise you need to download and install this package onto **your own** web server!
 
-For using the Google-maps-based click-and-drag interface as shown in the screen shots below
-you need to use **your own** Google-maps id.
+For using the Google-maps-based click-and-drag interface as shown in the screen shots below you need to use **your own** Google-maps id.
 
 ## Application
-In order for any of your layers to be visible in ARpoise
-you need to supply the **url** of your PorPOISe installation that is serving the layer's content,
-and the **name**, and the **longitude** and **latitude** coordinates of the layer to the administrators of www.arpoise.com.
+In order for any of your layers to be visible in ARpoise you need to supply the **url** of your PorPOISe installation that is serving the layer's content, and the **name**, and the **longitude** and **latitude** coordinates of the layer, to the administrators of www.arpoise.com.
 
-The 3D content of each of the **POI**s of your layer needs to be created as an Unity prefab
-and needs to be put into an Unity asset bundle made available on the web.
-The asset bundle is referenced by the **POI**'s definition in your layer.
+The content of each of the **POI**s of your layer needs to be created as a Unity prefab and needs to be put into an Unity asset bundle made available on the web. The asset bundle is referenced by the **POI**'s definition in your layer.
 
 Creation of asset bundles in Unity is beyond this documentation.
 
-One thing we found is, asset bundles created for either Android or iOS do not work on the "other" platform.
-Therefore you need to provide **two** asset bundles, one for Android and one for iOS.
-As you can only enter one asset bundle url in the ARpoise PorPOISe configuration of any POI, 
-ARpoise assumes that the asset bundle name given is the one of the Android asset bundle.
-The name of the iOS asset bundle has to be the Android name followed by the letter 'i'.
-Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle",
-you also need to avail the iOS asset bundle with the url ".../MyAssetBundlei". 
+One thing we found is that asset bundles created for Android do not work on iOS and vice versa. Therefore you need to provide **two** asset bundles, one for Android and one for iOS. As you can only enter one asset bundle url in the ARpoise PorPOISe configuration of any POI, ARpoise assumes that the asset bundle name given is the one of the Android asset bundle. The name of the iOS asset bundle has to be the Android name followed by the letter 'i'. 
 
-**Note: The asset bundles and trigger images you make available on the web and reference in the POI definitions
-need to accessable via https**.
+Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle", you also need to create and make available the iOS asset bundle with the url ".../MyAssetBundlei". 
+
+**Note: The asset bundles and trigger images you make available on the web and reference in the POI definitions need to be accessable via https**.
 
 ## Functionality
 The ARpoise client contacts this web service with the client location and the layer name as parameter.
