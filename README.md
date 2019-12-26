@@ -2,18 +2,17 @@
 # *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
 
 ## Overview
-ARpoise is an open-source Augmented Reality service environment that allows AR content designers to create and distribute and AR users to view location based AR content that is created in [Unity](http://unity3d.com). 
+ARpoise is an open-source Augmented Reality service environment that allows AR content designers to create and distribute AR experiences, and users to view location-based or image trigger AR content that is created in [Unity](http://unity3d.com). The goal of ARpoise is to provide an open-source, community-supported AR app for artists and other people who might not be able to develop their own apps, and as an alternative to commercial AR platforms that may go out of business at any time without warning.
 
 Two different client applications have both been implemented for Android and iOS.
 
 - The **ARpoise** client is a geolocative AR app running on most available phones.
 The **ARpoise** app can be downloaded from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store and the Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843). The source code of the apps is available [here](unity/).
 
-- The **AR-vos** client is an image trigger and a geolocative AR app using ARKit on iOS and ARCore on Android.
+- The **AR-vos** client app provides both geolocative and image trigger AR functionality, using ARKit on iOS and ARCore on Android. It therefore only runs on [ARKit supporting iOS devices](https://developer.apple.com/library/archive/documentation/DeviceInformation/Reference/iOSDeviceCompatibility/DeviceCompatibilityMatrix/DeviceCompatibilityMatrix.html) and [ARCore supporting Android devices](https://developers.google.com/ar/discover/supported-devices). We hope to merge the two client apps at some point, when the majority of smartphones support ARKit and ARCore technology. 
 The **AR-vos** app can be downloaded from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARvos) Store and the Apple [App Store](https://apps.apple.com/us/app/ar-vos/id1483218444). The source code of the apps is available [here](unity/).
 
-The goal of ARpoise is to provide an open-source, community-supported, location-based AR app as a replacement for the 
-[Layar app](https://www.layar.com/) and other commercial geolocative AR platforms.
+
 
 ## Getting Started
 If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content,
