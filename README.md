@@ -36,7 +36,7 @@ If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver
 
 - **POI**s can be added to and removed from an ARpoise layer via a PHP based web interface similar to the [PorPOISe for Layar](https://code.google.com/archive/p/porpoise/) web service. The placement of individual **POI**s can be performed through a Google-maps-based click-and-drag map interface. The ARpoise version of PorPOISe converts your data sets of **POI**s into responses to the ARpoise client. Things like JSON formatting and distance calculation are all done for you. ARpoise supports XML as data stores.
 
-- One or more ARpoise layers can be shown at any location in the world. If there are two or more ARpoise layers located within the range of the client's location, a list of all available layers is shown to the user to allow them to select a layer. If there is exactly one ARpoise layer located within the range, only this layer is shown to the user. If there is no layer within the range of the client's location, a default layer is shown. Currently Tamiko Thiel's [*Lotus Meditation*](http://www.tamikothiel.com/AR/lotus-meditation.html).
+- One or more ARpoise layers can be shown at any location in the world. If there are two or more ARpoise layers located within the range of the client's location, a list of all available layers is shown to the user to allow them to select a layer. If there is exactly one ARpoise layer located within the range, only this layer is shown to the user. If there is no layer within the range of the client's location, a default layer is shown. Currently this is Tamiko Thiel's [*Lotus Meditation*](http://www.tamikothiel.com/AR/lotus-meditation.html).
 ## Components
 ### iOS- and Android-Client Application
 See [unity](unity/).
@@ -51,4 +51,4 @@ See [/php/porpoise](php/porpoise/README.md).
 ## Restrictions
 - Unity behaviour scripts written in C# cannot be included in Unity-created 3D content of ARpoise.
 
-- To add, remove and geolocate layers within the ARpoise-Directory, contact the administrators of [www.arpoise.com](http://www.arpoise.com).
+- To add, remove and geolocate layers within the ARpoise-Directory, you will need to contact the administrators of [www.arpoise.com](http://www.arpoise.com).
