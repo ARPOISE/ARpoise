@@ -15,48 +15,28 @@ The **AR-vos** app can be downloaded from the [Google Play](https://play.google.
 
 
 ## Getting Started
-If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content,
-you should start by reading this document.
-As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read
-the documentation for it in [/php/porpoise](php/porpoise/README.md).
+If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content, you should start by reading this document. As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read the documentation for it in [/php/porpoise](php/porpoise/README.md).
 
 ## Functionality
-- Content designers can create image trigger or location-based AR experiences in Unity3d and add them as project layers to a general directory. This AR experiences can either be visible all over the world, or geo-fenced to be viewable only within areas defined by specific GPS coordinates.
+- Content designers can create image trigger or location-based AR experiences in Unity3d and request that we add them as project layers to the general ARpoise directory. These AR experiences can either be visible all over the world, or geo-fenced to be viewable only within areas defined by specific GPS coordinates.
 
-- These AR experiences can be viewed by anyone who downloads one of the free client apps, **ARpoise** or **AR-vos**, onto Android and iOS devices. Since the AR experiences are individual project layers within an existing app, content designers do not have to create individual apps for each project and bring each project into the App and Play stores themselves.
+- These AR experiences can be viewed by anyone who downloads one of the free client apps, **ARpoise** or **AR-vos**, onto Android and iOS devices. Since the AR experiences are individual project "layers" within an existing app, content designers do not have to create individual apps for each experience, saving them the trouble of pushing their projects into the App and Play stores.
 
-- Artist define layers of points of interest, (**POI**)s, can be added to,
-removed from, or placed within the world coordinates of ARpoise dynamically.
+- The assets making up an AR experience viewable in ARpoise are downloaded from the content creator's web server as needed, rather than being part of the client app downloaded from the Google Play Store or the Apple App Store. 
 
-- The 3D content visible in ARpoise is independent of the app downloaded from the Google Play Store or the Apple App Store.
-The **POI**s specified in an ARpoise layer definition contain the URL of an Unity AssetBundle.
-When showing a **POI**, the ARpoise app downloads this asset bundle
-and loads the 3D Unity prefab of the **POI** from it.
+- A layer containing an AR experience is made up of one or more individual augments or **POI**s (Points Of Interest). These are specified in an ARpoise layer definition containing the URL of an Unity AssetBundle. When showing a **POI**, the ARpoise app downloads this asset bundle and loads the 3D Unity prefab of the **POI** from it.
 
-- Unity-created 3D content of ARpoise can include your animations. Furthermore, **POI**s can have
-ARpoise level animations like scale, rotation, and transformation to be started
-'on create', 'on focus', 'in focus', or 'on click' of a **POI**.
+- Using the porPOIse back end, the functions available to content creators include dynamically adding **POI**s, removing them, placing them within world coordinates or relative to the user, and animations described in the next point.
 
-- Image trigger based **POI**s are shown to the user once the app discovers a trigger image.
+- Unity-created 3D content of ARpoise can include animations in FBX files created in 3D modeling and animation programs. Furthermore, using the porPOIse back end, content creators can give **POI**s ARpoise level animations like scale, rotation, and transformation to be started 'on create', 'on focus', 'in focus', or 'on click' of a **POI**.
 
-- Geolocative **POI**s can have an absolute world location defined by longitude and latitude
-or they can have a position relative to the user's device defined in meters of distance in the X, Y, and Z directions.
-**POI**s with an absolute location can additionally be confined into an area around the user,
-so they will always be around the user.
+- Image trigger based **POI**s are shown to the user once the app discovers a trigger image. The image trigger files are also downloaded via an assigned asset bundle, and therefore do not need to be built into the client apps.
 
-- **POI**s can be added to and removed from an ARpoise layer via a PHP based web interface similar to the
-[PorPOISe for Layar](https://code.google.com/archive/p/porpoise/) web service.
-The placement of individual **POI**s can be performed through a Google-maps-based click-and-drag map interface.
-The ARpoise version of PorPOISe converts your data sets of **POI**s into responses to the ARpoise client.
-Things like JSON formatting and distance calculation are all done for you. ARpoise supports XML as data stores.
+- Geolocative **POI**s can have an absolute world location defined by longitude and latitude or they can have a position relative to the user's device defined in meters of distance in the X, Y, and Z directions. **POI**s with absolute locations can additionally be confined into an area around the user, so as the user moves through the real world, they will be dynamically moved to be within a given area around the user.
 
-- One or more ARpoise layers can be shown at any location in the world.
-If there are two or more ARpoise layers located within the range of the client's location,
-a list of all available layers is shown to the user for selecting a layer.
-If there is exactly one ARpoise layer located within the range, this layer is shown to the user.
-If there is no layer within the range of the client's location, the default layer is shown.
-Currently Tamiko Thiel's
-[*Lotus Meditation*](http://www.tamikothiel.com/AR/lotus-meditation.html).
+- **POI**s can be added to and removed from an ARpoise layer via a PHP based web interface similar to the [PorPOISe for Layar](https://code.google.com/archive/p/porpoise/) web service. The placement of individual **POI**s can be performed through a Google-maps-based click-and-drag map interface. The ARpoise version of PorPOISe converts your data sets of **POI**s into responses to the ARpoise client. Things like JSON formatting and distance calculation are all done for you. ARpoise supports XML as data stores.
+
+- One or more ARpoise layers can be shown at any location in the world. If there are two or more ARpoise layers located within the range of the client's location, a list of all available layers is shown to the user to allow them to select a layer. If there is exactly one ARpoise layer located within the range, only this layer is shown to the user. If there is no layer within the range of the client's location, a default layer is shown. Currently Tamiko Thiel's [*Lotus Meditation*](http://www.tamikothiel.com/AR/lotus-meditation.html).
 ## Components
 ### iOS- and Android-Client Application
 See [unity](unity/).
@@ -71,5 +51,4 @@ See [/php/porpoise](php/porpoise/README.md).
 ## Restrictions
 - Unity behaviour scripts written in C# cannot be included in Unity-created 3D content of ARpoise.
 
-- Adding, removing and placing layers within the ARpoise-Directory is an email-based process involving the administrators of
-[www.arpoise.com](http://www.arpoise.com).
+- To add, remove and geolocate layers within the ARpoise-Directory, contact the administrators of [www.arpoise.com](http://www.arpoise.com).
