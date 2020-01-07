@@ -38,17 +38,18 @@ If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver
 
 - One or more ARpoise layers can be shown at any location in the world. If there are two or more ARpoise layers located within the range of the client's location, a list of all available layers is shown to the user to allow them to select a layer. If there is exactly one ARpoise layer located within the range, only this layer is shown to the user. If there is no layer within the range of the client's location, a default layer is shown. Currently this is Tamiko Thiel's [*Lotus Meditation*](http://www.tamikothiel.com/AR/lotus-meditation.html).
 ## Components
-### iOS- and Android-Client Application
+### Content creation for iOS and Android Client Application
 See [unity](unity/).
 This folder contains Unity projects for the different clients, **ARpoise** and **AR-vos**.
-### ARpoise-Directory Front End
-See [ARpoiseDirectory](ArpoiseDirectory).
-### ARpoise-Directory Back End
-See [/php/dir](php/dir/README.md).
-### ARpoise-PorPOISe Back End
+### Content publishing and management with ARpoise PorPOISe Back End
 See [/php/porpoise](php/porpoise/README.md).
+### ARpoise-Directory Front End (We can manage this for you, unless you wish to set up your own system.)
+See [ARpoiseDirectory](ArpoiseDirectory).
+### ARpoise-Directory Back End (We can manage this for you, unless you wish to set up your own system.)
+See [/php/dir](php/dir/README.md).
+
 
 ## Restrictions
 - Unity behaviour scripts written in C# cannot be included in Unity-created 3D content of ARpoise.
 
-- To add, remove and geolocate layers within the ARpoise-Directory, you will need to contact the administrators of [www.arpoise.com](http://www.arpoise.com).
+- Unless you set up your own complete system, to add, remove and geolocate layers within the ARpoise-Directory you will need to contact the administrators of [www.arpoise.com](http://www.arpoise.com).
