@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.34  2020/01/10 11:06:06  peter
+Layer lists for AR-vos also for Android
+
 Revision 1.33  2019/11/15 21:50:03  peter
 Layer lists for AR-vos on iOs
 
@@ -132,7 +135,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.33 2019/11/15 21:50:03 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.34 2020/01/10 11:06:06 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -1176,6 +1179,13 @@ static int arpoiseDirectory(int argc, char * argv[])
 			os = "UnknownOperatingSystem";
 		}
 
+		int bundleInteger = 0;
+		char* bundle = pblCgiQueryValue("bundle");
+		if (bundle && isdigit(*bundle))
+		{
+			bundleInteger = atoi(bundle);
+		}
+
 		// This is a request for the Arpoise-Directory layer
 
 		PBL_CGI_TRACE("-------> Directory Request\n");
@@ -1183,7 +1193,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 		// See what client it is
 		if (pblCgiStrEquals("Arvos", client))
 		{
-			if (pblCgiStrEquals("Android", os))
+			if (pblCgiStrEquals("Android", os) && bundleInteger < 200101)
 			{
 				// Request the default layer from porpoise and return it to the client
 
@@ -1240,13 +1250,6 @@ static int arpoiseDirectory(int argc, char * argv[])
 
 			createStatisticsHits(layer, layerName, layerServed);
 			return 0;
-		}
-
-		int bundleInteger = 0;
-		char * bundle = pblCgiQueryValue("bundle");
-		if (bundle && isdigit(*bundle))
-		{
-			bundleInteger = atoi(bundle);
 		}
 
 		uri = pblCgiSprintf("%s?%s", directoryUri, queryString);
