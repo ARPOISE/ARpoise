@@ -56,13 +56,12 @@ public class ArKitAnchorManager : MonoBehaviour
 {
 #if HAS_AR_KIT
     private List<GameObject> _gameObjects = new List<GameObject>();
-#endif
     public Dictionary<int, TriggerObject> TriggerObjects { get; set; }
     public ArBehaviourImage ArBehaviour { get; set; }
     public GameObject FitToScanOverlay { get; set; }
-
+#endif
     // Use this for initialization
-    private void Start()
+    protected void Start()
     {
 #if HAS_AR_KIT
         UnityARSessionNativeInterface.ARImageAnchorAddedEvent += AddImageAnchor;
@@ -70,17 +69,21 @@ public class ArKitAnchorManager : MonoBehaviour
         UnityARSessionNativeInterface.ARImageAnchorRemovedEvent += RemoveImageAnchor;
 #endif
     }
+
 #if HAS_AR_KIT
+    private bool _hasTriggerObjects = false;
+
     private void AddImageAnchor(ARImageAnchor arImageAnchor)
     {
-        Debug.LogFormat("image anchor added[{0}] : tracked => {1}", arImageAnchor.Identifier, arImageAnchor.IsTracked);
+        //Debug.LogFormat("Anchor added[{0}] : tracked {1}, name '{2}'", arImageAnchor.Identifier, arImageAnchor.IsTracked, arImageAnchor.ReferenceImageName);
         int index;
         if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
         {
             TriggerObject triggerObject;
-            if (TriggerObjects != null && TriggerObjects.TryGetValue(index, out triggerObject))
+            var triggerObjects = TriggerObjects;
+            if (triggerObjects != null && triggerObjects.TryGetValue(index, out triggerObject))
             {
-                Debug.LogFormat("Index {0} trigger object {1}", index, triggerObject != null);
+                //Debug.LogFormat("Index {0} trigger object {1}", index, triggerObject != null);
 
                 while (index >= _gameObjects.Count)
                 {
@@ -90,26 +93,23 @@ public class ArKitAnchorManager : MonoBehaviour
                 var arObjectState = ArBehaviour.ArObjectState;
                 if (arObjectState != null && _gameObjects[index] == null)
                 {
-                    lock (arObjectState)
+                    GameObject newGameObject;
+                    var result = ArBehaviour.CreateArObject(
+                        arObjectState,
+                        triggerObject.gameObject,
+                        null,
+                        transform,
+                        triggerObject.poi,
+                        triggerObject.poi.id,
+                        out newGameObject
+                        );
+                    if (!ArBehaviourPosition.IsEmpty(result))
                     {
-                        GameObject newGameObject;
-                        var result = ArBehaviour.CreateArObject(
-                            arObjectState,
-                            triggerObject.gameObject,
-                            null,
-                            transform,
-                            triggerObject.poi,
-                            triggerObject.poi.id,
-                            out newGameObject
-                            );
-                        if (!ArBehaviourPosition.IsEmpty(result))
-                        {
-                            ArBehaviour.ErrorMessage = result;
-                            return;
-                        }
-                        _gameObjects[index] = newGameObject;
-                        newGameObject.SetActive(true);
+                        ArBehaviour.ErrorMessage = result;
+                        return;
                     }
+                    _gameObjects[index] = newGameObject;
+                    newGameObject.SetActive(true);
                 }
             }
         }
@@ -117,7 +117,8 @@ public class ArKitAnchorManager : MonoBehaviour
 
     private void UpdateImageAnchor(ARImageAnchor arImageAnchor)
     {
-        Debug.LogFormat("image anchor updated[{0}] : tracked => {1}", arImageAnchor.Identifier, arImageAnchor.IsTracked);
+        //Debug.LogFormat("Anchor updated[{0}] : tracked {1}, name '{2}' GOs {3}",
+        //    arImageAnchor.Identifier, arImageAnchor.IsTracked, arImageAnchor.ReferenceImageName, _gameObjects.Count);
         int index;
         if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
         {
@@ -126,12 +127,13 @@ public class ArKitAnchorManager : MonoBehaviour
             {
                 gameObjectToAHandle = _gameObjects[index];
             }
+            //Debug.LogFormat("Index {0} game object {1}", index, gameObjectToAHandle != null);
             if (gameObjectToAHandle != null)
             {
                 if (arImageAnchor.IsTracked)
                 {
-                    gameObjectToAHandle.transform.position = UnityARMatrixOps.GetPosition(arImageAnchor.Transform);
-                    gameObjectToAHandle.transform.rotation = UnityARMatrixOps.GetRotation(arImageAnchor.Transform);
+                    gameObjectToAHandle.transform.localPosition = UnityARMatrixOps.GetPosition(arImageAnchor.Transform);
+                    gameObjectToAHandle.transform.localRotation = UnityARMatrixOps.GetRotation(arImageAnchor.Transform);
                     if (!gameObjectToAHandle.activeSelf)
                     {
                         gameObjectToAHandle.SetActive(true);
@@ -142,12 +144,52 @@ public class ArKitAnchorManager : MonoBehaviour
                     //gameObjectToAHandle.SetActive(false);
                 }
             }
+            else if (_hasTriggerObjects)
+            {
+                //Debug.LogFormat("Anchor re-added[{0}] : tracked {1}, name '{2}'", arImageAnchor.Identifier, arImageAnchor.IsTracked, arImageAnchor.ReferenceImageName);
+                if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
+                {
+                    TriggerObject triggerObject;
+                    var triggerObjects = TriggerObjects;
+                    if (triggerObjects != null && triggerObjects.TryGetValue(index, out triggerObject))
+                    {
+                        //Debug.LogFormat("Index {0} trigger object {1}", index, triggerObject != null);
+
+                        while (index >= _gameObjects.Count)
+                        {
+                            _gameObjects.Add(null);
+                        }
+
+                        var arObjectState = ArBehaviour.ArObjectState;
+                        if (arObjectState != null && _gameObjects[index] == null)
+                        {
+                            GameObject newGameObject;
+                            var result = ArBehaviour.CreateArObject(
+                                arObjectState,
+                                triggerObject.gameObject,
+                                null,
+                                transform,
+                                triggerObject.poi,
+                                triggerObject.poi.id,
+                                out newGameObject
+                                );
+                            if (!ArBehaviourPosition.IsEmpty(result))
+                            {
+                                ArBehaviour.ErrorMessage = result;
+                                return;
+                            }
+                            _gameObjects[index] = newGameObject;
+                            newGameObject.SetActive(true);
+                        }
+                    }
+                }
+            }
         }
     }
 
     private void RemoveImageAnchor(ARImageAnchor arImageAnchor)
     {
-        Debug.LogFormat("image anchor removed[{0}] : tracked => {1}", arImageAnchor.Identifier, arImageAnchor.IsTracked);
+        //Debug.LogFormat("Anchor removed[{0}] : tracked {1}, name '{2}'", arImageAnchor.Identifier, arImageAnchor.IsTracked, arImageAnchor.ReferenceImageName);
         int index;
         if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
         {
@@ -155,7 +197,6 @@ public class ArKitAnchorManager : MonoBehaviour
             if (index < _gameObjects.Count)
             {
                 gameObjectToAHandle = _gameObjects[index];
-                _gameObjects[index] = null;
             }
             if (gameObjectToAHandle != null)
             {
@@ -163,7 +204,6 @@ public class ArKitAnchorManager : MonoBehaviour
                 {
                     gameObjectToAHandle.SetActive(false);
                 }
-                Destroy(gameObjectToAHandle);
             }
         }
     }
@@ -181,12 +221,17 @@ public class ArKitAnchorManager : MonoBehaviour
         if (fitToScanOverlay != null)
         {
             var hasActiveObjects = false;
-            var hasTriggerObjects = TriggerObjects != null && TriggerObjects.Any();
-            if (hasTriggerObjects)
+            var triggerObjects = TriggerObjects;
+            _hasTriggerObjects = triggerObjects != null && triggerObjects.Values.Any(x => x.isActive);
+            if (_hasTriggerObjects)
             {
                 hasActiveObjects = _gameObjects.Any(x => x != null && x.activeSelf);
             }
-            fitToScanOverlay.SetActive(hasTriggerObjects && !hasActiveObjects);
+            var setActive = _hasTriggerObjects && !hasActiveObjects && !ArBehaviour.LayerPanelIsActive();
+            if (fitToScanOverlay.activeSelf != setActive)
+            {
+                fitToScanOverlay.SetActive(setActive);
+            }
         }
     }
 #endif

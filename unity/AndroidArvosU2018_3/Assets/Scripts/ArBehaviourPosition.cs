@@ -49,6 +49,15 @@ namespace com.arpoise.arpoiseapp
 
         #region Protecteds
 
+#if HAS_AR_CORE
+        protected const string AppName = "AR-vos";
+#else
+#if HAS_AR_KIT
+        protected const string AppName = "AR-vos";
+#else
+        protected const string AppName = "ARpoise";
+#endif
+#endif
         protected int AreaSize = 0;
         protected int AreaWidth = 0;
 
@@ -71,6 +80,21 @@ namespace com.arpoise.arpoiseapp
 
         protected bool CameraIsInitializing = true;
         protected long StartTicks = 0;
+
+        public virtual bool InfoPanelIsActive()
+        {
+            return false;
+        }
+
+        public virtual bool InputPanelIsActive()
+        {
+            return false;
+        }
+
+        public virtual bool LayerPanelIsActive()
+        {
+            return false;
+        }
 
         protected float UsedLatitude
         {
@@ -232,6 +256,11 @@ namespace com.arpoise.arpoiseapp
             bool doInitialize = true;
             while (IsEmpty(ErrorMessage))
             {
+                while (InfoPanelIsActive())
+                {
+                    yield return new WaitForSeconds(.01f);
+                }
+
                 if (doInitialize)
                 {
                     doInitialize = false;
@@ -256,7 +285,7 @@ namespace com.arpoise.arpoiseapp
                         _locationService = new LocationService();
                         if (!_locationService.isEnabledByUser)
                         {
-                            ErrorMessage = "Please enable the location service for the ARpoise application.";
+                            ErrorMessage = $"Please enable the location service for the {AppName} app.";
                             yield break;
                         }
                     }
@@ -281,7 +310,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (++nFails > 10)
                         {
-                            ErrorMessage = "Please enable the location service for the ARpoise app.";
+                            ErrorMessage = $"Please enable the location service for the {AppName} app.";
                             yield break;
                         }
                         Input.location.Stop();

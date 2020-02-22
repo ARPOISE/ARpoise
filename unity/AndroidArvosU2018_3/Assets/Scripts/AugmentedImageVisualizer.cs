@@ -108,27 +108,23 @@ namespace GoogleARCore.Examples.AugmentedImage
             if (arObjectState != null && TriggerObject != null && !_gameObjectCreated)
             {
                 _gameObjectCreated = true;
-                //_gameObject = Instantiate(TriggerObject.gameObject);
 
-                lock (arObjectState)
+                transform.position = Image.CenterPose.position;
+                transform.rotation = Image.CenterPose.rotation;
+
+                var result = ArBehaviour.CreateArObject(
+                    arObjectState,
+                    TriggerObject.gameObject,
+                    null,
+                    transform,
+                    TriggerObject.poi,
+                    TriggerObject.poi.id,
+                    out _gameObject
+                    );
+                if (!ArBehaviourPosition.IsEmpty(result))
                 {
-                    transform.position = Image.CenterPose.position;
-                    transform.rotation = Image.CenterPose.rotation;
-
-                    var result = ArBehaviour.CreateArObject(
-                        arObjectState,
-                        TriggerObject.gameObject,
-                        null,
-                        transform,
-                        TriggerObject.poi,
-                        TriggerObject.poi.id,
-                        out _gameObject
-                        );
-                    if (!ArBehaviourPosition.IsEmpty(result))
-                    {
-                        ArBehaviour.ErrorMessage = result;
-                        return;
-                    }
+                    ArBehaviour.ErrorMessage = result;
+                    return;
                 }
             }
 

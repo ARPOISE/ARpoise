@@ -415,6 +415,10 @@ public class AbEvolutionOfFish : ArFlock
 
         if (ArCamera == null)
         {
+            ArCamera = Camera.main.gameObject;
+        }
+        if (ArCamera == null)
+        {
             return;
         }
         if (_first)

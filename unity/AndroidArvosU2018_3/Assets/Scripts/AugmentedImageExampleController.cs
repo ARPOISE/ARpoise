@@ -44,6 +44,7 @@ namespace GoogleARCore.Examples.AugmentedImage
     using GoogleARCore;
 #endif
     using System.Collections.Generic;
+    using System.Linq;
     using UnityEngine;
 
     /// <summary>
@@ -57,7 +58,7 @@ namespace GoogleARCore.Examples.AugmentedImage
         /// </summary>
         public AugmentedImageVisualizer AugmentedImageVisualizerPrefab;
 
-        private Dictionary<int, AugmentedImageVisualizer> _visualizers = new Dictionary<int, AugmentedImageVisualizer>();
+        private readonly Dictionary<int, AugmentedImageVisualizer> _visualizers = new Dictionary<int, AugmentedImageVisualizer>();
 
         private readonly List<AugmentedImage> _tempAugmentedImages = new List<AugmentedImage>();
 
@@ -85,8 +86,25 @@ namespace GoogleARCore.Examples.AugmentedImage
                 return;
             }
 
+            var fitToScanOverlay = FitToScanOverlay;
+
             if (!HasTriggerImages)
             {
+                if (fitToScanOverlay != null)
+                {
+                    if (fitToScanOverlay.activeSelf != false)
+                    {
+                        fitToScanOverlay.SetActive(false);
+                    }
+                }
+                if (_visualizers.Any())
+                {
+                    foreach (var visualizer in _visualizers.Values)
+                    {
+                        GameObject.Destroy(visualizer.gameObject);
+                    }
+                    _visualizers.Clear();
+                }
                 return;
             }
 
@@ -123,17 +141,16 @@ namespace GoogleARCore.Examples.AugmentedImage
                 }
             }
 
-            // Show the fit-to-scan overlay if there are no images that are Tracking.
-            foreach (var visualizer in _visualizers.Values)
+            if (fitToScanOverlay != null)
             {
-                if (visualizer.Image.TrackingState == TrackingState.Tracking)
+                // Show the fit-to-scan overlay if there are no images that are Tracking.
+                var hasActiveObjects = _visualizers.Values.Any(x => x.Image.TrackingState == TrackingState.Tracking);
+                var setActive = !hasActiveObjects && !LayerPanelIsActive();
+                if (fitToScanOverlay.activeSelf != setActive)
                 {
-                    FitToScanOverlay.SetActive(false);
-                    return;
+                    fitToScanOverlay.SetActive(setActive);
                 }
             }
-
-            FitToScanOverlay.SetActive(true);
         }
 #endif
     }

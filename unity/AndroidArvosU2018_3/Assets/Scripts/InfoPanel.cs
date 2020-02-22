@@ -1,5 +1,5 @@
 ﻿/*
-MenuButton.cs - Script handling clicks on the menu button.
+MenuButton.cs - Script handling clicks on the info panel.
 
 Copyright (C) 2019, Tamiko Thiel and Peter Graf - All Rights Reserved
 
@@ -28,12 +28,23 @@ Arpoise, see www.Arpoise.com/
 
 */
 
+/*
+Welcome to AR-vos augmented reality app!
+
+The AR-vos menu will present you with one or more different AR layers, depending on your location.
+
+If you select a geolocative layer, you will be immediately surrounded by the augments. Look all around you, as they may be above, below or behind you!
+
+If you select an image trigger layer, you then point the scan screen at a designated AR-vos trigger image to call up the augments.
+
+For example AR-vos trigger images, see www.ar-vos.com/trigger
+*/
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace com.arpoise.arpoiseapp
 {
-    public class MenuButton : MonoBehaviour
+    public class InfoPanel : MonoBehaviour
     {
         public Button Button;
         private bool _started;
@@ -45,7 +56,7 @@ namespace com.arpoise.arpoiseapp
             {
                 _started = true;
                 Button.onClick.AddListener(HandleClick);
-                //Debug.Log("MenuButton Start.");
+                //Debug.Log("InfoPanel Start.");
             }
         }
 
@@ -54,13 +65,13 @@ namespace com.arpoise.arpoiseapp
         {
             Start();
             _behaviour = behaviour;
-            //Debug.Log("MenuButton Setup.");
+            //Debug.Log("InfoPanel Setup.");
         }
 
         public void HandleClick()
         {
-            _behaviour?.HandleMenuButtonClick();
-            //Debug.Log("MenuButton HandleClick.");
+            _behaviour?.HandleInfoPanelClosed();
+            //Debug.Log("InfoPanel HandleClick.");
         }
     }
 }

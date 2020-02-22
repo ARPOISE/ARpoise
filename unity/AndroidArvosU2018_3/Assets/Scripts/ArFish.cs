@@ -43,7 +43,7 @@ namespace com.arpoise.arpoiseapp
 
         private float _speed = 0.001f;
 
-        private void Start()
+        protected void Start()
         {
             var flock = _flock;
             if (flock == null)
@@ -53,7 +53,7 @@ namespace com.arpoise.arpoiseapp
             _speed = Random.Range(flock.MinimumSpeed, flock.MaximumSpeed);
         }
 
-        private void Update()
+        protected void Update()
         {
             var flock = _flock;
             if (flock == null)
@@ -111,7 +111,7 @@ namespace com.arpoise.arpoiseapp
 
                         if (distance < _flock.MinNeighbourDistance)
                         {
-                            avoidDirection = avoidDirection + (transform.position - fish.transform.position);
+                            avoidDirection += transform.position - fish.transform.position;
                         }
 
                         var otherFiscg = fish.GetComponent<ArFish>();

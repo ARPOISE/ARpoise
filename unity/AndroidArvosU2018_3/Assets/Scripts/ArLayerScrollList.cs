@@ -7,8 +7,8 @@ namespace com.arpoise.arpoiseapp
 {
     public class ArLayerScrollList 
     {
-        private Transform _contentPanel;
-        private SimpleObjectPool _buttonObjectPool;
+        private readonly Transform _contentPanel;
+        private readonly SimpleObjectPool _buttonObjectPool;
 
         public ArLayerScrollList(Transform contentPanel, SimpleObjectPool buttonObjectPool)
         {
@@ -16,7 +16,7 @@ namespace com.arpoise.arpoiseapp
             _buttonObjectPool = buttonObjectPool;
         }
 
-        public void AddButtons(List<ArItem> itemList, ArBehaviour behaviour)
+        public void AddButtons(List<ArItem> itemList, ArBehaviourUserInterface behaviour)
         {
             if (itemList != null)
             {

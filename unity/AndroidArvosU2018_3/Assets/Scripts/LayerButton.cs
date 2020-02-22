@@ -14,14 +14,14 @@ namespace com.arpoise.arpoiseapp
         public Image iconImage;
 
         private ArItem _item;
-        private ArBehaviour _behaviour;
+        private ArBehaviourUserInterface _behaviour;
 
-        private void Start()
+        protected void Start()
         {
             button.onClick.AddListener(HandleClick);
         }
 
-        public void Setup(ArItem currentItem, ArBehaviour behaviour)
+        public void Setup(ArItem currentItem, ArBehaviourUserInterface behaviour)
         {
             _item = currentItem;
             nameLabel.text = _item.itemName;
