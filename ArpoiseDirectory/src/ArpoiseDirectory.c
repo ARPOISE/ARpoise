@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.35  2020/02/23 12:29:21  peter
+Added layer name to location statistics
+
 Revision 1.34  2020/01/10 11:06:06  peter
 Layer lists for AR-vos also for Android
 
@@ -135,7 +138,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.34 2020/01/10 11:06:06 peter Exp $";
+char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.35 2020/02/23 12:29:21 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -1033,7 +1036,7 @@ static void createStatisticsHits(int layer, char * layerName, int layerServed)
 				ptr[4] = '\0'; // truncate longitude to 3 digits after the '.'
 			}
 
-			char * fileName = pblCgiSprintf("%s_%s.htm", queryLon, queryLat);
+			char * fileName = pblCgiSprintf("%s_%s-%s.htm", queryLon, queryLat, layerName);
 			createStatisticsFile(locationsDirectory, fileName);
 			char * uri = pblCgiSprintf("/ArpoiseDirectory/Locations/%s", fileName);
 			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/Locations");
