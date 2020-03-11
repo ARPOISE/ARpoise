@@ -3,3 +3,6 @@
 
 ## Overview
 This folder contains documentation for **ARpoise**.
+
+## Contents
+[Creating Asset Bundles](/documentation/CreatingAssetBundles.md).
