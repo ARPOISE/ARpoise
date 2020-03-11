@@ -16,7 +16,7 @@ The **AR-vos** app can be downloaded from the [Google Play](https://play.google.
 
 ## Getting Started
 If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content, you should start by reading this document. As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read the documentation for it in [/php/porpoise](php/porpoise/README.md).
-Also see the [documentation](/documentation/Readme.md) fodler and see the [Creating Asset Bundles](/documentation/CreatingAssetBundles.md).
+Also see the [documentation](/documentation/README.md) folder and read the [Creating Asset Bundles](/documentation/CreatingAssetBundles.md).
 
 ## Functionality
 - Content designers can create image trigger or location-based AR experiences in Unity3d and request that we add them as project layers to the general ARpoise directory. These AR experiences can either be visible all over the world, or geo-fenced to be viewable only within areas defined by specific GPS coordinates.
