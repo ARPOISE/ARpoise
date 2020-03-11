@@ -63,3 +63,44 @@ Call the script **CreateAssetBundles**. Repeat the step and call the second scri
 
 ### Image - Scripts:
 ![CreateAssetBundle9](/documentation/images/CreateAssetBundle9.PNG)
+
+Double click on the **CreateAssetBundles** script. Visual Studio or your favorite C# editor should open.
+
+Empty the file and copy the following lines into the file and save it.
+```
+using System.IO;
+using UnityEditor;
+
+public class CreateAssetBundles
+{
+    [MenuItem("Assets/Build AssetBundles")]
+    static void BuildAllAssetBundles()
+    {
+        string assetBundleDirectory = "Assets/AssetBundles";
+        if (!Directory.Exists(assetBundleDirectory))
+        {
+            Directory.CreateDirectory(assetBundleDirectory);
+        }
+        BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None, BuildTarget.Android);
+    }
+}
+```
+Copy the following lines into CreateiOSAssetBundles and save it.
+```
+using System.IO;
+using UnityEditor;
+
+public class CreateiOSAssetBundles
+{
+    [MenuItem("Assets/Build iOSAssetBundles")]
+    static void BuildAllAssetBundles()
+    {
+        string assetBundleDirectory = "Assets/AssetBundles";
+        if (!Directory.Exists(assetBundleDirectory))
+        {
+            Directory.CreateDirectory(assetBundleDirectory);
+        }
+        BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None, BuildTarget.iOS);
+    }
+}
+```
