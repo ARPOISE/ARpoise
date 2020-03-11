@@ -22,7 +22,7 @@ If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver
 
 - These AR experiences can be viewed by anyone who downloads one of the free client apps, **ARpoise** or **AR-vos**, onto Android and iOS devices. Since the AR experiences are individual project "layers" within an existing app, content designers do not have to create individual apps for each experience, saving them the trouble of pushing their projects into the App and Play stores.
 
-- The assets making up an AR experience viewable in ARpoise are downloaded from the content creator's web server as needed, rather than being part of the client app downloaded from the Google Play Store or the Apple App Store. 
+- The assets making up an AR experience viewable in ARpoise are downloaded from the content creator's web server as needed, rather than being part of the client app downloaded from the Google Play Store or the Apple App Store. The content creators have to build Unity3D asset bundles for Android and iOS containing their assets. 
 
 - A layer containing an AR experience is made up of one or more individual augments or **POI**s (Points Of Interest). These are specified in an ARpoise layer definition containing the URL of an Unity AssetBundle. When showing a **POI**, the ARpoise app downloads this asset bundle and loads the 3D Unity prefab of the **POI** from it.
 
