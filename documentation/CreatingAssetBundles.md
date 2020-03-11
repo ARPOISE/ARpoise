@@ -104,7 +104,7 @@ public class CreateiOSAssetBundles
 ```
 
 ## Prefab - Context Menu Entries
-Now when you right click on the **BlueSphere** prefab in the Prefabs folder you should see a context menu with the two entries
+Now, when you right click on the **BlueSphere** prefab in the Prefabs folder you should see a context menu with the two entries
 **Build AssetBundles** and **Build iOSAssetBundles** at the bottom.
 ### Image - Menu Options:
 ![CreateAssetBundle10](/documentation/images/CreateAssetBundle10.PNG)
