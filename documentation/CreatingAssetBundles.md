@@ -1,6 +1,6 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
 # *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
-# Creating Asset Bundles
+# -- Creating Asset Bundles --
 ## Overview
 This is a step by step tutorial to create an asset bundle that can be used by **ARpoise** or **AR-vos**.
 In the tutorial an asset bundle for Android is created.
