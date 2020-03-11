@@ -165,7 +165,8 @@ Assets:
 - Assets/Prefabs/RedCube.prefab
 Dependencies: []
 ```
-It is good idea to keep the manifest around with the asset bundle so you can find out what is in the bundle.
+The tow lines listing the two assets contained, the blue sphere and the red cube are important.
+It is a good idea to keep the manifest around with the asset bundle so you can find out what is in the bundle.
 
 The actual asset bundle file needs to be uploaded to the web and needs to be made available via http.
 The url of that file needs to be entered into the porpoise configuration of the layer
