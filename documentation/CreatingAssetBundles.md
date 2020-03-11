@@ -85,7 +85,7 @@ public class CreateAssetBundles
     }
 }
 ```
-Copy the following lines into CreateiOSAssetBundles and save it.
+Copy the following lines into **CreateiOSAssetBundles** and save it.
 ```
 using System.IO;
 using UnityEditor;
@@ -104,3 +104,86 @@ public class CreateiOSAssetBundles
     }
 }
 ```
+## Prefab - Context Menu Entries
+Now when you right click on the **BlueSphere** prefab in the Prefabs folder you should see a context menu with the two entries
+**Build AssetBundles** and **Build iOSAssetBundles** at the bottom.
+
+### Image - Menu Options:
+![CreateAssetBundle10](/documentation/images/CreateAssetBundle10.PNG)
+
+## Create an Asset Bundle
+Select the **BlueSphere** prefab.
+
+On the right bottom of the Unity window you should see the label **AssetBundle** with **None** selected.
+Click on **None** and select **New** from the context menu. Enter the name of the new asset bundle, in my case that is **exampleassetbundle**.
+
+### Image - Select Asset Bundle:
+![CreateAssetBundle11](/documentation/images/CreateAssetBundle11.PNG)
+
+Select the **RedCube** prefab and also select the **exampleassetbundle** for it.
+
+Select the **RedCube** prefab, Right Click and select the **Build AssetBundles** option from the bottom of the context menu.
+
+### The asset bundle should be created!!!!!!!!
+
+Select the **AssetBundles** folder created earlier. You should see four entries.
+
+### Image - Asset Bundles:
+![CreateAssetBundle12](/documentation/images/CreateAssetBundle12.PNG)
+
+The first **exampleassetbundle** file is the actual asset bundle that needs to be made available on the web.
+The second file is a manifest file describing what is in the bundle. The file should contain:
+```
+ManifestFileVersion: 0
+CRC: 1652422628
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 912661529e9af10c64a43b680d62010f
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 6597594720de07d06673fc08865c772c
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 135
+  Script: {instanceID: 0}
+Assets:
+- Assets/Prefabs/BlueSphere.prefab
+- Assets/Prefabs/RedCube.prefab
+Dependencies: []
+```
+It is good idea to keep the manifest around with the asset bundle so you can find out what is in the bundle.
+
+The actual asset bundle file needs to be uploaded to the web and needs to be made available via http.
+The url of that file needs to entered into the porpoise configuration of the layer
+that wants to show the red cube or the blue sphere as points of interest,
+but that topic needs to be covered in a different tutorial.
+
+## iOS Asset Bundles
+In order to build an iOS asset bundle the iOS Unity module needs to be installed, see the second image above. Then the script CreateiOSAssetBundles can be used to create the asset bundles for iOS.
+
+**Important Note**: In order for the assets to work in ARpoise and AR-vos on Android and iOS both the Android and the iOS asset bundle need to be created and made available on the web via http.
+
+Furthermore, the following naming convention needs to be applied.
+If the name of the Android asset bundle is **exampleassetbundle**,
+the name of the iOS asset bundle needs to be **exampleassetbundlei**.
+I.e. the same name followed by a lower case letter ‘**i**’.
+
+
+
