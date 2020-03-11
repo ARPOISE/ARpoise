@@ -165,7 +165,7 @@ Assets:
 - Assets/Prefabs/RedCube.prefab
 Dependencies: []
 ```
-The tow lines listing the two assets contained, the blue sphere and the red cube are important.
+The two lines listing the two assets contained, the blue sphere and the red cube, are important.
 It is a good idea to keep the manifest around with the asset bundle so you can find out what is in the bundle.
 
 The actual asset bundle file needs to be uploaded to the web and needs to be made available via http.
@@ -176,12 +176,10 @@ but that topic is covered in a different tutorial.
 ## iOS Asset Bundles
 In order to build an iOS asset bundle the iOS Unity module needs to be installed, see the second image above. Then the script CreateiOSAssetBundles can be used to create the asset bundles for iOS.
 
-**Important Note**: In order for the assets to work in ARpoise and AR-vos on Android and iOS both the Android and the iOS asset bundle need to be created and made available on the web via http.
+**Important Note**: In order for the assets to work in **ARpoise** and **AR-vos** on **Android** and **iOS**,
+both the **Android** and the **iOS** asset bundle need to be created and made available on the web via **http**.
 
 Furthermore, the following naming convention needs to be applied.
 If the name of the Android asset bundle is **exampleassetbundle**,
 the name of the iOS asset bundle needs to be **exampleassetbundlei**.
 I.e. the same name followed by a lower case letter ‘**i**’.
-
-
-
