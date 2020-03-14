@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<porpoise-configuration>
+ <connectors>
+  <!--<connector><name></name><file></file></connector>-->
+ </connectors>
+ 
+ <layers>
+
+<!--
+
+Sample XML layer configuration
+  <layer>
+   <name>example</name>
+   <connector>XMLPOIConnector</connector>
+   <source>example.xml</source>
+  </layer>
+ -->
+
+  <layer>
+   <name>ExampleLayer</name>
+   <connector>XMLPOIConnector</connector>
+   <source>ExampleLayer.xml</source>
+  </layer>
+
+ </layers>
+</porpoise-configuration>
