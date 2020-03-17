@@ -27,6 +27,21 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.40  2020/03/17 22:11:00  peter
+No caching
+
+Revision 1.39  2020/03/17 22:01:30  peter
+Made sure the directory server does not cache
+
+Revision 1.38  2020/03/17 20:50:03  peter
+Working on hidden histories version
+
+Revision 1.37  2020/03/16 11:43:13  peter
+Working on version for hidden histories
+
+Revision 1.36  2020/03/15 23:29:25  peter
+Working on areas for the directory
+
 Revision 1.35  2020/02/23 12:29:21  peter
 Added layer name to location statistics
 
@@ -138,7 +153,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.35 2020/02/23 12:29:21 peter Exp $";
+char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.40 2020/03/17 22:11:00 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -182,15 +197,15 @@ char * ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.35 2020/02/23 12:29:
 /*
  * Receive some bytes from a socket
  */
-static int receiveBytesFromTcp(int socket, char * buffer, int bufferSize, struct timeval * timeout)
+static int receiveBytesFromTcp(int socket, char* buffer, int bufferSize, struct timeval* timeout)
 {
-	char * tag = "readTcp";
+	char* tag = "readTcp";
 	int    rc = 0;
 	int    socketError = 0;
 	int    optlen = sizeof(socketError);
 
 	errno = 0;
-	if (getsockopt(socket, SOL_SOCKET, SO_ERROR, (char *)&socketError, &optlen))
+	if (getsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&socketError, &optlen))
 	{
 		pblCgiExitOnError("%s: getsockopt(%d) error, errno %d\n", tag, socket, errno);
 	}
@@ -203,7 +218,7 @@ static int receiveBytesFromTcp(int socket, char * buffer, int bufferSize, struct
 		FD_SET(socket, &readFds);
 
 		errno = 0;
-		rc = select(socket + 1, &readFds, (fd_set *)NULL, (fd_set *)NULL, timeout);
+		rc = select(socket + 1, &readFds, (fd_set*)NULL, (fd_set*)NULL, timeout);
 		switch (rc)
 		{
 		case 0:
@@ -219,7 +234,7 @@ static int receiveBytesFromTcp(int socket, char * buffer, int bufferSize, struct
 
 		default:
 			errno = 0;
-			if (getsockopt(socket, SOL_SOCKET, SO_ERROR, (char *)&socketError, &optlen))
+			if (getsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&socketError, &optlen))
 			{
 				pblCgiExitOnError("%s: getsockopt(%d) error, errno %d\n", tag, socket, errno);
 			}
@@ -249,27 +264,31 @@ static int receiveBytesFromTcp(int socket, char * buffer, int bufferSize, struct
 	return nBytesRead;
 }
 
+static char receiveBuffer[64 * 1024];
 /*
 * Receive some string bytes and return the result in a malloced buffer.
 */
-static char * receiveStringFromTcp(int socket, int timeoutSeconds)
+static char* receiveStringFromTcp(int socket, int timeoutSeconds)
 {
-	static char * tag = "receiveStringFromTcp";
+	static char* tag = "receiveStringFromTcp";
 
-	char * result = NULL;
-	PblStringBuilder * stringBuilder = NULL;
+	char* result = NULL;
+	PblStringBuilder* stringBuilder = NULL;
 
 	struct timeval timeoutValue;
 	timeoutValue.tv_sec = timeoutSeconds;
 	timeoutValue.tv_usec = 0;
 
-	char buffer[64 * 1024];
-	buffer[0] = '\0';
+	receiveBuffer[0] = '\0';
 
 	for (;;)
 	{
-		int rc = receiveBytesFromTcp(socket, buffer, sizeof(buffer) - 1, &timeoutValue);
-		if (rc < 0 || rc > sizeof(buffer) - 1)
+		int rc = receiveBytesFromTcp(socket, receiveBuffer, sizeof(receiveBuffer) - 1, &timeoutValue);
+		if (rc < 0)
+		{
+			return NULL;
+		}
+		if (rc < 0 || rc > sizeof(receiveBuffer) - 1)
 		{
 			pblCgiExitOnError("%s: readTcp failed! rc %d\n", tag, rc);
 		}
@@ -279,12 +298,12 @@ static char * receiveStringFromTcp(int socket, int timeoutSeconds)
 		}
 		else
 		{
-			buffer[rc] = '\0';
+			receiveBuffer[rc] = '\0';
 		}
 
-		if (rc < sizeof(buffer) - 1 && stringBuilder == NULL)
+		if (rc < sizeof(receiveBuffer) - 1 && stringBuilder == NULL)
 		{
-			result = pblCgiStrDup(buffer);
+			result = pblCgiStrDup(receiveBuffer);
 			break;
 		}
 
@@ -296,7 +315,7 @@ static char * receiveStringFromTcp(int socket, int timeoutSeconds)
 				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 			}
 		}
-		if (pblStringBuilderAppendStr(stringBuilder, buffer) == ((size_t)-1))
+		if (pblStringBuilderAppendStr(stringBuilder, receiveBuffer) == ((size_t)-1))
 		{
 			pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
@@ -325,11 +344,11 @@ static char * receiveStringFromTcp(int socket, int timeoutSeconds)
 /*
 * Send some bytes to a tcp socket
 */
-static void sendBytesToTcp(int socket, char * buffer, int nBytesToSend)
+static void sendBytesToTcp(int socket, char* buffer, int nBytesToSend)
 {
-	static char * tag = "sendBytesToTcp";
+	static char* tag = "sendBytesToTcp";
 
-	char * ptr = buffer;
+	char* ptr = buffer;
 	while (nBytesToSend > 0)
 	{
 		errno = 0;
@@ -349,15 +368,16 @@ static void sendBytesToTcp(int socket, char * buffer, int nBytesToSend)
 /*
 * Connect to a tcp socket on machine with hostname and port
 */
-static int connectToTcp(char * hostname, int port)
+static int connectToTcp(char* hostname, int port)
 {
-	static char * tag = "connectToTcp";
+	static char* tag = "connectToTcp";
 
 	errno = 0;
-	struct hostent * hostInfo = gethostbyname(hostname);
+	struct hostent* hostInfo = gethostbyname(hostname);
 	if (!hostInfo)
 	{
 		pblCgiExitOnError("%s: gethostbyname(%s) error, errno %d.\n", tag, hostname, errno);
+		return -1;
 	}
 
 	short shortPort = 80;
@@ -380,7 +400,7 @@ static int connectToTcp(char * hostname, int port)
 	}
 
 	errno = 0;
-	if (connect(socketFd, (struct sockaddr *) &serverAddress, sizeof(struct sockaddr_in)) < 0)
+	if (connect(socketFd, (struct sockaddr*) & serverAddress, sizeof(struct sockaddr_in)) < 0)
 	{
 		pblCgiExitOnError("%s: connect(%d) error, host '%s' on port %d, errno %d\n", tag, socketFd, hostname, shortPort, errno);
 		socket_close(socketFd);
@@ -392,27 +412,40 @@ static int connectToTcp(char * hostname, int port)
 * Make a HTTP request with the given uri to the given host/port
 * and return the result content in a malloced buffer.
 */
-static char * getHttpResponse(char * hostname, int port, char * uri, int timeoutSeconds, char * agent)
+static char* getHttpResponse(char* hostname, int port, char* uri, int timeoutSeconds, char* agent)
 {
-	int socketFd = connectToTcp(hostname, port);
+	char* response = NULL;
+	for (int n = 0; n < 2; n++)
+	{
+		int socketFd = connectToTcp(hostname, port);
 
-	char * sendBuffer = pblCgiSprintf("GET %s HTTP/1.0\r\nUser-Agent: %s\r\nHost: %s\r\n\r\n", uri, agent, hostname);
-	PBL_CGI_TRACE("HttpRequest=%s", sendBuffer);
+		char* sendBuffer = pblCgiSprintf("GET %s HTTP/1.0\r\nUser-Agent: %s\r\nHost: %s\r\n\r\n", uri, agent, hostname);
+		PBL_CGI_TRACE("HttpRequest=%s", sendBuffer);
 
-	sendBytesToTcp(socketFd, sendBuffer, strlen(sendBuffer));
-	PBL_FREE(sendBuffer);
+		sendBytesToTcp(socketFd, sendBuffer, strlen(sendBuffer));
+		PBL_FREE(sendBuffer);
 
-	char * response = receiveStringFromTcp(socketFd, timeoutSeconds);
-	PBL_CGI_TRACE("HttpResponse=%s", response);
-	socket_close(socketFd);
-
+		response = receiveStringFromTcp(socketFd, timeoutSeconds);
+		socket_close(socketFd);
+		if (!response)
+		{
+			PBL_CGI_TRACE("HttpResponse=NULL, n=%d", n);
+			continue;
+		}
+		PBL_CGI_TRACE("HttpResponse=%s", response);
+		break;
+	}
+	if (!response)
+	{
+		pblCgiExitOnError("getHttpResponse: receiveStringFromTcp returned NULL\n");
+	}
 	return response;
 }
 
-static char * getMatchingString(char * string, char start, char end, char **nextPtr)
+static char* getMatchingString(char* string, char start, char end, char** nextPtr)
 {
-	char * tag = "getMatchingString";
-	char * ptr = string;
+	char* tag = "getMatchingString";
+	char* ptr = string;
 	if (start != *ptr)
 	{
 		pblCgiExitOnError("%s: expected %c at start of string '%s'\n", tag, start, string);
@@ -443,16 +476,17 @@ static char * getMatchingString(char * string, char start, char end, char **next
 	return NULL;
 }
 
-static char * getStringBetween(char * string, char * start, char * end)
+static char* getStringBetween(char* string, char* start, char* end)
 {
-	char * tag = "getStringBetween";
-	char * ptr = *start ? strstr(string, start) : string;
+	char* tag = "getStringBetween";
+	char* ptr = *start ? strstr(string, start) : string;
 	if (!ptr)
 	{
 		pblCgiExitOnError("%s: expected starting tag '%s' in string '%s'\n", tag, start, string);
+		return NULL;
 	}
 	ptr += strlen(start);
-	char * ptr2 = strstr(ptr, end);
+	char* ptr2 = strstr(ptr, end);
 	if (!ptr2)
 	{
 		pblCgiExitOnError("%s: expected ending '%s' in string '%s'\n", tag, end, ptr);
@@ -460,17 +494,17 @@ static char * getStringBetween(char * string, char * start, char * end)
 	return pblCgiStrRangeDup(ptr, ptr2);
 }
 
-static char * getNumberString(char * string, char * start)
+static char* getNumberString(char* string, char* start)
 {
-	char * tag = "getNumberString";
-	char * ptr = strstr(string, start);
+	char* tag = "getNumberString";
+	char* ptr = strstr(string, start);
 	if (!ptr)
 	{
 		pblCgiExitOnError("%s: expected starting tag '%s' in string '%s'\n", tag, start, string);
 	}
 	ptr += strlen(start);
 
-	char * ptr2 = ptr;
+	char* ptr2 = ptr;
 	while (ptr2 && *ptr2)
 	{
 		if (isdigit(*ptr2) || '.' == *ptr2 || '-' == *ptr2 || '+' == *ptr2)
@@ -487,9 +521,9 @@ static char * getNumberString(char * string, char * start)
 	return pblCgiStrRangeDup(ptr, ptr2);
 }
 
-static char * getHttpResponseBody(char * response, char ** cookiePtr)
+static char* getHttpResponseBody(char* response, char** cookiePtr)
 {
-	static char * tag = "getHttpResponseBody";
+	static char* tag = "getHttpResponseBody";
 
 	// check for HTTP error code like HTTP/1.1 500 Server Error
 	//
@@ -498,7 +532,7 @@ static char * getHttpResponseBody(char * response, char ** cookiePtr)
 		*cookiePtr = getStringBetween(response, "Set-Cookie: ", "\r\n");
 	}
 
-	char * ptr = strstr(response, "HTTP/");
+	char* ptr = strstr(response, "HTTP/");
 	if (ptr)
 	{
 		ptr = strstr(ptr, " ");
@@ -514,7 +548,7 @@ static char * getHttpResponseBody(char * response, char ** cookiePtr)
 
 	if (ptr)
 	{
-		char * end = strstr(ptr, "\r\n\r\n");
+		char* end = strstr(ptr, "\r\n\r\n");
 		if (!end)
 		{
 			end = strstr(ptr, "\n\n");
@@ -538,9 +572,9 @@ static char * getHttpResponseBody(char * response, char ** cookiePtr)
 	return NULL;
 }
 
-static void putString(char * string, PblStringBuilder * stringBuilder)
+static void putString(char* string, PblStringBuilder* stringBuilder)
 {
-	char * tag = "putString";
+	char* tag = "putString";
 
 	if (pblStringBuilderAppendStr(stringBuilder, string) == ((size_t)-1))
 	{
@@ -549,7 +583,7 @@ static void putString(char * string, PblStringBuilder * stringBuilder)
 	fputs(string, stdout);
 }
 
-static char * changeLat(char * string, int i, int difference)
+static char* changeLat(char* string, int i, int difference)
 {
 	if (!strstr(string, "\"lat\":"))
 	{
@@ -579,16 +613,16 @@ static char * changeLat(char * string, int i, int difference)
 		return pblCgiStrDup(string);
 	}
 
-	char * lat = getNumberString(string, "\"lat\":");
+	char* lat = getNumberString(string, "\"lat\":");
 	//PBL_CGI_TRACE("lat=%s", lat);
 
-	char * oldLat = pblCgiSprintf("\"lat\":%s,", lat);
+	char* oldLat = pblCgiSprintf("\"lat\":%s,", lat);
 	//PBL_CGI_TRACE("oldLat=%s", oldLat);
 
-	char * newLat = pblCgiSprintf("\"lat\":%d,", atoi(lat) + difference);
+	char* newLat = pblCgiSprintf("\"lat\":%d,", atoi(lat) + difference);
 	//PBL_CGI_TRACE("newLat=%s", newLat);
 
-	char * replacedLat = pblCgiStrReplace(string, oldLat, newLat);
+	char* replacedLat = pblCgiStrReplace(string, oldLat, newLat);
 
 	PBL_FREE(lat);
 	PBL_FREE(oldLat);
@@ -597,7 +631,7 @@ static char * changeLat(char * string, int i, int difference)
 	return replacedLat;
 }
 
-static char * changeLon(char * string, int i, int difference)
+static char* changeLon(char* string, int i, int difference)
 {
 	if (!strstr(string, "\"lon\":"))
 	{
@@ -627,16 +661,16 @@ static char * changeLon(char * string, int i, int difference)
 		return pblCgiStrDup(string);
 	}
 
-	char * lon = getNumberString(string, "\"lon\":");
+	char* lon = getNumberString(string, "\"lon\":");
 	//PBL_CGI_TRACE("lon=%s", lon);
 
-	char * oldLon = pblCgiSprintf("\"lon\":%s,", lon);
+	char* oldLon = pblCgiSprintf("\"lon\":%s,", lon);
 	//PBL_CGI_TRACE("oldLon=%s", oldLon);
 
-	char * newLon = pblCgiSprintf("\"lon\":%d,", atoi(lon) + difference);
+	char* newLon = pblCgiSprintf("\"lon\":%d,", atoi(lon) + difference);
 	//PBL_CGI_TRACE("newLon=%s", newLon);
 
-	char * replacedLon = pblCgiStrReplace(string, oldLon, newLon);
+	char* replacedLon = pblCgiStrReplace(string, oldLon, newLon);
 
 	PBL_FREE(lon);
 	PBL_FREE(oldLon);
@@ -645,21 +679,23 @@ static char * changeLon(char * string, int i, int difference)
 	return replacedLon;
 }
 
-static char * changeLatAndLon(char * queryString, char * lat, char * lon, int * latDifference, int * lonDifference)
+static char* changeLatAndLon(char* queryString, char* lat, char* lon, int* latDifference, int* lonDifference)
 {
 	if (!pblCgiStrIsNullOrWhiteSpace(lat) && !pblCgiStrIsNullOrWhiteSpace(lon))
 	{
-		char * replacementLat = pblCgiStrCat("lat=", lat);
-		char * replacementLon = pblCgiStrCat("lon=", lon);
-		int replacementLatInteger = (int)(1000000.0 * strtof(replacementLat + 4, NULL));
-		int replacementLonInteger = (int)(1000000.0 * strtof(replacementLon + 4, NULL));
+		char* replacementLat = pblCgiStrCat("lat=", lat);
+		char* replacementLon = pblCgiStrCat("lon=", lon);
+		double latDouble = strtod(replacementLat + 4, NULL);
+		int replacementLatInteger = (int)(1000000.0 * latDouble);
+		double lonDouble = strtod(replacementLon + 4, NULL);
+		int replacementLonInteger = (int)(1000000.0 * lonDouble);
 		int latPtrInteger = 0;
 		int lonPtrInteger = 0;
 
-		char * latPtr = strstr(queryString, "lat=");
+		char* latPtr = strstr(queryString, "lat=");
 		if (latPtr)
 		{
-			char * ptr = strstr(latPtr, "&");
+			char* ptr = strstr(latPtr, "&");
 			if (ptr)
 			{
 				latPtr = pblCgiStrRangeDup(latPtr, ptr);
@@ -668,13 +704,13 @@ static char * changeLatAndLon(char * queryString, char * lat, char * lon, int * 
 			{
 				latPtr = pblCgiStrDup(latPtr);
 			}
-			latPtrInteger = (int)(1000000.0 * strtof(latPtr + 4, NULL));
+			latPtrInteger = (int)(1000000.0 * strtod(latPtr + 4, NULL));
 			queryString = pblCgiStrReplace(queryString, latPtr, replacementLat);
 		}
-		char * lonPtr = strstr(queryString, "lon=");
+		char* lonPtr = strstr(queryString, "lon=");
 		if (lonPtr)
 		{
-			char * ptr = strstr(lonPtr, "&");
+			char* ptr = strstr(lonPtr, "&");
 			if (ptr)
 			{
 				lonPtr = pblCgiStrRangeDup(lonPtr, ptr);
@@ -683,7 +719,7 @@ static char * changeLatAndLon(char * queryString, char * lat, char * lon, int * 
 			{
 				lonPtr = pblCgiStrDup(lonPtr);
 			}
-			lonPtrInteger = (int)(1000000.0 * strtof(lonPtr + 4, NULL));
+			lonPtrInteger = (int)(1000000.0 * strtod(lonPtr + 4, NULL));
 			queryString = pblCgiStrReplace(queryString, lonPtr, replacementLon);
 		}
 		if (latDifference && lonDifference && latPtrInteger != 0 && lonPtrInteger != 0)
@@ -696,19 +732,19 @@ static char * changeLatAndLon(char * queryString, char * lat, char * lon, int * 
 	return NULL;
 }
 
-static char * changeRedirectionUrl(char * string, char * redirectionUrl)
+static char* changeRedirectionUrl(char* string, char* redirectionUrl)
 {
 	if (!strstr(string, "\"redirectionUrl\":"))
 	{
 		return pblCgiStrDup(string);
 	}
 
-	char * oldValue = getStringBetween(string, "\"redirectionUrl\":", ",\"");
+	char* oldValue = getStringBetween(string, "\"redirectionUrl\":", ",\"");
 
-	char * oldValueStr = pblCgiSprintf("\"redirectionUrl\":%s", oldValue);
-	char * newValueStr = pblCgiSprintf("\"redirectionUrl\":\"%s\"", redirectionUrl);
+	char* oldValueStr = pblCgiSprintf("\"redirectionUrl\":%s", oldValue);
+	char* newValueStr = pblCgiSprintf("\"redirectionUrl\":\"%s\"", redirectionUrl);
 
-	char * replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
+	char* replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
 
 	PBL_FREE(oldValue);
 	PBL_FREE(oldValueStr);
@@ -717,19 +753,19 @@ static char * changeRedirectionUrl(char * string, char * redirectionUrl)
 	return replacedString;
 }
 
-static char * changeRedirectionLayer(char * string, char * redirectionLayer)
+static char* changeRedirectionLayer(char* string, char* redirectionLayer)
 {
 	if (!strstr(string, "\"redirectionLayer\":"))
 	{
 		return pblCgiStrDup(string);
 	}
 
-	char * oldValue = getStringBetween(string, "\"redirectionLayer\":", ",\"");
+	char* oldValue = getStringBetween(string, "\"redirectionLayer\":", ",\"");
 
-	char * oldValueStr = pblCgiSprintf("\"redirectionLayer\":%s", oldValue);
-	char * newValueStr = pblCgiSprintf("\"redirectionLayer\":\"%s\"", redirectionLayer);
+	char* oldValueStr = pblCgiSprintf("\"redirectionLayer\":%s", oldValue);
+	char* newValueStr = pblCgiSprintf("\"redirectionLayer\":\"%s\"", redirectionLayer);
 
-	char * replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
+	char* replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
 
 	PBL_FREE(oldValue);
 	PBL_FREE(oldValueStr);
@@ -738,19 +774,19 @@ static char * changeRedirectionLayer(char * string, char * redirectionLayer)
 	return replacedString;
 }
 
-static char * changeLayerName(char * string, char * layerName)
+static char* changeLayerName(char* string, char* layerName)
 {
 	if (!strstr(string, "layerName="))
 	{
 		return pblCgiStrDup(string);
 	}
 
-	char * oldLayerName = getStringBetween(string, "layerName=", "&");
+	char* oldLayerName = getStringBetween(string, "layerName=", "&");
 
-	char * oldLayerNameStr = pblCgiSprintf("layerName=%s", oldLayerName);
-	char * newLayerNameStr = pblCgiSprintf("layerName=%s", layerName);
+	char* oldLayerNameStr = pblCgiSprintf("layerName=%s", oldLayerName);
+	char* newLayerNameStr = pblCgiSprintf("layerName=%s", layerName);
 
-	char * replacedString = pblCgiStrReplace(string, oldLayerNameStr, newLayerNameStr);
+	char* replacedString = pblCgiStrReplace(string, oldLayerNameStr, newLayerNameStr);
 
 	PBL_FREE(oldLayerName);
 	PBL_FREE(oldLayerNameStr);
@@ -759,19 +795,19 @@ static char * changeLayerName(char * string, char * layerName)
 	return replacedString;
 }
 
-static char * changeShowMenuOption(char * string, char * value)
+static char* changeShowMenuOption(char* string, char* value)
 {
 	if (!strstr(string, "\"showMenuButton\":"))
 	{
 		return pblCgiStrDup(string);
 	}
 
-	char * oldValue = getStringBetween(string, "\"showMenuButton\":", ",\"");
+	char* oldValue = getStringBetween(string, "\"showMenuButton\":", ",\"");
 
-	char * oldValueStr = pblCgiSprintf("\"showMenuButton\":%s", oldValue);
-	char * newValueStr = pblCgiSprintf("\"showMenuButton\":\"%s\"", value);
+	char* oldValueStr = pblCgiSprintf("\"showMenuButton\":%s", oldValue);
+	char* newValueStr = pblCgiSprintf("\"showMenuButton\":\"%s\"", value);
 
-	char * replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
+	char* replacedString = pblCgiStrReplace(string, oldValueStr, newValueStr);
 
 	PBL_FREE(oldValue);
 	PBL_FREE(oldValueStr);
@@ -780,27 +816,21 @@ static char * changeShowMenuOption(char * string, char * value)
 	return replacedString;
 }
 
-static PblList * devicePositionList = NULL;
+static PblList* devicePositionList = NULL;
 
-static char * handleDevicePosition(char * deviceId, char* client, char * queryString, int * latDifference, int * lonDifference)
+static char* handleDevicePosition(char* deviceId, char* client, char* queryString, int* latDifference, int* lonDifference)
 {
 	if (pblCgiStrIsNullOrWhiteSpace(deviceId))
 	{
 		return NULL;
 	}
 
-	char * lat = NULL;
-	char * lon = NULL;
-
-	if (pblCgiStrEquals("Arvos", client))
-	{
-		lat = lon = "0.000000";
-		return changeLatAndLon(queryString, lat, lon, latDifference, lonDifference);
-	}
+	char* lat = NULL;
+	char* lon = NULL;
 
 	if (!devicePositionList)
 	{
-		char * devicePositionValue = pblCgiConfigValue("DevicePosition", NULL);
+		char* devicePositionValue = pblCgiConfigValue("DevicePosition", NULL);
 		if (pblCgiStrIsNullOrWhiteSpace(devicePositionValue))
 		{
 			return NULL;
@@ -817,7 +847,7 @@ static char * handleDevicePosition(char * deviceId, char* client, char * querySt
 
 	for (int i = 0; i < listSize - 2; i += 3)
 	{
-		char * device = pblListGet(devicePositionList, i);
+		char* device = pblListGet(devicePositionList, i);
 
 		if (pblCgiStrEquals(deviceId, device))
 		{
@@ -836,11 +866,11 @@ static void traceDuration()
 
 	unsigned long duration = now.tv_sec * 1000000 + now.tv_usec;
 	duration -= pblCgiStartTime.tv_sec * 1000000 + pblCgiStartTime.tv_usec;
-	char * string = pblCgiSprintf("%lu", duration);
+	char* string = pblCgiSprintf("%lu", duration);
 	PBL_CGI_TRACE("Duration=%s microseconds", string);
 }
 
-static void printHeader(char * cookie)
+static void printHeader(char* cookie)
 {
 	fputs("Content-Type: application/json\r\n", stdout);
 	if (cookie)
@@ -852,13 +882,13 @@ static void printHeader(char * cookie)
 	fputs("\r\n", stdout);
 }
 
-static void handleResponse(char * response, int latDifference, int lonDifference)
+static void handleResponse(char* response, int latDifference, int lonDifference)
 {
-	static char * tag = "handleResponse";
-	char * cookie = NULL;
+	static char* tag = "handleResponse";
+	char* cookie = NULL;
 	response = getHttpResponseBody(response, &cookie);
 
-	char * start = "{\"hotspots\":";
+	char* start = "{\"hotspots\":";
 	int length = strlen(start);
 
 	if (strncmp(start, response, length))
@@ -869,26 +899,26 @@ static void handleResponse(char * response, int latDifference, int lonDifference
 		return;
 	}
 
-	PblStringBuilder * stringBuilder = pblStringBuilderNew();
+	PblStringBuilder* stringBuilder = pblStringBuilderNew();
 	if (!stringBuilder)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 	}
 
-	char * rest = NULL;
-	char * hotspotsString = getMatchingString(response + length, '[', ']', &rest);
+	char* rest = NULL;
+	char* hotspotsString = getMatchingString(response + length, '[', ']', &rest);
 
-	PblList * list = pblListNewArrayList();
+	PblList* list = pblListNewArrayList();
 	if (!list)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 	}
 
-	char * ptr = hotspotsString;
+	char* ptr = hotspotsString;
 	while (*ptr == '{')
 	{
-		char * ptr2 = NULL;
-		char * hotspot = getMatchingString(ptr, '{', '}', &ptr2);
+		char* ptr2 = NULL;
+		char* hotspot = getMatchingString(ptr, '{', '}', &ptr2);
 
 		if (pblListAdd(list, hotspot) < 0)
 		{
@@ -916,12 +946,12 @@ static void handleResponse(char * response, int latDifference, int lonDifference
 		}
 		putString("{", stringBuilder);
 
-		char * hotspot = pblListGet(list, j);
+		char* hotspot = pblListGet(list, j);
 
-		char * ptr = hotspot;
+		char* ptr = hotspot;
 		if (latDifference != 0 || lonDifference != 0)
 		{
-			char * replacedLat = changeLat(hotspot, 1, -1 * latDifference);
+			char* replacedLat = changeLat(hotspot, 1, -1 * latDifference);
 			ptr = changeLon(replacedLat, 5, -1 * lonDifference);
 			PBL_CGI_TRACE("Applied latDifference=%d and lonDifference=%d", latDifference, lonDifference);
 		}
@@ -936,11 +966,11 @@ static void handleResponse(char * response, int latDifference, int lonDifference
 	pblStringBuilderFree(stringBuilder);
 }
 
-static void createStatisticsFile(char * directory, char * fileName)
+static void createStatisticsFile(char* directory, char* fileName)
 {
-	char * filePath = pblCgiSprintf("%s/%s", directory, fileName);
+	char* filePath = pblCgiSprintf("%s/%s", directory, fileName);
 
-	FILE * stream = NULL;
+	FILE* stream = NULL;
 
 #ifdef WIN32
 	errno_t err = fopen_s(&stream, filePath, "r");
@@ -964,49 +994,49 @@ static void createStatisticsFile(char * directory, char * fileName)
 		fclose(stream);
 	}
 	PBL_FREE(filePath);
-}
+	}
 
-static char * getVersion()
+static char* getVersion()
 {
 	return getStringBetween(ArpoiseDirectory_c_id, "ArpoiseDirectory.c,v ", " ");
 }
 
-static void createStatisticsHits(int layer, char * layerName, int layerServed)
+static void createStatisticsHits(int layer, char* layerName, int layerServed)
 {
-	char * count = pblCgiQueryValue("count");
+	char* count = pblCgiQueryValue("count");
 	if (pblCgiStrEquals("1", count))
 	{
 		PBL_CGI_TRACE("-------> Statistics Request\n");
 
 		// Create a web hit for the os and bundle, so that web stats can be used to count hits
 
-		char * versionsDirectory = pblCgiConfigValue("VersionsDirectory", "");
+		char* versionsDirectory = pblCgiConfigValue("VersionsDirectory", "");
 		if (versionsDirectory && *versionsDirectory)
 		{
-			char * os = pblCgiQueryValue("os");
+			char* os = pblCgiQueryValue("os");
 			if (!os || !*os || strstr(os, ".."))
 			{
 				os = "UnknownOperatingSystem";
 			}
 
-			char * bundle = pblCgiQueryValue("bundle");
+			char* bundle = pblCgiQueryValue("bundle");
 			if (!bundle || !*bundle || strstr(bundle, ".."))
 			{
 				bundle = "UnknownBundle";
 			}
 
-			char * fileName = pblCgiSprintf("%s_%s.htm", os, bundle);
+			char* fileName = pblCgiSprintf("%s_%s.htm", os, bundle);
 			createStatisticsFile(versionsDirectory, fileName);
-			char * uri = pblCgiSprintf("/ArpoiseDirectory/AppVersions/%s", fileName);
+			char* uri = pblCgiSprintf("/ArpoiseDirectory/AppVersions/%s", fileName);
 			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/AppVersions");
 		}
 
 		// Create a web hit for the location, so that web stats can be used to count hits
 
-		char *locationsDirectory = pblCgiConfigValue("LocationsDirectory", "");
+		char* locationsDirectory = pblCgiConfigValue("LocationsDirectory", "");
 		if (locationsDirectory && *locationsDirectory)
 		{
-			char * queryLat = pblCgiQueryValue("lat");
+			char* queryLat = pblCgiQueryValue("lat");
 			if (!queryLat || !*queryLat || strstr(queryLat, ".."))
 			{
 				queryLat = "UnknownLat";
@@ -1015,13 +1045,13 @@ static void createStatisticsHits(int layer, char * layerName, int layerServed)
 			{
 				queryLat = pblCgiStrDup(queryLat);
 			}
-			char * ptr = strstr(queryLat, ".");
+			char* ptr = strstr(queryLat, ".");
 			if (ptr && strlen(ptr) > 4)
 			{
 				ptr[4] = '\0'; // truncate latitude to 3 digits after the '.'
 			}
 
-			char * queryLon = pblCgiQueryValue("lon");
+			char* queryLon = pblCgiQueryValue("lon");
 			if (!queryLon || !*queryLon || strstr(queryLon, ".."))
 			{
 				queryLon = "UnknownLon";
@@ -1036,15 +1066,15 @@ static void createStatisticsHits(int layer, char * layerName, int layerServed)
 				ptr[4] = '\0'; // truncate longitude to 3 digits after the '.'
 			}
 
-			char * fileName = pblCgiSprintf("%s_%s-%s.htm", queryLon, queryLat, layerName);
+			char* fileName = pblCgiSprintf("%s_%s-%s.htm", queryLon, queryLat, layerName);
 			createStatisticsFile(locationsDirectory, fileName);
-			char * uri = pblCgiSprintf("/ArpoiseDirectory/Locations/%s", fileName);
+			char* uri = pblCgiSprintf("/ArpoiseDirectory/Locations/%s", fileName);
 			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/Locations");
 		}
 
 		// Create a web hit for the layer, so that web stats can be used to count hits
 
-		char * layersDirectory = pblCgiConfigValue("LayersDirectory", "");
+		char* layersDirectory = pblCgiConfigValue("LayersDirectory", "");
 		if (layer && layersDirectory && *layersDirectory && layerName && *layerName)
 		{
 			if (!layerName || !*layerName || strstr(layerName, ".."))
@@ -1052,15 +1082,15 @@ static void createStatisticsHits(int layer, char * layerName, int layerServed)
 				layerName = "UnknownLayer";
 			}
 
-			char * fileName = pblCgiSprintf("%s.htm", layerName);
+			char* fileName = pblCgiSprintf("%s.htm", layerName);
 			createStatisticsFile(layersDirectory, fileName);
-			char * uri = pblCgiSprintf("/ArpoiseDirectory/Layers/%s", fileName);
+			char* uri = pblCgiSprintf("/ArpoiseDirectory/Layers/%s", fileName);
 			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/Layers");
 		}
 
 		// Create a web hit for the layer served, so that web stats can be used to count hits
 
-		char * layersServedDirectory = pblCgiConfigValue("LayersServedDirectory", "");
+		char* layersServedDirectory = pblCgiConfigValue("LayersServedDirectory", "");
 		if (layerServed && layersServedDirectory && *layersServedDirectory && layerName && *layerName)
 		{
 			if (!layerName || !*layerName || strstr(layerName, ".."))
@@ -1068,19 +1098,127 @@ static void createStatisticsHits(int layer, char * layerName, int layerServed)
 				layerName = "UnknownLayer";
 			}
 
-			char * fileName = pblCgiSprintf("%s.htm", layerName);
+			char* fileName = pblCgiSprintf("%s.htm", layerName);
 			createStatisticsFile(layersServedDirectory, fileName);
-			char * uri = pblCgiSprintf("/ArpoiseDirectory/LayersServed/%s", fileName);
+			char* uri = pblCgiSprintf("/ArpoiseDirectory/LayersServed/%s", fileName);
 			getHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/LayersServed");
 		}
 	}
 }
 
+static void freeStringList(PblList* list)
+{
+	while (!pblListIsEmpty(list))
+	{
+		free(pblListPop(list));
+	}
+	pblListFree(list);
+}
+
+static char* getArea(char* queryString)
+{
+	int lat = 0;
+	int lon = 0;
+	char* latPtr = strstr(queryString, "lat=");
+	if (latPtr)
+	{
+		char* ptr = strstr(latPtr, "&");
+		if (ptr)
+		{
+			latPtr = pblCgiStrRangeDup(latPtr, ptr);
+		}
+		else
+		{
+			latPtr = pblCgiStrDup(latPtr);
+		}
+		double latDouble = strtod(latPtr + 4, NULL);
+		lat = (int)(1000000.0 * latDouble);
+	}
+	char* lonPtr = strstr(queryString, "lon=");
+	if (lonPtr)
+	{
+		char* ptr = strstr(lonPtr, "&");
+		if (ptr)
+		{
+			lonPtr = pblCgiStrRangeDup(lonPtr, ptr);
+		}
+		else
+		{
+			lonPtr = pblCgiStrDup(lonPtr);
+		}
+		double lonDouble = strtod(lonPtr + 4, NULL);
+		lon = (int)(1000000.0 * lonDouble);
+	}
+	for (int i = 1; i <= 1000; i++)
+	{
+		char* areaKey = pblCgiSprintf("Area_%d", i);
+		char* areaValue = pblCgiConfigValue(areaKey, NULL);
+
+		if (pblCgiStrIsNullOrWhiteSpace(areaValue))
+		{
+			PBL_CGI_TRACE("No value for area %s", areaKey);
+			PBL_FREE(areaKey);
+			return NULL;
+		}
+
+		PblList* locationList = pblCgiStrSplitToList(areaValue, ",");
+		int size = pblListSize(locationList);
+		if (size != 4)
+		{
+			PBL_CGI_TRACE("%s, expecting 4 location values, current value is %s", areaKey, areaValue);
+
+			freeStringList(locationList);
+			PBL_FREE(areaKey);
+			continue;
+		}
+
+		int list0 = atoi(pblListGet(locationList, 0));
+		int list1 = atoi(pblListGet(locationList, 1));
+		int list2 = atoi(pblListGet(locationList, 2));
+		int list3 = atoi(pblListGet(locationList, 3));
+
+		if (lat < list0 || lon < list1 || lat > list2 || lon > list3)
+		{
+			PBL_CGI_TRACE("%s, lat %d, lon %d is outside area value %s", areaKey, lat, lon, areaValue);
+
+			freeStringList(locationList);
+			PBL_FREE(areaKey);
+			continue;
+		}
+		PBL_CGI_TRACE("%s, lat %d, lon %d is inside area value %s", areaKey, lat, lon, areaValue);
+
+		freeStringList(locationList);
+		return areaKey;
+	}
+	return NULL;
+}
+
+static char* getAreaConfigValue(char* area, char* configKey, char* defaultValue)
+{
+	if (!area || !*area)
+	{
+		return pblCgiConfigValue(configKey, defaultValue);
+	}
+	char* key = pblCgiSprintf("%s_%s", area, configKey);
+	char* valueString = pblCgiConfigValue(key, defaultValue);
+
+	if (pblCgiStrIsNullOrWhiteSpace(valueString))
+	{
+		valueString = pblCgiConfigValue(configKey, defaultValue);
+		if (pblCgiStrIsNullOrWhiteSpace(valueString))
+		{
+			PBL_CGI_TRACE("No value for %s", key);
+		}
+	}
+	PBL_FREE(key);
+	return valueString;
+}
+
 int showDefaultLayer = 1;
 
-static int arpoiseDirectory(int argc, char * argv[])
+static int arpoiseDirectory(int argc, char* argv[])
 {
-	char * tag = "ArpoiseDirectory";
+	char* tag = "ArpoiseDirectory";
 	int layerServed = 0;
 	int layer = 0;
 
@@ -1097,45 +1235,12 @@ static int arpoiseDirectory(int argc, char * argv[])
 
 #endif
 
-	char * traceFile = pblCgiConfigValue(PBL_CGI_TRACE_FILE, "/tmp/ArpoiseDirectory.txt");
+	char* traceFile = pblCgiConfigValue(PBL_CGI_TRACE_FILE, "/tmp/ArpoiseDirectory.txt");
 	pblCgiInitTrace(&startTime, traceFile);
 	PBL_CGI_TRACE("argc %d argv[0] = %s", argc, argv[0]);
 
 	pblCgiParseQuery(argc, argv);
-	char * queryString = pblCgiQueryString;
-
-	// Read config values
-	//
-	char * hostName = pblCgiConfigValue("HostName", "www.arpoise.com");
-	if (pblCgiStrIsNullOrWhiteSpace(hostName))
-	{
-		pblCgiExitOnError("%s: HostName must be given.\n", tag);
-	}
-	PBL_CGI_TRACE("HostName=%s", hostName);
-
-	int port = 80;
-	char * portString = pblCgiConfigValue("Port", "80");
-	if (!pblCgiStrIsNullOrWhiteSpace(portString))
-	{
-		int givenPort = atoi(portString);
-		if (givenPort < 1)
-		{
-			pblCgiExitOnError("%s: Bad port %d.\n", tag, givenPort);
-		}
-		port = givenPort;
-	}
-	PBL_CGI_TRACE("Port=%d", port);
-
-	char * directoryUri = pblCgiConfigValue("DirectoryUri", "/php/dir/web/porpoise.php");
-	if (pblCgiStrIsNullOrWhiteSpace(directoryUri))
-	{
-		pblCgiExitOnError("%s: DirectoryUri must be given.\n", tag);
-	}
-	char * porpoiseUri = pblCgiConfigValue("PorpoiseUri", "/php/porpoise/web/porpoise.php");
-	if (pblCgiStrIsNullOrWhiteSpace(porpoiseUri))
-	{
-		pblCgiExitOnError("%s: PorpoiseUri must be given.\n", tag);
-	}
+	char* queryString = pblCgiQueryString;
 
 #ifdef _WIN32
 
@@ -1151,8 +1256,8 @@ static int arpoiseDirectory(int argc, char * argv[])
 
 	// read query values
 	//
-	char * client = pblCgiQueryValue("client");
-	char * userId = pblCgiQueryValue("userId");
+	char* client = pblCgiQueryValue("client");
+	char* userId = pblCgiQueryValue("userId");
 	if (!userId || !*userId)
 	{
 		userId = "UnknownUserId";
@@ -1162,15 +1267,44 @@ static int arpoiseDirectory(int argc, char * argv[])
 	//
 	int latDifference = 0;
 	int lonDifference = 0;
-	char * deviceQueryString = handleDevicePosition(userId, client, queryString, &latDifference, &lonDifference);
+	char* deviceQueryString = handleDevicePosition(userId, client, queryString, &latDifference, &lonDifference);
 	if (deviceQueryString != NULL)
 	{
 		queryString = deviceQueryString;
 	}
 
-	char * layerName = pblCgiQueryValue("layerName");
-	char * layerUrl = "";
-	char * uri = "";
+	char* layerName = pblCgiQueryValue("layerName");
+	char* layerUrl = "";
+	char* uri = "";
+	char* area = getArea(queryString);
+
+	// Read config values
+	//
+	char* hostName = getAreaConfigValue(area, "HostName", "www.arpoise.com");
+	if (pblCgiStrIsNullOrWhiteSpace(hostName))
+	{
+		pblCgiExitOnError("%s: HostName must be given.\n", tag);
+	}
+	PBL_CGI_TRACE("HostName=%s", hostName);
+
+	int port = 80;
+	char* portString = getAreaConfigValue(area, "Port", "80");
+	if (!pblCgiStrIsNullOrWhiteSpace(portString))
+	{
+		int givenPort = atoi(portString);
+		if (givenPort < 1)
+		{
+			pblCgiExitOnError("%s: Bad port %d.\n", tag, givenPort);
+		}
+		port = givenPort;
+	}
+	PBL_CGI_TRACE("Port=%d", port);
+
+	char* directoryUri = getAreaConfigValue(area, "DirectoryUri", "/php/dir/web/porpoise.php");
+	if (pblCgiStrIsNullOrWhiteSpace(directoryUri))
+	{
+		pblCgiExitOnError("%s: DirectoryUri must be given.\n", tag);
+	}
 
 	int isDirectoryRequest = pblCgiStrEquals(layerName, "Arpoise-Directory");
 	if (isDirectoryRequest)
@@ -1200,8 +1334,8 @@ static int arpoiseDirectory(int argc, char * argv[])
 			{
 				// Request the default layer from porpoise and return it to the client
 
-				layerUrl = pblCgiConfigValue("ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
-				layerName = pblCgiConfigValue("ArvosDefaultLayerName", "Default-ImageTrigger");
+				layerUrl = getAreaConfigValue(area, "ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
+				layerName = getAreaConfigValue(area, "ArvosDefaultLayerName", "Default-ImageTrigger");
 
 				layerServed = 1;
 				PBL_CGI_TRACE("-------> Arvos Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
@@ -1214,9 +1348,9 @@ static int arpoiseDirectory(int argc, char * argv[])
 				latDifference += myLatDifference;
 				lonDifference += myLonDifference;
 
-				uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
+				uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
 				char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-				char* response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
+				char* response = getHttpResponse(hostName, port, uri, 16, agent);
 				handleResponse(response, latDifference, lonDifference);
 
 				createStatisticsHits(layer, layerName, layerServed);
@@ -1231,13 +1365,13 @@ static int arpoiseDirectory(int argc, char * argv[])
 		{
 			// Request the default layer from porpoise and return it to the client
 
-			layerUrl = pblCgiConfigValue("ArslamDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
-			layerName = pblCgiConfigValue("ArslamDefaultLayerName", "Default-Slam");
+			layerUrl = getAreaConfigValue(area, "ArslamDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
+			layerName = getAreaConfigValue(area, "ArslamDefaultLayerName", "Default-Slam");
 
 			layerServed = 1;
 			PBL_CGI_TRACE("-------> Arslam Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
 
-			char * ptr = changeLayerName(queryString, layerName);
+			char* ptr = changeLayerName(queryString, layerName);
 
 			int myLatDifference = 0;
 			int myLonDifference = 0;
@@ -1245,9 +1379,9 @@ static int arpoiseDirectory(int argc, char * argv[])
 			latDifference += myLatDifference;
 			lonDifference += myLonDifference;
 
-			uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
-			char * agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-			char * response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
+			uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
+			char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
+			char* response = getHttpResponse(hostName, port, uri, 16, agent);
 			response = changeShowMenuOption(response, "false");
 			handleResponse(response, latDifference, lonDifference);
 
@@ -1255,13 +1389,13 @@ static int arpoiseDirectory(int argc, char * argv[])
 			return 0;
 		}
 
-		uri = pblCgiSprintf("%s?%s", directoryUri, queryString);
-		char * cookie = NULL;
+		uri = pblCgiSprintf("%s?p=%d&%s", directoryUri, getpid(), queryString);
+		char* cookie = NULL;
 
-		char * httpResponse = getHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId));
-		char * response = getHttpResponseBody(httpResponse, &cookie);
+		char* httpResponse = getHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId));
+		char* response = getHttpResponseBody(httpResponse, &cookie);
 
-		char * start = "{\"hotspots\":";
+		char* start = "{\"hotspots\":";
 		int length = strlen(start);
 
 		if (strncmp(start, response, length))
@@ -1278,8 +1412,8 @@ static int arpoiseDirectory(int argc, char * argv[])
 			{
 				// Request the default layer from porpoise and return it to the client
 
-				layerUrl = pblCgiConfigValue("ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
-				layerName = pblCgiConfigValue("ArvosDefaultLayerName", "Default-ImageTrigger");
+				layerUrl = getAreaConfigValue(area, "ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
+				layerName = getAreaConfigValue(area, "ArvosDefaultLayerName", "Default-ImageTrigger");
 
 				layerServed = 1;
 				PBL_CGI_TRACE("-------> Arvos Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
@@ -1292,9 +1426,9 @@ static int arpoiseDirectory(int argc, char * argv[])
 				latDifference += myLatDifference;
 				lonDifference += myLonDifference;
 
-				uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
+				uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
 				char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-				char* response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
+				char* response = getHttpResponse(hostName, port, uri, 16, agent);
 				handleResponse(response, latDifference, lonDifference);
 
 				createStatisticsHits(layer, layerName, layerServed);
@@ -1304,14 +1438,14 @@ static int arpoiseDirectory(int argc, char * argv[])
 			{
 				// Request the default layer from porpoise and return it to the client
 
-				layerUrl = pblCgiConfigValue("DefaultLayerUrl", "/php/porpoise/web/porpoise.php");
-				layerName = pblCgiConfigValue("DefaultLayerName", "Default-Layer-Reign-of-Gold");
+				layerUrl = getAreaConfigValue(area, "DefaultLayerUrl", "/php/porpoise/web/porpoise.php");
+				layerName = getAreaConfigValue(area, "DefaultLayerName", "Default-Layer-Reign-of-Gold");
 
 				if ((pblCgiStrEquals("Android", os) && bundleInteger >= 190310)
 					|| (pblCgiStrEquals("iOS", os) && bundleInteger >= 20190310)
 					)
 				{
-					char * layername190310 = pblCgiConfigValue("DefaultLayerName190310", "");
+					char* layername190310 = getAreaConfigValue(area, "DefaultLayerName190310", "");
 					if (layername190310 && *layername190310)
 					{
 						layerName = layername190310;
@@ -1321,7 +1455,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 				layerServed = 1;
 				PBL_CGI_TRACE("-------> Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
 
-				char * ptr = changeLayerName(queryString, layerName);
+				char* ptr = changeLayerName(queryString, layerName);
 
 				int myLatDifference = 0;
 				int myLonDifference = 0;
@@ -1329,9 +1463,9 @@ static int arpoiseDirectory(int argc, char * argv[])
 				latDifference += myLatDifference;
 				lonDifference += myLonDifference;
 
-				uri = pblCgiSprintf("%s?%s", layerUrl, ptr);
-				char * agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-				char * response = getHttpResponse("www.arpoise.com", 80, uri, 16, agent);
+				uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
+				char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
+				char* response = getHttpResponse(hostName, port, uri, 16, agent);
 				//response = changeShowMenuOption(response, "false");
 				handleResponse(response, latDifference, lonDifference);
 			}
@@ -1345,7 +1479,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 			// send the response back to the client
 
 			int numberOfHotspots = 0;
-			char * numberOfHotspotsString = getStringBetween(response, "\"numberOfHotspots\":", ",\"");
+			char* numberOfHotspotsString = getStringBetween(response, "\"numberOfHotspots\":", ",\"");
 			if (numberOfHotspotsString && isdigit(*numberOfHotspotsString))
 			{
 				numberOfHotspots = atoi(numberOfHotspotsString);
@@ -1365,8 +1499,8 @@ static int arpoiseDirectory(int argc, char * argv[])
 			}
 			else
 			{
-				char * baseUrlStart = "\"baseURL\":\"";
-				char * ptr = strstr(response, baseUrlStart);
+				char* baseUrlStart = "\"baseURL\":\"";
+				char* ptr = strstr(response, baseUrlStart);
 				if (ptr)
 				{
 					layerUrl = getStringBetween(ptr, baseUrlStart, "\"");
@@ -1384,7 +1518,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 					return 0;
 				}
 
-				char * titleStart = "\"title\":\"";
+				char* titleStart = "\"title\":\"";
 				ptr = strstr(response, titleStart);
 				if (ptr)
 				{
@@ -1414,12 +1548,17 @@ static int arpoiseDirectory(int argc, char * argv[])
 	else
 	{
 		// This is a request for a specific layer, request the layer from porpoise and return it to the client
+		char* porpoiseUri = getAreaConfigValue(area, "PorpoiseUri", "/php/porpoise/web/porpoise.php");
+		if (pblCgiStrIsNullOrWhiteSpace(porpoiseUri))
+		{
+			pblCgiExitOnError("%s: PorpoiseUri must be given.\n", tag);
+		}
 
 		layerServed = 1;
 		PBL_CGI_TRACE("-------> Layer Request: '%s' '%s'\n", porpoiseUri, layerName);
 
-		uri = pblCgiSprintf("%s?%s", porpoiseUri, queryString);
-		char * agent = pblCgiSprintf("ArpoiseFilter/%s", getVersion());
+		uri = pblCgiSprintf("%s?p=%d&%s", porpoiseUri, getpid(), queryString);
+		char* agent = pblCgiSprintf("ArpoiseFilter/%s", getVersion());
 		handleResponse(getHttpResponse(hostName, port, uri, 16, agent), latDifference, lonDifference);
 	}
 
@@ -1427,7 +1566,7 @@ static int arpoiseDirectory(int argc, char * argv[])
 	return 0;
 }
 
-int main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
 	int rc = arpoiseDirectory(argc, argv);
 	traceDuration();
