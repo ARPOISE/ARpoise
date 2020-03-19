@@ -27,6 +27,12 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.43  2020/03/18 22:37:22  peter
+handle inner layer request for a default layer
+
+Revision 1.41  2020/03/18 00:23:26  peter
+Cleanup of getAreaConfigValue()
+
 Revision 1.40  2020/03/17 22:11:00  peter
 No caching
 
@@ -153,7 +159,7 @@ Working on arpoise directory service
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.40 2020/03/17 22:11:00 peter Exp $";
+char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.43 2020/03/18 22:37:22 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -170,6 +176,7 @@ char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.40 2020/03/17 22:11:0
 #include <winsock2.h>
 #include <direct.h>
 #include <windows.h> 
+#include <process.h>
 
 #define socket_close closesocket
 
@@ -202,7 +209,7 @@ static int receiveBytesFromTcp(int socket, char* buffer, int bufferSize, struct 
 	char* tag = "readTcp";
 	int    rc = 0;
 	int    socketError = 0;
-	int    optlen = sizeof(socketError);
+	unsigned int optlen = sizeof(socketError);
 
 	errno = 0;
 	if (getsockopt(socket, SOL_SOCKET, SO_ERROR, (char*)&socketError, &optlen))
@@ -1193,24 +1200,23 @@ static char* getArea(char* queryString)
 	return NULL;
 }
 
-static char* getAreaConfigValue(char* area, char* configKey, char* defaultValue)
+static char* getAreaConfigValue(char* area, char* key, char* defaultValue)
 {
-	if (!area || !*area)
+	char* valueString = NULL;
+	if (!pblCgiStrIsNullOrWhiteSpace(area))
 	{
-		return pblCgiConfigValue(configKey, defaultValue);
+		char* areaKey = pblCgiSprintf("%s_%s", area, key);
+		valueString = pblCgiConfigValue(areaKey, NULL);
+		PBL_FREE(areaKey);
 	}
-	char* key = pblCgiSprintf("%s_%s", area, configKey);
-	char* valueString = pblCgiConfigValue(key, defaultValue);
-
 	if (pblCgiStrIsNullOrWhiteSpace(valueString))
 	{
-		valueString = pblCgiConfigValue(configKey, defaultValue);
-		if (pblCgiStrIsNullOrWhiteSpace(valueString))
-		{
-			PBL_CGI_TRACE("No value for %s", key);
-		}
+		valueString = pblCgiConfigValue(key, defaultValue);
 	}
-	PBL_FREE(key);
+	if (pblCgiStrIsNullOrWhiteSpace(valueString))
+	{
+		PBL_CGI_TRACE("No value for %s", key);
+	}
 	return valueString;
 }
 
@@ -1277,6 +1283,15 @@ static int arpoiseDirectory(int argc, char* argv[])
 	char* layerUrl = "";
 	char* uri = "";
 	char* area = getArea(queryString);
+
+	if (pblCgiStrEquals("true", pblCgiQueryValue("innerLayer"))
+		&& pblCgiStrEquals("0.000000", pblCgiQueryValue("lat"))
+		&& pblCgiStrEquals("0.000000", pblCgiQueryValue("lon")))
+	{
+		// an inner layer request for a default layer
+		//
+		queryString = pblCgiQueryString;
+	}
 
 	// Read config values
 	//
