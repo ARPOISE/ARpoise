@@ -2,11 +2,11 @@
 # ARpoise-Directory Back End
 
 ## Overview
-The porPOIse back end user interface was originally developed in 2009 by Jens de Smit, who worked for the AR company Layar (now defunct). This is an ARpoise version of PorPOISe used for the placing of artist's layers in the ARpoiseDirectory.
+The porPOIse open source back end user interface was originally developed in 2009 by Jens de Smit for use with the AR platform Layar (now defunct). This is an ARpoise version of PorPOISe used for setting up artist's layers in the ARpoiseDirectory.
 
-The ARpoise directory is maintained on www.arpoise.com. It contains a single "meta" layer, the Arpoise-Directory.
-The "**POI**s" of this layer define the name, url, attributes, and location of all the layers visible in ARpoise.
-Content creators who want to use ARpoise or AR-vos to deliver their 3D content via the apps, do not need to run this service.
+The ARpoise directory is maintained on www.arpoise.com. It contains a single "meta" layer, the Arpoise-Directory, in which
+the "**POI**s" of this layer define the name, url, attributes, and location of all the layers visible in ARpoise.
+Content creators who want to use the ARpoise or AR-vos apps to deliver their 3D content do NOT need to run this service themselves, but rather should request that the ARpoise administrators(public@arpoise.com) register their layers in the directory.
 
 ## Functionality
 The ARpoise directory front end contacts this web service with the client's location as parameter.
