@@ -44,9 +44,9 @@ See [unity](unity/).
 This folder contains Unity projects for the different clients, **ARpoise** and **AR-vos**.
 ### Content publishing and management with ARpoise PorPOISe Back End
 See [/php/porpoise](php/porpoise/README.md).
-### ARpoise-Directory Front End (We manage this for you, unless you set up your own system.)
+### ARpoiseDirectory Front End (We manage this for you, unless you set up your own system.)
 See [ARpoiseDirectory](ArpoiseDirectory).
-### ARpoise-Directory Back End (We manage this for you, unless you set up your own system.)
+### ARpoiseDirectory Back End (We manage this for you, unless you set up your own system.)
 See [/php/dir](php/dir/README.md).
 
 
