@@ -1,5 +1,5 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# ARpoise-Directory Back End
+# ARpoiseDirectory Back End
 
 ## Overview
 The porPOIse open source back end user interface was originally developed in 2009 by Jens de Smit for use with the AR platform LAYAR (now defunct). This is an ARpoise version of PorPOISe used for setting up artist's layers in the ARpoise directory.
@@ -9,16 +9,18 @@ The ARpoise directory is maintained on www.arpoise.com. It contains a single "me
 Content creators who want to use the ARpoise or AR-vos apps to deliver their 3D content do NOT need to run this service themselves. They only need to set up the porPOIse back end user interface, then request that the ARpoise administrators (public@arpoise.com) register their layers in the directory.
 
 ## Functionality
-The ARpoise directory front end contacts this web service with the client's location as parameter.
+The ARpoise directory front end contacts this web service with the client's GPS location as parameter.
 
-The service returns all definitions of layers that are within the range of the client's location.
+The service returns all definitions of layers that are within a specified range of the client's GPS location.
 
 If there are no layers within range of the client's location, an empty list of layer definitions is returned.
 
-In the ARpoise-Directory back end the placing of the layers can be performed in a Google-maps-based click-and-drag web interface.
+In the ARpoiseDirectory back end, the layers can be placed at the desired GPS coodinates either by typing in the coordinates directly, or with a Google Maps based click-and-drag web interface.
 
 ## Documentation:
-## ARpoise-Directory Back End Layer Configuration
+
+## ARpoiseDirectory Back End Layer Configuration
+
 ### Screen Shot:
 ![DirectoryImg1](/images/Directory1.png)
 ### Explanation:
