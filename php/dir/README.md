@@ -9,7 +9,7 @@ We maintain the **ARpoiseDirectory Back End** on www.arpoise.com. The ArpoiseDir
 Content creators who want to use the ARpoise or AR-vos apps to deliver their 3D content do NOT need to run this service themselves. They only need to set up the porPOIse Back End user interface, then request that we ARpoise administrators (public@arpoise.com) register their layers in the directory.
 
 ## Functionality
-When the ARpoise Directory Front End receives a request from a client ARpoise or AR-vos app, it contacts the ARpoise Directory Back End web service with the client's GPS location as parameter. https://github.com/ARPOISE/ARpoise/tree/master/ArpoiseDirectory#arpoisedirectory
+When the ARpoise Directory Front End receives a request from a client ARpoise or AR-vos app, it contacts the (ARpoise Directory Back End)(https://github.com/ARPOISE/ARpoise/tree/master/ArpoiseDirectory#arpoisedirectory) web service with the client's GPS location as parameter. 
 
 The ARpoise Directory Back End service then returns all definitions of layers that are within a specified range of the client's GPS location.
 
