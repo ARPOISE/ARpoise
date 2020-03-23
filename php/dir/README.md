@@ -22,12 +22,19 @@ To configure this in the ARpoiseDirectory Back End, the layers can be placed at 
 .
 ## ARpoiseDirectory Back End Layer Configuration
 
-.
-When you log in to the ARpoiseDirectory Back End, you will see one entry for geolocative layers serviced by the ARpoise app, and another entry for both geolocative and image trigger layers serviced by the AR-vos app. The older ARpoise app runs on all iOS and Android smartphones, whereas the newer AR-vos app only runs on recent smartphones that can run [Android ARCore](https://developers.google.com/ar/discover/supported-devices) or [Apple ARKit](https://developer.apple.com/library/archive/documentation/DeviceInformation/Reference/iOSDeviceCompatibility/DeviceCompatibilityMatrix/DeviceCompatibilityMatrix.html). We expect to merge the two apps in the future when the newer smartphone hardware is widespread.
+When you log in to the ARpoiseDirectory Back End, you will see one entry for geolocative layers serviced by the **ARpoise 
+app**, and another entry for both geolocative and image trigger layers serviced by the **AR-vos app**. The older ARpoise 
+app runs on all iOS and Android smartphones, whereas the newer AR-vos app only runs on recent smartphones that support the 
+AR functionality of [Android ARCore](https://developers.google.com/ar/discover/supported-devices) or [Apple ARKit]
+(https://developer.apple.com/library/archive/documentation/DeviceInformation/Reference/iOSDeviceCompatibility/DeviceCompatibilityMatrix/DeviceCompatibilityMatrix.html). We expect to merge the two apps in the future when the newer smartphone 
+hardware is widespread.
 
-### Screen Shot - Arpoise Directory Service overview page
+### Screen Shot - Arpoise Directory Service - Overview page
 ![DirectoryImg0](/images/Directory0.png)
 
+.
+### Screen Shot - Arpoise Directory Service - Arpoise-Directory
+![DirectoryImg0a](/images/Directory0a.png)
 .
 ### Screen Shot:
 ![DirectoryImg1](/images/Directory1.png)
