@@ -19,8 +19,14 @@ To configure this in the ARpoiseDirectory Back End, the layers can be placed at 
 
 ## Documentation:
 
+.
 ## ARpoiseDirectory Back End Layer Configuration
 
+.
+### Screen Shot:
+![DirectoryImg0](/images/Directory0.png)
+
+.
 ### Screen Shot:
 ![DirectoryImg1](/images/Directory1.png)
 ### Explanation:
