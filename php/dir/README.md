@@ -38,14 +38,14 @@ hardware is widespread.
 
 The Arpoise-Directory entry lists all **layers** that are serviced by the ARpoise app client, and for each layer specifies a base GPS position that defines the area of the world in which the layer is visible. (What if it should be visible in several areas of the world???)
 
-To add a new layer, click on the "New Layer" link.
+To add a new layer, click on the "New Layer" link above the list of current layers.
 
 ![DirectoryImg0a](/images/Directory0a.png)
 
 .
 ### Screen Shot: Add new layer
 
-Click create ...
+In the next screen just click on "Create" ...
 
 ![DirectoryImg0b](/images/Directory0b.png)
 
