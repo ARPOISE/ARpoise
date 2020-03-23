@@ -23,7 +23,7 @@ To configure this in the ARpoiseDirectory Back End, the layers can be placed at 
 ## ARpoiseDirectory Back End Layer Configuration
 
 .
-### Screen Shot - Arpoise Directory Service - Overview page
+### Screen Shot: Arpoise Directory Service - Overview page
 
 When you log in to the ARpoiseDirectory Back End, you will see one entry for geolocative layers serviced by the **ARpoise 
 app**, and another entry for both geolocative and image trigger layers serviced by the **AR-vos app**. The older ARpoise 
@@ -34,15 +34,28 @@ hardware is widespread.
 ![DirectoryImg0](/images/Directory0.png)
 
 .
-### Screen Shot - Arpoise Directory Service - Arpoise-Directory
+### Screen Shot: Arpoise Directory Service - Arpoise-Directory
 
-The Arpoise-Directory entry lists all **layers** that are serviced by the ARpoise app client, and for each layer specifies an base GPS position that defines the area of the world in which the layer is visible. (What if it should be visible in several areas of the world???)
+The Arpoise-Directory entry lists all **layers** that are serviced by the ARpoise app client, and for each layer specifies a base GPS position that defines the area of the world in which the layer is visible. (What if it should be visible in several areas of the world???)
 
 To add a new layer, click on the "New Layer" link.
 
 ![DirectoryImg0a](/images/Directory0a.png)
+
 .
-### Screen Shot:
+### Screen Shot: Add new layer
+
+Click create ...
+
+![DirectoryImg0b](/images/Directory0b.png)
+
+### Screen Shot: New empty layer added to directory
+
+... and a new empty layer will be added to the directory.
+
+![DirectoryImg0c](/images/Directory0c.png)
+
+
 ![DirectoryImg1](/images/Directory1.png)
 ### Explanation:
 The following attributes of a layer can be edited.
