@@ -77,7 +77,9 @@ The following attributes of a layer can be edited.
 * **Save** button: Saves the layers's attributes to the ARpoise Directory's xml file.
 
 .
-### Test your new layer: (LINK???)
+## Next Steps
+
+**Set up content for your new layer: (LINK???)**
 
 .
 ## Original porPOIse Documentation: to set up your own porPOIse service
