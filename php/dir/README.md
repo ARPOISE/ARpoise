@@ -53,8 +53,15 @@ In the next screen just click on "Create" ...
 
 ... and a new empty layer will be added to the directory.
 
+Click on the new layer name "no title" to configure the new layer.
+
 ![DirectoryImg0c](/images/Directory0c.png)
 
+### Screen Shot: Configure new layer
+
+See the description of possible attributes beneath this example image.
+
+Enter the configuration for the new layers and then click the "Save" button
 
 ![DirectoryImg1](/images/Directory1.png)
 ### Explanation:
