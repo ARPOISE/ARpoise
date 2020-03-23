@@ -87,11 +87,11 @@ Stand at the GPS location where you set the new layer, open the ARpoise app and 
 .
 ## Next Steps
 
-###Exporting Unity assets into AssetBundles for ARpoise:
+### Exporting Unity assets into AssetBundles for ARpoise:
 To create a new AR experience for your layer, you need to set up the assets in Unity (2D and 3D objects, sounds) and then export them into asset bundles. Learning to use Unity goes beyond the scope of our tutorials, but here is our tutorial for turning Unity assets into AssetBundles:
 https://github.com/ARPOISE/ARpoise/blob/master/documentation/CreatingAssetBundles.md
 
-###Creating a new AR experience in porPOIse with assets from AssetBundles
+### Creating a new AR experience in porPOIse with assets from AssetBundles
 To set up content for your new layers, see the tutorial on the ARpoise porPOISe Back End:
 https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md
 
