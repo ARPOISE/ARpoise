@@ -76,6 +76,10 @@ The following attributes of a layer can be edited.
 * **Icon name**: The name of the icon shown in the client application when a list of layers is displayed for selection. The icon has to be bundled into the ARpoise global Unity asset bundle of icons. (Info on how to do this?)
 * **Save** button: Saves the layers's attributes to the ARpoise Directory's xml file.
 
+.
+### Test your new layer: (LINK???)
+
+.
 ## Original porPOIse Documentation: to set up your own porPOIse service
 
 The **porPOIse Back End user interface** is an open source project originally developed in 2009 by Jens de Smit for use with the AR platform LAYAR. Layar is now defunct, but porPOIse continues to work well.
