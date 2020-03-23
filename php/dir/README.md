@@ -11,11 +11,13 @@ Content creators who want to use the ARpoise or AR-vos apps to deliver their 3D 
 ## Functionality
 When the [ARpoise Directory Front End](https://github.com/ARPOISE/ARpoise/tree/master/ArpoiseDirectory#arpoisedirectory) receives a request from a client ARpoise or AR-vos app, it contacts the ARpoise Directory Back End web service with the client's GPS location as parameter. 
 
-The ARpoise Directory Back End service then returns all definitions of layers that are within a specified range of the client's GPS location.
+- The ARpoise Directory Back End service then returns all definitions of layers that are within a specified range of the client's GPS location.
 
-If there are no layers within range of the client's location, an empty list of layer definitions is returned.
+- If there are no layers within range of the client's location, an empty list of layer definitions is returned.
 
-To configure this in the ARpoiseDirectory Back End, the layers can be placed at the desired GPS coodinates either by typing in the coordinates directly, or with a Google Maps based click-and-drag web interface.
+- If the same augment should be visible in different locations around the world, a separate copy of that layer needs to be created and placed at the desired GPS locations.
+
+- To configure this in the ARpoiseDirectory Back End, the layers can be placed at the desired GPS coodinates either by typing in the coordinates directly, or with a Google Maps based click-and-drag web interface.
 
 ## Documentation:
 
