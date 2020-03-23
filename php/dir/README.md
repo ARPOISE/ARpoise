@@ -66,14 +66,14 @@ Enter the configuration for the new layers and then click the "Save" button
 ![DirectoryImg1](/images/Directory1.png)
 ### Explanation:
 The following attributes of a layer can be edited.
-* **Layer Name**: The name of the layer.
-* **Lat/Lon**: Allows to change the latitude and longitude of the layer. The layer's location can also be changed by dragging the layer's marker in the placement map.
-* **Is visible**: This combo box defines whether the layer is visible.
-* **Porpoise URL**: The URL of the ARpoise-PorPOISe Back End serving the layer.
+* **Layer Name**: The name of the layer (where will it be displayed?)
+* **Lat/Lon**: The basic location of the layer. Can be changed by typing in the latitude and longitude, or by dragging the layer's marker in the placement map. (What happens if you want it relative to user or in different parts of the world?)
+* **Is visible**: Use this box to turn the augment on or off for testing purposes.
+* **Porpoise URL**: The URL of the ARpoise PorPOISe Back End serving the layer.
 * **Layer Title**: The title of the layer shown in the client application when a list of layers is displayed for selection.
 * **Line 2**: The second line of text shown in the client application when a list of layers is displayed for selection.
 * **Line 3**: The third line of text shown in the client application when a list of layers is displayed for selection.
-* **Icon name**: The name of the icon shown in the client application when a list of layers is displayed for selection. The icon has to be bundled into the ARpoise global Unity asset bundle of icons.
+* **Icon name**: The name of the icon shown in the client application when a list of layers is displayed for selection. The icon has to be bundled into the ARpoise global Unity asset bundle of icons. (Info on how to do this?)
 * **Save** button: Saves the layers's attributes to the ARpoise Directory's xml file.
 
 ## Original Documentation
