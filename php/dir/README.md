@@ -6,10 +6,10 @@ The **porPOIse Back End user interface** is an open source project originally de
 
 We maintain the **ARpoiseDirectory Back End** on www.arpoise.com. The ArpoiseDirectory is like a single "metalayer" in which each 
 "**POI**" (Point Of Interest) defines the name, URL, attributes, and location of a **layer** (an AR project) that is visible in ARpoise.
-Content creators who want to use the ARpoise or AR-vos apps to deliver their 3D content do NOT need to run this service themselves. They only need to set up the (porPOIse Back End](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md) user interface, then request that we ARpoise administrators (public@arpoise.com) register their layers in the directory.
+Content creators who want to use the ARpoise or AR-vos apps to deliver their 3D content do NOT need to run this service themselves. They only need to set up the [porPOIse Back End](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md) user interface, then request that we ARpoise administrators (public@arpoise.com) register their layers in the directory.
 
 ## Functionality
-When the ARpoise Directory Front End receives a request from a client ARpoise or AR-vos app, it contacts the (ARpoise Directory Back End)(https://github.com/ARPOISE/ARpoise/tree/master/ArpoiseDirectory#arpoisedirectory) web service with the client's GPS location as parameter. 
+When the ARpoise Directory Front End receives a request from a client ARpoise or AR-vos app, it contacts the [ARpoise Directory Back End](https://github.com/ARPOISE/ARpoise/tree/master/ArpoiseDirectory#arpoisedirectory) web service with the client's GPS location as parameter. 
 
 The ARpoise Directory Back End service then returns all definitions of layers that are within a specified range of the client's GPS location.
 
