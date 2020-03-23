@@ -87,7 +87,8 @@ Stand at the GPS location where you set the new layer, open the ARpoise app and 
 .
 ## Next Steps
 
-**Set up content for your new layer: (LINK???)**
+To set up content for your new layers, see the tutorial on the ARpoise porPOISe Back End:
+https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md
 
 .
 ## Original porPOIse Documentation: to set up your own porPOIse service
