@@ -15,7 +15,7 @@ The ARpoise Directory Back End service then returns all definitions of layers th
 
 If there are no layers within range of the client's location, an empty list of layer definitions is returned.
 
-In the ARpoiseDirectory back end, the layers can be placed at the desired GPS coodinates either by typing in the coordinates directly, or with a Google Maps based click-and-drag web interface.
+To configure this in the ARpoiseDirectory Back End, the layers can be placed at the desired GPS coodinates either by typing in the coordinates directly, or with a Google Maps based click-and-drag web interface.
 
 ## Documentation:
 
