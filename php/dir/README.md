@@ -70,7 +70,7 @@ Enter the configuration for the new layers and then click the "Save" button
 ### Explanation:
 The following attributes of a layer can be edited.
 * **Layer Name**: The name of the layer (where will it be displayed?)
-* **Lat/Lon**: The basic location of the layer. Can be changed by typing in the latitude and longitude, or by dragging the layer's marker in the placement map. If the same augment should be visible in different locations around the world, a separate copy of that layer needs to be created and placed at each of the desired GPS locations.
+* **Lat/Lon**: The base GPS location of the layer **in decimal form only.** Can be changed by typing in the latitude and longitude, or by dragging the layer's marker in the placement map. If the same augment should be visible in different locations around the world, a separate copy of that layer needs to be created and placed at each of the desired GPS locations.
 * **Is visible**: Use this box to turn the augment on or off for testing purposes.
 * **Porpoise URL**: The URL of the ARpoise PorPOISe Back End serving the layer.
 * **Layer Title**: The title of the layer shown in the client application when a list of layers is displayed for selection. Please give this a unique name to make it easier for the public to identify which artist and artwork it is!
