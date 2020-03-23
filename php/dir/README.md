@@ -19,6 +19,7 @@ When the [ARpoise Directory Front End](https://github.com/ARPOISE/ARpoise/tree/m
 
 - To configure this in the ARpoiseDirectory Back End, the layers can be placed at the desired GPS coodinates either by typing in the coordinates directly, or with a Google Maps based click-and-drag web interface.
 
+.
 ## Documentation:
 
 .
