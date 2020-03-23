@@ -76,13 +76,15 @@ The following attributes of a layer can be edited.
 * **Icon name**: The name of the icon shown in the client application when a list of layers is displayed for selection. The icon has to be bundled into the ARpoise global Unity asset bundle of icons. (Info on how to do this?)
 * **Save** button: Saves the layers's attributes to the ARpoise Directory's xml file.
 
-## Original Documentation
+## Original porPOIse Documentation: to set up your own porPOIse service
+
+The **porPOIse Back End user interface** is an open source project originally developed in 2009 by Jens de Smit for use with the AR platform LAYAR. Layar is now defunct, but porPOIse continues to work well.
 
 ===PorPOISe for Layar===
-Portable Point-of-Interest Server for Layar
+Portable Point-of-Interest Server for LAYAR AR app (www.layar.com, now defunct)
 
 ===Administrative contact===
-Jens de Smit, jens@layar.com
+Jens de Smit, jens@layar.com (email might be out of date, as LAYAR when out of business in 2019)
 
 ===Introduction===
 PorPOISe is a server for Layar clients. It converts your data sets of POIs
@@ -108,4 +110,4 @@ from SURFnet to Layar and took the project with him.
 ===More information===
   * http://www.surfnet.nl/en The home of the creator of PorPOISe
   * http://teknograd.wordpress.com/2009/10/19/augmented-reality-create-your-own-layar-layer/ An explanation on how to build the most minimal of Layar servers. Very useful to get started
-  * http://layar.com/ is, of course, the reason this project exists
+  * http://layar.com/ wa the target platform for this project was developed (defunct since 2019)
