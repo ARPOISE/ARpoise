@@ -73,7 +73,7 @@ The following attributes of a layer can be edited.
 * **Layer Title**: The title of the layer shown in the client application when a list of layers is displayed for selection. Please give this a unique name to make it easier for the public to identify which artist and artwork it is!
 * **Line 2**: The second line of text shown in the client application when a list of layers is displayed for selection.
 * **Line 3**: The third line of text shown in the client application when a list of layers is displayed for selection.
-* **Icon name**: The name of the icon shown in the client application when a list of layers is displayed for selection. The icon has to be bundled into the ARpoise global Unity asset bundle of icons. (Info on how to do this?)
+* **Icon name**: The name of the icon shown in the client application when a list of layers is displayed for selection. The icon has to be bundled into the ARpoise global Unity asset bundle of icons. **(LINK???)**
 * **Save** button: Saves the layers's attributes to the ARpoise Directory's xml file.
 
 .
