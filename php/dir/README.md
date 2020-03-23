@@ -35,11 +35,11 @@ hardware is widespread.
 ![DirectoryImg0](/images/Directory0.png)
 
 .
+### Screen Shot - Arpoise Directory Service - Arpoise-Directory
+
 The Arpoise-Directory entry lists all **layers** that are serviced by the ARpoise app client, and for each layer specifies an base GPS position that defines the area of the world in which the layer is visible. (What if it should be visible in several areas of the world???)
 
 To add a new layer, click on the "New Layer" link.
-
-### Screen Shot - Arpoise Directory Service - Arpoise-Directory
 
 ![DirectoryImg0a](/images/Directory0a.png)
 .
