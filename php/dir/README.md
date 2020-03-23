@@ -79,6 +79,8 @@ The following attributes of a layer can be edited.
 .
 ## Testing 
 
+Stand at the GPS location where you set the new layer, open the ARpoise app and see if you can see it there. Make sure "Is visible" is YES! ;-)
+
 .
 ## Next Steps
 
