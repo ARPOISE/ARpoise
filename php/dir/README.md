@@ -39,7 +39,7 @@ hardware is widespread.
 .
 ### Screen Shot: Arpoise Directory Service - Arpoise-Directory
 
-The Arpoise-Directory entry lists all **layers** that are serviced by the ARpoise app client, and for each layer specifies a base GPS position that defines the area of the world in which the layer is visible. (What if it should be visible in several areas of the world???)
+The Arpoise-Directory entry lists all **layers** that are serviced by the ARpoise app client, and for each layer specifies a base GPS position that defines the area of the world in which the layer is visible. If the same augment should be visible in different locations around the world, a separate copy of that layer needs to be created and placed at each of the desired GPS locations.
 
 To add a new layer, click on the "New Layer" link above the list of current layers.
 
@@ -69,7 +69,7 @@ Enter the configuration for the new layers and then click the "Save" button
 ![DirectoryImg1](/images/Directory1.png)
 ### Explanation:
 The following attributes of a layer can be edited.
-* **Layer Name**: The name of the layer (where will it be displayed?)
+* **Layer Name**: The name of the layer, for internal purposes only.
 * **Lat/Lon**: The base GPS location of the layer **in decimal form only.** Can be changed by typing in the latitude and longitude, or by dragging the layer's marker in the placement map. If the same augment should be visible in different locations around the world, a separate copy of that layer needs to be created and placed at each of the desired GPS locations.
 * **Is visible**: Use this box to turn the augment on or off for testing purposes.
 * **Porpoise URL**: The URL of the ARpoise PorPOISe Back End serving the layer.
