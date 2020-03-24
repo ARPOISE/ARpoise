@@ -14,7 +14,10 @@ If you do not have access to a porPOIse server, you will need to set up your own
 - For the Google maps based click-and-drag interface as shown in the screen shots below you need to get **your own** Google-maps ID.
 
 ## Application
-In order for any of your layers to be visible in ARpoise you need to supply the **url** of your PorPOISe installation that is serving the layer's content, and the **name**, and the **longitude** and **latitude** coordinates of the layer, to the administrators of www.arpoise.com.
+
+If you are setting up your own porPOIse, contact the ARpoise administrators public@arpoise.com with the following:
+- The **URL** of your PorPOISe installation
+- The **name**, and the **longitude** and **latitude** coordinates of the layer.
 
 The content of each of the **POI**s of your layer needs to be created as a Unity prefab and needs to be put into an Unity asset bundle made available on the web. The asset bundle is referenced by the **POI**'s definition in your layer.
 
