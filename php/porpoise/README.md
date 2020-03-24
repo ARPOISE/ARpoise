@@ -20,7 +20,7 @@ If you are setting up your own porPOIse, contact the ARpoise administrators publ
 - The **name** of the layer, and approximate **longitude** and **latitude** of where you want the layer to be available.
 - If you want to have the same content visible in different regions of the world, create multiple copies of the same layer with different names, e.g. MyLayerLouvre, MyLayerSFMoMA, etc.
 
-.
+. 
 **If you already have a porPOIse and example layer, you can use this tutorial to learn how to modify it.**
 
 - One you understand how to use porPOIse to set up and modify your layer, you can add new **assets** (2d images, 3D models, sounds, etc.) to it by creating your own AssetBundle in Unity.
@@ -34,15 +34,19 @@ NOTES: (This should be moved to the AssetBundle tutorial):
 - **Note: The asset bundles and trigger images you make available on the web and reference in the POI definitions need to be accessable via https**.
 
 ## Functionality
-The ARpoise client contacts this web service with the client location and the layer name as parameter.
 
-The service has to return the definitions of the **POI**s of the layer.
+If you are setting up your own porPOIse:
+- The ARpoise client app contacts this web service with the client location and the layer name as parameters.
+- The service has to return the definitions of the **POI**s of the layer.
+- The placing of the **POI**s of the layer into world coordinates can be performed in a Google-maps-based click-and-drag interface.
 
-The placing of the **POI**s of the layer into world coordinates can be performed in a Google-maps-based click-and-drag interface.
-
+. 
 ## Documentation:
 
+. 
 ## ARpoise Back-End Layers List
+
+. 
 ### Screen Shot:
 ![BackEndImg1](/images/BackEnd1.png)
 ### Explanation:
