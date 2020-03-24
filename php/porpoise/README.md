@@ -6,9 +6,12 @@ Use porPOISe to place and adjust **POI**s of your own **layers.**
 - A **POI** (Point Of Interest) is an asset or a group of assets (such as 3D models, sounds etc.), that make up your AR experience.
 - Each individual AR experience or project exists on a separate ARpoise **layer.** In the ARpoise app, a single location in the real world can have multiple projects at exactly the same site, but if each one is in a separate layer, they will not interfere with each other and will show up in the ARpoise app as separate entries in a list of available projects.
 
-In order to create a project layer for ARpoise you need to download and install this package onto **your own** web server!
+If you already have access to a porPOIse, please proceed to the description below.
 
-For using the Google-maps-based click-and-drag interface as shown in the screen shots below you need to use **your own** Google-maps id.
+If you do not have access to a porPOIse server, you will need to set up your own:
+- Download and install the [porPOIse package](https://github.com/ARPOISE/ARpoise/tree/master/php/porpoise) onto **your own** web server!
+- Follow the instructions in the file [INSTALL](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/INSTALL)
+- For the Google maps based click-and-drag interface as shown in the screen shots below you need to get **your own** Google-maps ID.
 
 ## Application
 In order for any of your layers to be visible in ARpoise you need to supply the **url** of your PorPOISe installation that is serving the layer's content, and the **name**, and the **longitude** and **latitude** coordinates of the layer, to the administrators of www.arpoise.com.
