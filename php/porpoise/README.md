@@ -2,7 +2,7 @@
 # ARpoise-PorPOISe Back End
 
 ## Overview
-This is the version of PorPOISe used for placing and delivering the **POI**s of **your own** layers.
+Use porPOISe to place and adjust **POI**s of **your own** layers.
 - A **POI** (Point Of Interest) is one or more individual augments such as a 3D model, that make up your AR experience.
 - Each individual AR experience or project exists on a separate ARpoise "layer". A single location could have multiple projects at exactly the same site, but if each one is in a separate layer, they will not interfere with each other and will show up in the client app as separate entries in a list of available projects.
 
