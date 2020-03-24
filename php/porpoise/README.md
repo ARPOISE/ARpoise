@@ -49,13 +49,7 @@ If you are setting up your own porPOIse:
 . 
 ### Screen Shot: Arpoise Directory Service - Overview page
 
-When you log in to the ARpoiseDirectory Back End, you will see one entry for geolocative layers serviced by the **ARpoise 
-app**, and another entry for both geolocative and image trigger layers serviced by the **AR-vos app**. The older ARpoise 
-app runs on all iOS and Android smartphones, whereas the newer AR-vos app only runs on recent smartphones that support the 
-AR functionality of [Android ARCore](https://developers.google.com/ar/discover/supported-devices) or [Apple ARKit](https://developer.apple.com/library/archive/documentation/DeviceInformation/Reference/iOSDeviceCompatibility/DeviceCompatibilityMatrix/DeviceCompatibilityMatrix.html). We expect to merge the two apps in the future when the newer smartphone 
-hardware is widespread.
-
-![DirectoryImg0](/images/Directory0.png)
+![BackEndImg1](/images/BackEnd1.png)
 
 ### Explanation:
 A list of all your layers is shown. In order to add a new layer you will have to edit the file **config.xml** in your configuration directory and also create an **.xml** file for your new layer in the configuration directory.
