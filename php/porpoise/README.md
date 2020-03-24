@@ -17,7 +17,8 @@ If you do not have access to a porPOIse server, you will need to set up your own
 
 If you are setting up your own porPOIse, contact the ARpoise administrators public@arpoise.com with the following:
 - The **URL** of your PorPOISe installation
-- The **name**, and the **longitude** and **latitude** coordinates of the layer.
+- The **name** of the layer, and rough **longitude** and **latitude** of where you want the layer to be available.
+- If you want to have the same content visible in different regions of the world, create multiple copies of the same layer with different names, e.g. MyLayerLouvre, MyLayerSFMoMA, etc.
 
 The content of each of the **POI**s of your layer needs to be created as a Unity prefab and needs to be put into an Unity asset bundle made available on the web. The asset bundle is referenced by the **POI**'s definition in your layer.
 
