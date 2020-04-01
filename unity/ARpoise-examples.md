@@ -26,13 +26,12 @@ In order to use this feature, you will have to
 
 ![ARpoiseExamples3](/images/ARpoiseExamples3.PNG)
 
-- Tab on any of the layers offered, the layer will be loaded and shown, your screen should look like:
+- Tab on any of the layers offered, the layer will be loaded and shown, 'Reign of Gold' in my case, your screen should look like:
 
 ![ARpoiseExamples4](/images/ARpoiseExamples4.PNG)
 
 - If you tab again on the **ARpoise** logo in the upper left corner of the screen, the list of layers appears again.
 
-- Once you are done, don't forget to double tab and open the input panel once more and uncheck the 'Active Fixed Position' check box,
-so you can use **ARpoise** with real GPS coordinates once more.
+- Note: Once you are done, don't forget to double tab and open the input panel once more and uncheck the 'Active Fixed Position' check box, so you can use **ARpoise** with real GPS coordinates once more!
 
 - The input panel can of course be used to enter the coordinates of any location in the world. So if you know that a specific layer is currently shown at XYZ museum, just enter the GPS coordinates of that museum's location and see what the visitors see at the museum.
