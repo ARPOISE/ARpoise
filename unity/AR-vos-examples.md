@@ -15,3 +15,7 @@ In order to see this default, you will have to
 - Start **AR-vos** and let the default layer load, your screen should look like:
 
 ![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+
+- You need to point the device at the different image triggers, first the **AR-vos** logo for an example layer for **AR-vos**.
+
+![AR-vos Logo](https://www.arpoise.com/TI/arvos_logo_rgb-weiss1024.jpg)
