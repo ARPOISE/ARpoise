@@ -12,11 +12,21 @@ The **ARpoise** app can be downloaded from the [Google Play](https://play.google
 - The **AR-vos** client app provides both geolocative and image trigger AR functionality, using ARKit on iOS and ARCore on Android. It therefore only runs on [ARKit supporting iOS devices](https://developer.apple.com/library/archive/documentation/DeviceInformation/Reference/iOSDeviceCompatibility/DeviceCompatibilityMatrix/DeviceCompatibilityMatrix.html) and [ARCore supporting Android devices](https://developers.google.com/ar/discover/supported-devices). We hope to merge the two client apps at some point, when the majority of smartphones support ARKit and ARCore technology. 
 The **AR-vos** app can be downloaded from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARvos) Store and the Apple [App Store](https://apps.apple.com/us/app/ar-vos/id1483218444). The source code of the apps is available [here](unity/).
 
-
-
 ## Getting Started
 If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content, you should start by reading this document. As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read the documentation for it in [/php/porpoise](php/porpoise/README.md).
 Also see the [documentation](/documentation/README.md) folder and read the [Creating Asset Bundles](/documentation/CreatingAssetBundles.md) document.
+
+## ARpoise Examples
+The document [ARpoise-examples](/unity/ARpoise-examples.md) explains how to see some examples for **ARpoise**.
+The examples include versions of the following pieces:
+- [Reign of Gold](https://www.tamikothiel.com/AR/reign-of-gold.html) by Tamiko Thiel.
+- [Evolution of Fish](https://www.tamikothiel.com/evolutionoffish/index.html) by Tamiko Thiel and /p.
+- [Lotus Meditation](https://www.tamikothiel.com/AR/lotus-meditation.html) by Tamiko Thiel and /p.
+- [Gardens of the Anthropocene](https://tamikothiel.com/gota/index.html) by Tamiko Thiel.
+
+## AR-vos Examples
+The document [AR-vos-examples](/unity/AR-vos-examples.md) explains how to see some examples for **AR-vos**.
+The examples include various image triggered AR objects.
 
 ## Functionality
 - Content designers can create image trigger or location-based AR experiences in Unity3d and request that we add them as project layers to the general ARpoise directory. These AR experiences can either be visible all over the world, or geo-fenced to be viewable only within areas defined by specific GPS coordinates.
