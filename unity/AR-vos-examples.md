@@ -14,4 +14,30 @@ In order to see this default, you will have to
 
 - Start **AR-vos** and let the default layer load, your screen should look like:
 
-![ARpoiseExamples1](/images/ARpoiseExamples1.PNG)
+![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+
+- You need to point the device at the different trigger images, first the **AR-vos** logo for an example layer for **AR-vos**.
+
+![AR-vos Logo](https://www.arpoise.com/TI/arvos_logo_rgb-weiss1024.jpg)
+
+- The following should appear:
+
+![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+
+The trigger image for lotus meditation.
+
+![AR-vos Logo](https://www.arpoise.com/TI/zen_512sq.jpg)
+
+- The following should appear:
+
+![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+
+The trigger image for King Ludwig.
+
+![AR-vos Logo](https://www.arpoise.com/TI/flag.jpg)
+
+- The following should appear:
+
+![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+
+
