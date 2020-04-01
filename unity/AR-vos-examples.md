@@ -10,4 +10,8 @@ be shown to you. We will change this default layer periodically.
 ## Example Image Triggers
 The layer 'Tamiko Thiel's AR' is currently the default layer.
 
-In order to give you the possibility to look at more examples, we have placed some layers at the example location one degree north and one degree east. The ARpoise app allows to set a fixed device location, if you do so, the device will not use the real GPS coordinates but will send the coordinates you entered to the ARpoise back end.
+In order to see this default, you will have to
+
+- Start **AR-vos** and let the default layer load, your screen should look like:
+
+![ARpoiseExamples1](/images/ARpoiseExamples1.PNG)
