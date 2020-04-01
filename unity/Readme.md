@@ -22,6 +22,10 @@ The examples include versions of the following pieces:
 - [Lotus Meditation](https://www.tamikothiel.com/AR/lotus-meditation.html) by Tamiko Thiel and /p.
 - [Gardens of the Anthropocene](https://tamikothiel.com/gota/index.html) by Tamiko Thiel.
 
+## AR-vos Examples
+The document [AR-vos-examples](AR-vos-examples.md) explains how to see some examples for **AR-vos**.
+The examples include various image triggered AR objects.
+
 ## Functionality
 - **ARpoise** is a location based AR application.
 
