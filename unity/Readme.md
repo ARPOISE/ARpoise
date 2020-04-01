@@ -14,6 +14,9 @@ Download: [Google Play](https://play.google.com/store/apps/details?id=com.arpois
 The goal of ARpoise is to provide an open-source, community-supported, location-based AR app as a replacement for the 
 [Layar app](https://www.layar.com/) and other commercial geolocative AR platforms.
 
+## Examples
+The document [ARpoise-examples](ARpoise-examples.md) explains how to see some examples for **ARpoise**
+
 ## Functionality
 - **ARpoise** is a location based AR application.
 
