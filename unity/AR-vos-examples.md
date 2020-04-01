@@ -14,4 +14,4 @@ In order to see this default, you will have to
 
 - Start **AR-vos** and let the default layer load, your screen should look like:
 
-![ARpoiseExamples1](/images/ARpoiseExamples1.PNG)
+![AR-vosExamples1](/images/AR-vosExamples1.PNG)
