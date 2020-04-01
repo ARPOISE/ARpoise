@@ -22,7 +22,7 @@ In order to see this default, you will have to
 
 - The following should appear:
 
-![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+![AR-vosExamples2](/images/AR-vosExamples2.PNG)
 
 The trigger image for lotus meditation.
 
@@ -30,7 +30,7 @@ The trigger image for lotus meditation.
 
 - The following should appear:
 
-![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+![AR-vosExamples3](/images/AR-vosExamples3.PNG)
 
 The trigger image for King Ludwig.
 
@@ -38,6 +38,6 @@ The trigger image for King Ludwig.
 
 - The following should appear:
 
-![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+![AR-vosExamples4](/images/AR-vosExamples4.PNG)
 
 
