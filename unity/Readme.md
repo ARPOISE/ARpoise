@@ -16,7 +16,7 @@ The goal of ARpoise is to provide an open-source, community-supported, location-
 
 ## ARpoise Examples
 The document [ARpoise-examples](ARpoise-examples.md) explains how to see some examples for **ARpoise**.
-The examples include:
+The examples include versions of the following pieces:
 - [Reign of Gold](https://www.tamikothiel.com/AR/reign-of-gold.html) by Tamiko Thiel.
 - [Evolution of Fish](https://www.tamikothiel.com/evolutionoffish/index.html) by Tamiko Thiel and /p.
 - [Lotus Meditation](https://www.tamikothiel.com/AR/lotus-meditation.html) by Tamiko Thiel and /p.
