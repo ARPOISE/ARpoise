@@ -36,7 +36,7 @@ The lotus meditaion animation should appear:
 
 ![AR-vos Logo](https://www.arpoise.com/TI/flag.jpg)
 
-- King Ludwig should appear:
+King Ludwig should appear:
 
 ![AR-vosExamples4](/images/AR-vosExamples4.PNG)
 
