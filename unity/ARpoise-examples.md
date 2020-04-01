@@ -14,7 +14,21 @@ but will send the coordinates you entered to the **ARpoise** back end.
 
 In order to use this feature, you will have to
 
-- start **ARpoise** and let the default layer load, Evolution of Fish in my case
+- start **ARpoise** and let the default layer load, Evolution of Fish in my case, your screen should look like:
+![ARpoiseExamples1](/images/ARpoiseExamples1.PNG)
 
+- double tab on the **ARpoise** logo in the upper left corner of the screen, the input panel should appear, enter 1 for latitude and 1 for longitude and then check the 'Active Fixed Position' check box, your screen should look like:
+![ARpoiseExamples2](/images/ARpoiseExamples2.PNG)
 
-- double tab on the **ARpoise** logo in the upper left corner of the screen
+- Tab on OK, a list of layers available at GPS location one degree north and one degree east should appear, your screen should look like:
+![ARpoiseExamples3](/images/ARpoiseExamples3.PNG)
+
+- Tab on any of the layers offered, the layer will be loaded and shown, your screen should look like:
+![ARpoiseExamples4](/images/ARpoiseExamples4.PNG)
+
+- If you tab again on the **ARpoise** logo in the upper left corner of the screen, the list of layers appears again.
+
+- Once you are done, don't forget to double tab and open the input panel once more and uncheck the 'Active Fixed Position' check box,
+so you can use **ARpoise** with real GPS coordinates once more.
+
+- The input panel can of course be used to enter the coordinates of any location in the world. So if you know that a specific layer is currently shown at XYZ museum, just enter the GPS coordinates of that museum's location and see what the visitors see at the museum.
