@@ -12,7 +12,7 @@ INCLIB    =
 LIB_OBJS  = pblCgi.o pblStringBuilder.o pblPriorityQueue.o pblHeap.o pblMap.o pblSet.o pblList.o pblCollection.o pblIterator.o pblhash.o pbl.o
 THELIB    = libpbl.a
 
-EXE_OBJS1 = ArpoiseDirectory.o
+EXE_OBJS1 = ArpoiseDirectoryBase.o ArpoiseDirectory.o
 THEEXE1   = ArpoiseDirectory.cgi
 
 all: $(THELIB) $(THEEXE1)
