@@ -51,7 +51,7 @@ A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the J
 
 . 
 
-- Now try this doorway, which we set as a trigger image for King Ludwig II of Bavaria:
+- Now try this doorway, which we set as a trigger image for King Ludwig II of Bavaria. Note that this is a north-facing facade, and therefore has constant lighting with no shadows. Also, although there are reflections on the glass panes, they are small relative to the rest of the doorway and therefore should not disturb the overall reading of the trigger image.
 
 . 
 
@@ -59,7 +59,7 @@ A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the J
 
 . 
 
-The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) should appear, larger than life!
+The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) should appear, larger than life! 
 
 . 
 
