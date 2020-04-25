@@ -33,7 +33,9 @@ In order to see the triggered objects, you have to
 
 The following example objects should appear:
 
-![AR-vosExamples2](/images/AR-vosExamples2.PNG)
+![AR-vosExamples2](/images/AR-vosExamples2a_800w.png)
+
+. 
 
 - The trigger image for lotus meditation.
 
