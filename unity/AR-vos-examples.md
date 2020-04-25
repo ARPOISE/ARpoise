@@ -41,7 +41,7 @@ The following example augment should appear - some colorful animated cubes:
 
 .
 
-![Zen Kanji](/images/arvos_ZenOnWhite_800x600.png)
+![Zen Kanji](/images/AR-vosExamples3a_Zen800x600.png)
 
 .
 
