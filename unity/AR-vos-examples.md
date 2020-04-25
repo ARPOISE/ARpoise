@@ -1,4 +1,4 @@
-![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
+![ARpoise Logo](/images/arpoise_logo_rgb-128.png) - ![ARpoise Logo](/images/arvos_logo-sprite_rounded128sq.png)
 # AR-vos Augmented Reality App: Examples
 
 ## Overview
