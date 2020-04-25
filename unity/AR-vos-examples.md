@@ -1,5 +1,5 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# AR-vos -Mobile- App - Examples
+# AR-vos Augmented Reality App: Examples
 
 ## Overview
 **AR-vos** is a location and image trigger based AR app, once you download, install and start it on your device, it will use your
