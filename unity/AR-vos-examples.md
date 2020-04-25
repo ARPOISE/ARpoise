@@ -45,9 +45,9 @@ The following example augment should appear - some colorful animated cubes:
 
 .
 
-The lotus meditaion animation should appear:
+A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the Japanese monk who brought Zen (and green tea!) to Japan.
 
-![AR-vosExamples3](/images/AR-vosExamples3.PNG)
+![AR-vosExamples3](/images/AR-vosExamples3a_800w.png)
 
 - The trigger image for King Ludwig.
 
