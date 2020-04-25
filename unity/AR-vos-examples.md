@@ -53,9 +53,13 @@ A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the J
 
 - Now try this doorway, which we set trigger image for King Ludwig II of Bavaria:
 
+. 
+
 ![doorwayExample4](/images/AR-vosExamples4a_doorTrigger_800h.png)
 
-King Ludwig should appear:
+The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) should appear, larger than life!
+
+. 
 
 ![AR-vosExamples4](/images/AR-vosExamples4a_800h.png)
 
