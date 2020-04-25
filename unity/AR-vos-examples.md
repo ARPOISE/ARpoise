@@ -57,6 +57,8 @@ A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the J
 
 ![doorwayExample4](/images/AR-vosExamples4a_doorTrigger_800h.png)
 
+. 
+
 The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) should appear, larger than life!
 
 . 
