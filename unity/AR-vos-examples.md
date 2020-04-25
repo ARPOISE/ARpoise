@@ -51,7 +51,7 @@ A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the J
 
 . 
 
-- Now try this doorway, which we set trigger image for King Ludwig II of Bavaria:
+- Now try this doorway, which we set as a trigger image for King Ludwig II of Bavaria:
 
 . 
 
