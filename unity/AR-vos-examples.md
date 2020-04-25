@@ -17,21 +17,21 @@
 
 
 ## Example Image Triggers
-The layer 'Tamiko Thiel's AR' is currently the default layer.
+The layer 'Tamiko Thiel's AR' is currently the default AR-vos layer, but just ignore this fact for now!
 
-In order to see the triggered objects, you have to
+In order to see the triggered augment layers, you have to
 
-- Start **AR-vos** and let the default layer load, your screen should look like:
+- Start **AR-vos** and let the default layer load, your screen should look like this:
 
 ![AR-vosExamples1](/images/AR-vosExamples1_600h.png)
 
 . 
 
-- Now point your device at this trigger image: the **AR-vos** logo shows you an example layer for **AR-vos**.
+- Now point your device at the **AR-vos** logo, which we have set up as an example trigger.
 
 ![AR-vos Logo](/images/arvos_logoOnWhite_800x600.png)
 
-The following example objects should appear:
+The following example augment should appear - some colorful animated cubes:
 
 ![AR-vosExamples2](/images/AR-vosExamples2a_800w.png)
 
