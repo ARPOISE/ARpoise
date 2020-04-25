@@ -29,7 +29,7 @@ In order to see the triggered objects, you have to
 
 - Now point the device at the different trigger images, first the **AR-vos** logo for an example layer for **AR-vos**.
 
-![AR-vos Logo](/images/arvos_logoOnWhite_800x600)
+![AR-vos Logo](/images/arvos_logoOnWhite_800x600.png)
 
 The following example objects should appear:
 
