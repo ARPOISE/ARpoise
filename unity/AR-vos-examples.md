@@ -23,7 +23,7 @@ In order to see the triggered objects, you have to
 
 - Start **AR-vos** and let the default layer load, your screen should look like:
 
-![AR-vosExamples1](/images/AR-vosExamples1.PNG)
+![AR-vosExamples1](/images/AR-vosExamples1_600h.png)
 
 - Now point the device at the different trigger images, first the **AR-vos** logo for an example layer for **AR-vos**.
 
