@@ -37,9 +37,13 @@ The following example augment should appear - some colorful animated cubes:
 
 . 
 
-- The trigger image for lotus meditation.
+- Now point your device at this example trigger, the Japanese character for "Zen":
 
-![AR-vos Logo](https://www.arpoise.com/TI/zen_512sq.jpg)
+.
+
+![AR-vos Logo](/images/arvos_ZenOnWhite_800x600.png)
+
+.
 
 The lotus meditaion animation should appear:
 
