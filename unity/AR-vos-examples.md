@@ -23,7 +23,7 @@ In order to see the triggered augment layers, you have to
 
 - Start **AR-vos** and let the default layer load, your screen should look like this:
 
-![AR-vosExamples1](/images/AR-vosExamples1_600h.png)
+![AR-vosExamples1](/images/AR-vosExamples1a_800w.png)
 
 . 
 
