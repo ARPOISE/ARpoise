@@ -41,7 +41,7 @@ The following example augment should appear - some colorful animated cubes:
 
 .
 
-![AR-vos Logo](/images/arvos_ZenOnWhite_800x600.png)
+![Zen Kanji](/images/arvos_ZenOnWhite_800x600.png)
 
 .
 
@@ -49,12 +49,14 @@ A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the J
 
 ![AR-vosExamples3](/images/AR-vosExamples3a_800w.png)
 
-- The trigger image for King Ludwig.
+. 
 
-![AR-vos Logo](https://www.arpoise.com/TI/flag.jpg)
+- Now try this doorway, which we set trigger image for King Ludwig II of Bavaria:
+
+![doorwayExample4](/images/AR-vosExamples4a_doorTrigger_800h.png)
 
 King Ludwig should appear:
 
-![AR-vosExamples4](/images/AR-vosExamples4.PNG)
+![AR-vosExamples4](/images/AR-vosExamples4a_800h.png)
 
 
