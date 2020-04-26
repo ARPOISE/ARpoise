@@ -1,5 +1,5 @@
-![ARpoise Logo](/images/arvos_logo-sprite_rounded128sq.png)
-# AR-vos Augmented Reality App: Examples
+# ![ARpoise Logo](/images/arvos_logo-sprite_rounded128sq.png) AR-vos Augmented Reality App
+# Image Trigger AR Examples
 
 ## Overview
 
