@@ -36,6 +36,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
 For more information on 
 
 Tamiko Thiel, see www.TamikoThiel.com/
@@ -55,9 +56,10 @@ using UnityEngine.XR.iOS;
 public class ArKitAnchorManager : MonoBehaviour
 {
 #if HAS_AR_KIT
-    private List<GameObject> _gameObjects = new List<GameObject>();
-    public Dictionary<int, TriggerObject> TriggerObjects { get; set; }
+    private readonly List<GameObject> _gameObjects = new List<GameObject>();
+
     public ArBehaviourImage ArBehaviour { get; set; }
+    public Dictionary<int, TriggerObject> TriggerObjects { get; set; }
     public GameObject FitToScanOverlay { get; set; }
 #endif
     // Use this for initialization
@@ -75,6 +77,10 @@ public class ArKitAnchorManager : MonoBehaviour
 
     private void AddImageAnchor(ARImageAnchor arImageAnchor)
     {
+        if (ArBehaviour.IsSlam)
+        {
+            return;
+        }
         //Debug.LogFormat("Anchor added[{0}] : tracked {1}, name '{2}'", arImageAnchor.Identifier, arImageAnchor.IsTracked, arImageAnchor.ReferenceImageName);
         int index;
         if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
@@ -103,7 +109,7 @@ public class ArKitAnchorManager : MonoBehaviour
                         triggerObject.poi.id,
                         out newGameObject
                         );
-                    if (!ArBehaviourPosition.IsEmpty(result))
+                    if (!string.IsNullOrWhiteSpace(result))
                     {
                         ArBehaviour.ErrorMessage = result;
                         return;
@@ -117,6 +123,10 @@ public class ArKitAnchorManager : MonoBehaviour
 
     private void UpdateImageAnchor(ARImageAnchor arImageAnchor)
     {
+        if (ArBehaviour.IsSlam)
+        {
+            return;
+        }
         //Debug.LogFormat("Anchor updated[{0}] : tracked {1}, name '{2}' GOs {3}",
         //    arImageAnchor.Identifier, arImageAnchor.IsTracked, arImageAnchor.ReferenceImageName, _gameObjects.Count);
         int index;
@@ -173,7 +183,7 @@ public class ArKitAnchorManager : MonoBehaviour
                                 triggerObject.poi.id,
                                 out newGameObject
                                 );
-                            if (!ArBehaviourPosition.IsEmpty(result))
+                            if (!string.IsNullOrWhiteSpace(result))
                             {
                                 ArBehaviour.ErrorMessage = result;
                                 return;
@@ -227,7 +237,7 @@ public class ArKitAnchorManager : MonoBehaviour
             {
                 hasActiveObjects = _gameObjects.Any(x => x != null && x.activeSelf);
             }
-            var setActive = _hasTriggerObjects && !hasActiveObjects && !ArBehaviour.LayerPanelIsActive();
+            var setActive = _hasTriggerObjects && !hasActiveObjects && !ArBehaviour.LayerPanelIsActive() && !ArBehaviour.IsSlam;
             if (fitToScanOverlay.activeSelf != setActive)
             {
                 fitToScanOverlay.SetActive(setActive);

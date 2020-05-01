@@ -43,6 +43,7 @@ namespace com.arpoise.arpoiseapp
         #region Globals
 
         public GameObject ArCamera = null;
+
         public ArObjectState ArObjectState { get; protected set; }
         public string ErrorMessage { get; set; }
         #endregion
@@ -125,8 +126,8 @@ namespace com.arpoise.arpoiseapp
 
         #region PlaceArObjects
 
-        private float _latitudeHandled = 0;
-        private float _longitudeHandled = 0;
+        private float _handledLatitude = 0;
+        private float _handledLongitude = 0;
 
         // Calculate positions for all ar objects
         private void PlaceArObjects(ArObjectState arObjectState)
@@ -137,12 +138,12 @@ namespace com.arpoise.arpoiseapp
                 var filteredLatitude = UsedLatitude;
                 var filteredLongitude = UsedLongitude;
 
-                if (!arObjectsToPlace.Any(x => x.IsDirty) && _latitudeHandled == filteredLatitude && _longitudeHandled == filteredLongitude)
+                if (!arObjectsToPlace.Any(x => x.IsDirty) && _handledLatitude == filteredLatitude && _handledLongitude == filteredLongitude)
                 {
                     return;
                 }
-                _latitudeHandled = filteredLatitude;
-                _longitudeHandled = filteredLongitude;
+                _handledLatitude = filteredLatitude;
+                _handledLongitude = filteredLongitude;
 
                 foreach (var arObject in arObjectsToPlace)
                 {
@@ -254,7 +255,7 @@ namespace com.arpoise.arpoiseapp
 #endif
             int nFails = 0;
             bool doInitialize = true;
-            while (IsEmpty(ErrorMessage))
+            while (string.IsNullOrWhiteSpace(ErrorMessage))
             {
                 while (InfoPanelIsActive())
                 {
@@ -267,7 +268,7 @@ namespace com.arpoise.arpoiseapp
                     Input.compass.enabled = true;
 
                     int maxWait = 4500;
-#if PLATFORM_ANDROID
+#if UNITY_ANDROID
                     bool first = true;
                     while (!Permission.HasUserAuthorizedPermission(Permission.FineLocation) && maxWait > 0)
                     {
@@ -283,6 +284,12 @@ namespace com.arpoise.arpoiseapp
                     if (_locationService == null)
                     {
                         _locationService = new LocationService();
+                        maxWait = 1000;
+                        while (!_locationService.isEnabledByUser && maxWait > 0)
+                        {
+                            yield return new WaitForSeconds(.01f);
+                            maxWait--;
+                        }
                         if (!_locationService.isEnabledByUser)
                         {
                             ErrorMessage = $"Please enable the location service for the {AppName} app.";
@@ -310,7 +317,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (++nFails > 10)
                         {
-                            ErrorMessage = $"Please enable the location service for the {AppName} app.";
+                            ErrorMessage = $"Please enable the location service for {AppName} app.";
                             yield break;
                         }
                         Input.location.Stop();
@@ -424,12 +431,6 @@ namespace com.arpoise.arpoiseapp
                 // new Covarariance  matrix is (IdentityMatrix - K) * Covariance 
                 _variance = (1 - k) * _variance;
             }
-        }
-
-        // Not string is null or white space
-        public static bool IsEmpty(string s)
-        {
-            return s == null || string.IsNullOrEmpty(s.Trim());
         }
         #endregion
     }

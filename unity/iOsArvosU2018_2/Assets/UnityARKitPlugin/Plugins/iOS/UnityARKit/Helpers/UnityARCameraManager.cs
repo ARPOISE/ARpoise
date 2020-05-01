@@ -36,6 +36,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
 For more information on 
 
 Tamiko Thiel, see www.TamikoThiel.com/
@@ -53,10 +54,6 @@ using UnityEngine.XR.iOS;
 
 public class UnityARCameraManager : ArBehaviourSlam
 {
-#if IS_SLAM_APP
-#else
-    public GameObject AnchorManager;
-#endif
     private bool _sessionStarted = false;
 
     public Camera m_camera;
@@ -65,7 +62,7 @@ public class UnityARCameraManager : ArBehaviourSlam
 
     [Header("AR Config Options")]
     public UnityARAlignment startAlignment = UnityARAlignment.UnityARAlignmentGravity;
-    public UnityARPlaneDetection planeDetection = UnityARPlaneDetection.Horizontal;
+    public UnityARPlaneDetection planeDetection = UnityARPlaneDetection.HorizontalAndVertical;
     public bool getPointCloud = true;
     public bool enableLightEstimation = true;
     public bool enableAutoFocus = true;
@@ -115,14 +112,20 @@ public class UnityARCameraManager : ArBehaviourSlam
 
         Application.targetFrameRate = 60;
 
-#if IS_SLAM_APP
-        StartArSession();
-#else
-#endif
         if (m_camera == null)
         {
             m_camera = Camera.main;
         }
+
+        var hitTest = HitAnchor.GetComponent<UnityARHitTestExample>();
+        hitTest.ArBehaviour = this;
+        hitTest.SlamObjects = SlamObjects;
+        hitTest.SceneAnchor = SceneAnchor;
+
+        var anchorManager = AnchorManager.GetComponent<ArKitAnchorManager>();
+        anchorManager.ArBehaviour = this;
+        anchorManager.TriggerObjects = TriggerObjects;
+        anchorManager.FitToScanOverlay = FitToScanOverlay;
     }
 
     protected void StartArSession()
@@ -132,10 +135,14 @@ public class UnityARCameraManager : ArBehaviourSlam
             return;
         }
         var config = sessionConfiguration;
+        config.planeDetection = IsSlam ? UnityARPlaneDetection.HorizontalAndVertical : UnityARPlaneDetection.None;
+        config.getPointCloudData = IsSlam;
+
         if (config.IsSupported)
         {
             m_session.RunWithConfig(config);
             UnityARSessionNativeInterface.ARFrameUpdatedEvent += FirstFrameUpdate;
+            //Debug.Log("StartArSession()");
         }
     }
 
@@ -148,11 +155,15 @@ public class UnityARCameraManager : ArBehaviourSlam
         if (texture != null)
         {
             var config = sessionConfiguration;
+            config.planeDetection = UnityARPlaneDetection.None;
+            config.getPointCloudData = false;
+
             if (config.IsSupported)
             {
                 byte[] bytes = texture.EncodeToJPG();
                 m_session.RunWithConfigAndImage(config, bytes.Length, bytes, 0.25f);
                 UnityARSessionNativeInterface.ARFrameUpdatedEvent += FirstFrameUpdate;
+                //Debug.Log("StartArSession(texture)");
             }
         }
     }
@@ -166,6 +177,9 @@ public class UnityARCameraManager : ArBehaviourSlam
             return;
         }
         var config = sessionConfiguration;
+        config.planeDetection = UnityARPlaneDetection.None;
+        config.getPointCloudData = false;
+
         if (config.IsSupported)
         {
             foreach (var key in triggerObjects.Keys)
@@ -181,6 +195,7 @@ public class UnityARCameraManager : ArBehaviourSlam
             }
             m_session.RunWithConfigAndImages(config);
             UnityARSessionNativeInterface.ARFrameUpdatedEvent += FirstFrameUpdate;
+            //Debug.Log("StartArSession(triggerObjects)");
         }
     }
 
@@ -279,22 +294,19 @@ public class UnityARCameraManager : ArBehaviourSlam
             }
         }
 
-#if IS_SLAM_APP
-#else
         if (!_sessionStarted)
         {
-            if (!HasTriggerImages)
+            if (HasTriggerImages)
+            {
+                var anchorManager = AnchorManager.GetComponent<ArKitAnchorManager>();
+                StartArSession(anchorManager.TriggerObjects);
+            }
+            else
             {
                 StartArSession();
-                return;
             }
-            var anchorManager = AnchorManager.GetComponent<ArKitAnchorManager>();
-            anchorManager.ArBehaviour = this;
-            anchorManager.TriggerObjects = TriggerObjects;
-            anchorManager.FitToScanOverlay = FitToScanOverlay;
-            StartArSession(anchorManager.TriggerObjects);
         }
-#endif
+
         if (m_camera != null && _sessionStarted)
         {
             // JUST WORKS!

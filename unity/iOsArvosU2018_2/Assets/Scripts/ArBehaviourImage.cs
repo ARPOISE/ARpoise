@@ -48,9 +48,9 @@ namespace com.arpoise.arpoiseapp
 #endif
         public GameObject FitToScanOverlay;
 
-#endregion
+        #endregion
 
-#region Start
+        #region Start
         protected override void Start()
         {
             base.Start();

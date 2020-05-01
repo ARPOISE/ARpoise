@@ -56,6 +56,8 @@ namespace GoogleARCore.Examples.AugmentedImage
         /// </summary>
         public AugmentedImage Image;
 
+        public Pose? Pose = null;
+
         /// <summary>
         /// A model for the lower left corner of the frame to place when an image is detected.
         /// </summary>
@@ -84,17 +86,30 @@ namespace GoogleARCore.Examples.AugmentedImage
 
         public void Start()
         {
-            FrameLowerLeft.SetActive(false);
-            FrameLowerRight.SetActive(false);
-            FrameUpperLeft.SetActive(false);
-            FrameUpperRight.SetActive(false);
+            FrameLowerLeft?.SetActive(false);
+            FrameLowerRight?.SetActive(false);
+            FrameUpperLeft?.SetActive(false);
+            FrameUpperRight?.SetActive(false);
         }
 
         private bool _first = true;
 
         public void Update()
         {
-            if (Image == null || Image.TrackingState != TrackingState.Tracking)
+            if (Pose != null)
+            {
+                // Check that motion tracking is tracking.
+                if (Session.Status != SessionStatus.Tracking)
+                {
+                    if (_gameObject != null)
+                    {
+                        _gameObject.SetActive(false);
+                        _first = true;
+                    }
+                    return;
+                }
+            }
+            else if (Image == null || Image.TrackingState != TrackingState.Tracking)
             {
                 if (_gameObject != null)
                 {
@@ -108,43 +123,60 @@ namespace GoogleARCore.Examples.AugmentedImage
             if (arObjectState != null && TriggerObject != null && !_gameObjectCreated)
             {
                 _gameObjectCreated = true;
-                //_gameObject = Instantiate(TriggerObject.gameObject);
 
-                lock (arObjectState)
+                if (Pose != null)
+                {
+                    transform.position = Pose.Value.position;
+                    transform.rotation = Pose.Value.rotation;
+                }
+                else
                 {
                     transform.position = Image.CenterPose.position;
                     transform.rotation = Image.CenterPose.rotation;
+                }
 
-                    var result = ArBehaviour.CreateArObject(
-                        arObjectState,
-                        TriggerObject.gameObject,
-                        null,
-                        transform,
-                        TriggerObject.poi,
-                        TriggerObject.poi.id,
-                        out _gameObject
-                        );
-                    if (!ArBehaviourPosition.IsEmpty(result))
-                    {
-                        ArBehaviour.ErrorMessage = result;
-                        return;
-                    }
+                var result = ArBehaviour.CreateArObject(
+                    arObjectState,
+                    TriggerObject.gameObject,
+                    null,
+                    transform,
+                    TriggerObject.poi,
+                    TriggerObject.poi.id,
+                    out _gameObject
+                    );
+                if (!string.IsNullOrWhiteSpace(result))
+                {
+                    ArBehaviour.ErrorMessage = result;
+                    return;
                 }
             }
 
             if (_gameObject != null)
             {
                 _gameObject.SetActive(true);
-                if (_first)
+
+                if (Pose != null)
                 {
-                    _first = false;
-                    _gameObject.transform.position = Image.CenterPose.position;
-                    _gameObject.transform.rotation = Image.CenterPose.rotation;
+                    if (_first)
+                    {
+                        _first = false;
+                        _gameObject.transform.position = Pose.Value.position;
+                        _gameObject.transform.rotation = Pose.Value.rotation;
+                    }
                 }
                 else
                 {
-                    _gameObject.transform.position = Vector3.Lerp(_gameObject.transform.position, Image.CenterPose.position, 0.02f);
-                    _gameObject.transform.rotation = Quaternion.Lerp(_gameObject.transform.rotation, Image.CenterPose.rotation, 0.02f);
+                    if (_first)
+                    {
+                        _first = false;
+                        _gameObject.transform.position = Image.CenterPose.position;
+                        _gameObject.transform.rotation = Image.CenterPose.rotation;
+                    }
+                    else
+                    {
+                        _gameObject.transform.position = Vector3.Lerp(_gameObject.transform.position, Image.CenterPose.position, 0.02f);
+                        _gameObject.transform.rotation = Quaternion.Lerp(_gameObject.transform.rotation, Image.CenterPose.rotation, 0.02f);
+                    }
                 }
             }
         }

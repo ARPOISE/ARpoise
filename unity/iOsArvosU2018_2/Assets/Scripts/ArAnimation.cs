@@ -64,9 +64,6 @@ namespace com.arpoise.arpoiseapp
 
         public ArAnimation(long poiId, GameObject wrapper, GameObject gameObject, PoiAnimation poiAnimation, bool isActive)
         {
-            JustActivated = false;
-            JustStopped = false;
-
             PoiId = poiId;
             Wrapper = wrapper;
             GameObject = gameObject;

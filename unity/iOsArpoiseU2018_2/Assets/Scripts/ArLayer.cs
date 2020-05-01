@@ -114,7 +114,7 @@ namespace com.arpoise.arpoiseapp
         public bool isVisible = true;
         public PoiTransform transform = null;
         public PoiObject poiObject = null;
-        public PoiAction[] actions = new PoiAction[0];
+        public PoiAction[] actions = Array.Empty<PoiAction>();
         public PoiAnimations animations = null;
         public string attribution = string.Empty;
         public float distance = 0;
@@ -140,7 +140,7 @@ namespace com.arpoise.arpoiseapp
         {
             get
             {
-                string baseUrl = poiObject != null ? poiObject.baseURL : null;
+                string baseUrl = poiObject?.baseURL;
                 if (baseUrl != null)
                 {
                     baseUrl = baseUrl.Trim();
@@ -153,7 +153,7 @@ namespace com.arpoise.arpoiseapp
         {
             get
             {
-                string triggerImageURL = poiObject != null ? poiObject.triggerImageURL : null;
+                string triggerImageURL = poiObject?.triggerImageURL;
                 if (triggerImageURL != null)
                 {
                     triggerImageURL = triggerImageURL.Trim();
@@ -166,7 +166,7 @@ namespace com.arpoise.arpoiseapp
         {
             get
             {
-                string name = poiObject != null ? poiObject.full : null;
+                string name = poiObject?.full;
                 if (name != null)
                 {
                     name = name.Trim();
@@ -179,7 +179,7 @@ namespace com.arpoise.arpoiseapp
         {
             get
             {
-                string name = poiObject != null ? poiObject.poiLayerName : null;
+                string name = poiObject?.poiLayerName;
                 if (name != null)
                 {
                     name = name.Trim();
@@ -193,7 +193,7 @@ namespace com.arpoise.arpoiseapp
     [Serializable]
     public class ArLayer
     {
-        public Poi[] hotspots = new Poi[0];
+        public Poi[] hotspots = Array.Empty<Poi>();
         public float radius = 0;
         public float refreshInterval = 0;
         public float refreshDistance = 0;
@@ -215,7 +215,7 @@ namespace com.arpoise.arpoiseapp
         public bool isDefaultLayer = false;
         public bool showMenuButton = true;
 
-        public PoiAction[] actions = new PoiAction[0];
+        public PoiAction[] actions = Array.Empty<PoiAction>();
 
         public static ArLayer Create(string json)
         {

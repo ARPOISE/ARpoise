@@ -350,12 +350,13 @@ MonoBehaviour:
   ArCamera: {fileID: 1479066982}
   SceneAnchor: {fileID: 813781979}
   Wrapper: {fileID: 1265291788}
-  InputPanel: {fileID: 2096308619}
-  MenuButton: {fileID: 276603405}
   InfoText: {fileID: 773190229}
-  HeaderText: {fileID: 1791072195}
-  LayerPanel: {fileID: 207147540}
+  MenuButton: {fileID: 276603405}
   HeaderButton: {fileID: 1443613269}
+  HeaderText: {fileID: 1791072195}
+  InputPanel: {fileID: 2096308619}
+  InfoPanel: {fileID: 0}
+  LayerPanel: {fileID: 207147540}
   PanelHeaderButton: {fileID: 80896538}
   ContentPanel: {fileID: 1413246688}
   ButtonObjectPool: {fileID: 304134660}

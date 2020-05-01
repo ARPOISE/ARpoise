@@ -86,7 +86,7 @@ namespace com.arpoise.arpoiseapp
                     }
                     else
                     {
-                        foreach (GameObject child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
+                        foreach (var child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
                         {
                             if (child != null)
                             {

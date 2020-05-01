@@ -45,7 +45,7 @@ public class GenerateImageAnchor : MonoBehaviour
                         TriggerObject.poi.id,
                         out _gameObject
                         );
-                    if (!ArBehaviourPosition.IsEmpty(result))
+                    if (!string.IsNullOrWhiteSpace(result))
                     {
                         ArBehaviour.ErrorMessage = result;
                         return;

@@ -114,8 +114,8 @@ namespace com.arpoise.arpoiseapp
                             avoidDirection += transform.position - fish.transform.position;
                         }
 
-                        var otherFiscg = fish.GetComponent<ArFish>();
-                        groupSpeed += otherFiscg._speed;
+                        var otherFish = fish.GetComponent<ArFish>();
+                        groupSpeed += otherFish._speed;
                     }
                 }
             }

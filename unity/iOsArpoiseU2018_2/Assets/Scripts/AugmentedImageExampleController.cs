@@ -44,27 +44,40 @@ namespace GoogleARCore.Examples.AugmentedImage
     using GoogleARCore;
 #endif
     using System.Collections.Generic;
+    using System.Linq;
     using UnityEngine;
 
     /// <summary>
     /// Controller for AugmentedImage example.
     /// </summary>
-    public class AugmentedImageExampleController : ArBehaviourImage
+    public class AugmentedImageExampleController : ArBehaviourSlam
     {
 #if HAS_AR_CORE
+
+        public Camera FirstPersonCamera;
+
         /// <summary>
         /// A prefab for visualizing an AugmentedImage.
         /// </summary>
         public AugmentedImageVisualizer AugmentedImageVisualizerPrefab;
 
-        private Dictionary<int, AugmentedImageVisualizer> _visualizers = new Dictionary<int, AugmentedImageVisualizer>();
+        private readonly Dictionary<int, AugmentedImageVisualizer> _visualizers = new Dictionary<int, AugmentedImageVisualizer>();
+
+        private readonly Dictionary<int, AugmentedImageVisualizer> _slamVisualizers = new Dictionary<int, AugmentedImageVisualizer>();
 
         private readonly List<AugmentedImage> _tempAugmentedImages = new List<AugmentedImage>();
+
+        /// <summary>
+        /// True if the app is in the process of quitting due to an ARCore connection error, otherwise false.
+        /// </summary>
+        private bool _isQuitting = false;
 
         protected override void Start()
         {
             base.Start();
         }
+
+        private int _slamHitCount = 0;
 
         /// <summary>
         /// The Unity Update method.
@@ -85,8 +98,129 @@ namespace GoogleARCore.Examples.AugmentedImage
                 return;
             }
 
+            if (_isQuitting)
+            {
+                return;
+            }
+
+            // Quit if ARCore was unable to connect and give Unity some time for the toast to appear.
+            if (Session.Status == SessionStatus.ErrorPermissionNotGranted)
+            {
+                ShowAndroidToastMessage("Camera permission is needed to run this application.");
+                _isQuitting = true;
+                Invoke("DoQuit", 1.5f);
+            }
+            else if (Session.Status.IsError())
+            {
+                ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
+                _isQuitting = true;
+                Invoke("DoQuit", 1.5f);
+            }
+
+            var fitToScanOverlay = FitToScanOverlay;
+
+            if (!IsSlam)
+            {
+                _slamHitCount = 0;
+                if (_slamVisualizers.Any())
+                {
+                    foreach (var visualizer in _slamVisualizers.Values)
+                    {
+                        GameObject.Destroy(visualizer.gameObject);
+                    }
+                    _slamVisualizers.Clear();
+                }
+            }
+
             if (!HasTriggerImages)
             {
+                if (fitToScanOverlay != null)
+                {
+                    if (fitToScanOverlay.activeSelf != false)
+                    {
+                        fitToScanOverlay.SetActive(false);
+                    }
+                }
+                if (_visualizers.Any())
+                {
+                    foreach (var visualizer in _visualizers.Values)
+                    {
+                        GameObject.Destroy(visualizer.gameObject);
+                    }
+                    _visualizers.Clear();
+                }
+                if (!IsSlam)
+                {
+                    return;
+                }
+            }
+
+            if (IsSlam)
+            {
+                if (!SlamObjects.Any())
+                {
+                    return;
+                }
+
+                // Only allow the screen to sleep when not tracking.
+                if (Session.Status != SessionStatus.Tracking)
+                {
+                    const int lostTrackingSleepTimeout = 15;
+                    Screen.sleepTimeout = lostTrackingSleepTimeout;
+                }
+                else
+                {
+                    Screen.sleepTimeout = SleepTimeout.NeverSleep;
+                }
+
+                if (HasHitOnObject)
+                {
+                    return;
+                }
+
+                // If the player has not touched the screen, we are done with this update.
+                Touch touch;
+                if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
+                {
+                    return;
+                }
+
+                // Raycast against the location the player touched to search for planes.
+                TrackableHit hit;
+                TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
+                    TrackableHitFlags.FeaturePointWithSurfaceNormal;
+
+                if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+                {
+                    // Use hit pose and camera pose to check if hittest is from the
+                    // back of the plane, if it is, no need to create the anchor.
+                    if ((hit.Trackable is DetectedPlane) &&
+                        Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
+                            hit.Pose.rotation * Vector3.up) < 0)
+                    {
+                        Debug.Log("Hit at back of the current DetectedPlane");
+                    }
+                    else
+                    {
+                        int index = _slamHitCount++ % SlamObjects.Count;
+
+                        TriggerObject triggerObject = null;
+                        if (!SlamObjects.TryGetValue(index, out triggerObject))
+                        {
+                            ErrorMessage = $"No slam object for database index {index}, {SlamObjects.Keys.Min()} is minimum.";
+                        }
+
+                        AugmentedImageVisualizer visualizer = null;
+
+                        Anchor anchor = hit.Trackable.CreateAnchor(hit.Pose);
+                        visualizer = Instantiate(AugmentedImageVisualizerPrefab, anchor.transform);
+                        visualizer.Pose = hit.Pose;
+                        visualizer.TriggerObject = triggerObject;
+                        visualizer.ArBehaviour = this;
+
+                        _slamVisualizers.Add(_slamHitCount, visualizer);
+                    }
+                }
                 return;
             }
 
@@ -123,17 +257,45 @@ namespace GoogleARCore.Examples.AugmentedImage
                 }
             }
 
-            // Show the fit-to-scan overlay if there are no images that are Tracking.
-            foreach (var visualizer in _visualizers.Values)
+            if (fitToScanOverlay != null)
             {
-                if (visualizer.Image.TrackingState == TrackingState.Tracking)
+                // Show the fit-to-scan overlay if there are no images that are Tracking.
+                var hasActiveObjects = _visualizers.Values.Any(x => x.Image.TrackingState == TrackingState.Tracking);
+                var setActive = !hasActiveObjects && !LayerPanelIsActive();
+                if (fitToScanOverlay.activeSelf != setActive)
                 {
-                    FitToScanOverlay.SetActive(false);
-                    return;
+                    fitToScanOverlay.SetActive(setActive);
                 }
             }
+        }
 
-            FitToScanOverlay.SetActive(true);
+        /// <summary>
+        /// Show an Android toast message.
+        /// </summary>
+        /// <param name="message">Message string to show in the toast.</param>
+        private void ShowAndroidToastMessage(string message)
+        {
+            AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+            AndroidJavaObject unityActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+
+            if (unityActivity != null)
+            {
+                AndroidJavaClass toastClass = new AndroidJavaClass("android.widget.Toast");
+                unityActivity.Call("runOnUiThread", new AndroidJavaRunnable(() =>
+                {
+                    AndroidJavaObject toastObject = toastClass.CallStatic<AndroidJavaObject>("makeText", unityActivity,
+                        message, 0);
+                    toastObject.Call("show");
+                }));
+            }
+        }
+
+        /// <summary>
+        /// Actually quit the application.
+        /// </summary>
+        private void DoQuit()
+        {
+            Application.Quit();
         }
 #endif
     }

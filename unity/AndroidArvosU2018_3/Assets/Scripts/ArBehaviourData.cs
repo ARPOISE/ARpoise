@@ -110,12 +110,12 @@ namespace com.arpoise.arpoiseapp
     {
         public const string ArvosApplicationName = "Arvos";
         public const string ArpoiseApplicationName = "Arpoise";
-        public const string ArslamApplicationName = "Arslam";
 
         #region Globals
 
         public GameObject SceneAnchor = null;
         public GameObject Wrapper = null;
+        public bool IsSlam { get; private set; }
 
         #endregion
 
@@ -125,6 +125,7 @@ namespace com.arpoise.arpoiseapp
         protected bool IsNewLayer = false;
         protected bool HasTriggerImages = false;
         protected Dictionary<int, TriggerObject> TriggerObjects = new Dictionary<int, TriggerObject>();
+        protected Dictionary<int, TriggerObject> SlamObjects = new Dictionary<int, TriggerObject>();
 #if HAS_AR_CORE
         protected AugmentedImageDatabase AugmentedImageDatabase;
 #endif
@@ -140,6 +141,7 @@ namespace com.arpoise.arpoiseapp
 
         protected static readonly string ArpoiseDirectoryLayer = "Arpoise-Directory";
         protected static readonly string ArpoiseDirectoryUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
+
         #endregion
 
         #region ArObjects
@@ -148,11 +150,7 @@ namespace com.arpoise.arpoiseapp
         private readonly string _clientApplicationName = ArvosApplicationName;
 #else
 #if HAS_AR_KIT
-#if IS_SLAM_APP
-        private readonly string _clientApplicationName = ArslamApplicationName;
-#else
         private readonly string _clientApplicationName = ArvosApplicationName;
-#endif
 #else
         private readonly string _clientApplicationName = ArpoiseApplicationName;
 #endif
@@ -171,7 +169,7 @@ namespace com.arpoise.arpoiseapp
                 arObjectState.Add(arObject);
 
                 List<ArLayer> innerLayers = null;
-                if (!IsEmpty(poi.InnerLayerName) && _innerLayers.TryGetValue(poi.InnerLayerName, out innerLayers))
+                if (!string.IsNullOrWhiteSpace(poi.InnerLayerName) && _innerLayers.TryGetValue(poi.InnerLayerName, out innerLayers))
                 {
                     foreach (var layer in innerLayers.Where(x => x.hotspots != null))
                     {
@@ -404,10 +402,10 @@ namespace com.arpoise.arpoiseapp
             // Relative to user, parent or with absolute coordinates
             var relativePosition = poi.poiObject.relativeLocation;
 
-            if (parentObject != null || !IsEmpty(relativePosition))
+            if (parentObject != null || !string.IsNullOrWhiteSpace(relativePosition))
             {
                 // Relative to user or parent
-                if (IsEmpty(relativePosition))
+                if (string.IsNullOrWhiteSpace(relativePosition))
                 {
                     relativePosition = "0,0,0";
                 }
@@ -465,7 +463,7 @@ namespace com.arpoise.arpoiseapp
         // Create ar objects for the pois and link them
         protected string CreateArObjects(ArObjectState arObjectState, ArObject parentObject, Transform parentObjectTransform, IEnumerable<Poi> pois)
         {
-            foreach (var poi in pois.Where(x => x.isVisible && !IsEmpty(x.GameObjectName)))
+            foreach (var poi in pois.Where(x => x.isVisible && !string.IsNullOrWhiteSpace(x.GameObjectName)))
             {
                 long poiId = poi.id;
                 if (parentObject != null)
@@ -474,7 +472,7 @@ namespace com.arpoise.arpoiseapp
                 }
 
                 string assetBundleUrl = poi.BaseUrl;
-                if (IsEmpty(assetBundleUrl))
+                if (string.IsNullOrWhiteSpace(assetBundleUrl))
                 {
                     return "Poi with id " + poiId + ", empty asset bundle url'";
                 }
@@ -486,7 +484,7 @@ namespace com.arpoise.arpoiseapp
                 }
 
                 string objectName = poi.GameObjectName;
-                if (IsEmpty(objectName))
+                if (string.IsNullOrWhiteSpace(objectName))
                 {
                     continue;
                 }
@@ -498,22 +496,29 @@ namespace com.arpoise.arpoiseapp
                 }
 
                 var triggerImageURL = poi.TriggerImageURL;
-                if (!IsEmpty(triggerImageURL))
+                if (!string.IsNullOrWhiteSpace(triggerImageURL))
                 {
                     try
                     {
+                        var isSlamUrl = IsSlamUrl(triggerImageURL);
                         Texture2D texture = null;
                         if (!_triggerImages.TryGetValue(triggerImageURL, out texture) || texture == null)
                         {
-                            return "?t " + triggerImageURL;
+                            if (!isSlamUrl)
+                            {
+                                return "?t " + triggerImageURL;
+                            }
                         }
 
-                        var t = TriggerObjects.Values.FirstOrDefault(x => x.triggerImageURL == triggerImageURL);
+                        var t = !isSlamUrl ? TriggerObjects.Values.FirstOrDefault(x => x.triggerImageURL == triggerImageURL) : null;
                         if (t == null)
                         {
-                            int newIndex = TriggerObjects.Count;
+                            int newIndex = isSlamUrl ? SlamObjects.Count : TriggerObjects.Count;
 #if HAS_AR_CORE
-                            newIndex = AugmentedImageDatabase.Count;
+                            if (!isSlamUrl)
+                            {
+                                newIndex = AugmentedImageDatabase.Count;
+                            }
 #endif
                             var width = poi.poiObject.triggerImageWidth;
                             t = new TriggerObject
@@ -526,9 +531,19 @@ namespace com.arpoise.arpoiseapp
                                 gameObject = objectToAdd,
                                 poi = poi
                             };
-                            TriggerObjects[t.index] = t;
+                            if (isSlamUrl)
+                            {
+                                SlamObjects[t.index] = t;
+                            }
+                            else
+                            {
+                                TriggerObjects[t.index] = t;
+                            }
 #if HAS_AR_CORE
-                            AugmentedImageDatabase.AddImage(triggerImageURL, texture, width);
+                            if (!isSlamUrl)
+                            {
+                                AugmentedImageDatabase.AddImage(triggerImageURL, texture, width);
+                            }
 #endif
                         }
                         else
@@ -553,7 +568,7 @@ namespace com.arpoise.arpoiseapp
                         poiId,
                         out newObject
                         );
-                    if (!IsEmpty(result))
+                    if (!string.IsNullOrWhiteSpace(result))
                     {
                         return result;
                     }
@@ -612,7 +627,7 @@ namespace com.arpoise.arpoiseapp
                     }
                     if (informationMessage == null)
                     {
-                        informationMessage = layer.actions.Select(x => x.activityMessage).FirstOrDefault(x => !IsEmpty(x));
+                        informationMessage = layer.actions.Select(x => x.activityMessage).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
                     }
                 }
 
@@ -620,7 +635,7 @@ namespace com.arpoise.arpoiseapp
                 {
                     continue;
                 }
-                var layerPois = layer.hotspots.Where(x => x.isVisible && !IsEmpty(x.GameObjectName) && (x.ArLayer = layer) == layer);
+                var layerPois = layer.hotspots.Where(x => x.isVisible && !string.IsNullOrWhiteSpace(x.GameObjectName) && (x.ArLayer = layer) == layer);
                 pois.AddRange(layerPois.Where(x => CalculateDistance(x.Latitude, x.Longitude, UsedLatitude, UsedLongitude) <= layer.visibilityRange));
             }
 
@@ -665,7 +680,7 @@ namespace com.arpoise.arpoiseapp
                 {
                     var poi = pois.FirstOrDefault(x => arObject.Id == x.id
                                                && arObject.GameObjectName.Equals(x.GameObjectName)
-                                               && (IsEmpty(x.BaseUrl) || arObject.BaseUrl.Equals(x.BaseUrl))
+                                               && (string.IsNullOrWhiteSpace(x.BaseUrl) || arObject.BaseUrl.Equals(x.BaseUrl))
                               );
                     if (poi == null)
                     {
@@ -697,13 +712,13 @@ namespace com.arpoise.arpoiseapp
                 if (existingArObjects != null)
                 {
                     string objectName = poi.GameObjectName;
-                    if (IsEmpty(objectName))
+                    if (string.IsNullOrWhiteSpace(objectName))
                     {
                         continue;
                     }
 
                     string baseUrl = poi.BaseUrl;
-                    if (!IsEmpty(baseUrl))
+                    if (!string.IsNullOrWhiteSpace(baseUrl))
                     {
                         while (baseUrl.Contains('\\'))
                         {
@@ -730,7 +745,7 @@ namespace com.arpoise.arpoiseapp
         protected override IEnumerator GetData()
         {
             var os = "Android";
-            var bundle = "200222";
+            var bundle = "200430";
 #if UNITY_IOS
             os = "iOS";
             bundle = "20" + bundle;
@@ -752,7 +767,7 @@ namespace com.arpoise.arpoiseapp
                 yield return new WaitForSeconds(.01f);
             }
 
-            while (IsEmpty(ErrorMessage))
+            while (string.IsNullOrWhiteSpace(ErrorMessage))
             {
                 MenuEnabled = null;
                 count++;
@@ -764,6 +779,9 @@ namespace com.arpoise.arpoiseapp
                 var layers = new List<ArLayer>();
                 var nextPageKey = string.Empty;
 
+                IsSlam = false;
+                SlamObjects.Clear();
+
                 #region Download all pages of the layer
                 for (; ; )
                 {
@@ -773,7 +791,7 @@ namespace com.arpoise.arpoiseapp
                         + (filteredLatitude != usedLatitude ? "&latOfDevice=" + filteredLatitude.ToString("F6") : string.Empty)
                         + (filteredLongitude != usedLongitude ? "&lonOfDevice=" + filteredLongitude.ToString("F6") : string.Empty)
                         + "&layerName=" + layerName
-                        + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
+                        + (!string.IsNullOrWhiteSpace(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
                         + "&client=" + _clientApplicationName
                         + "&bundle=" + bundle
@@ -815,7 +833,7 @@ namespace com.arpoise.arpoiseapp
                     }
 
                     var text = request.downloadHandler.text;
-                    if (IsEmpty(text))
+                    if (string.IsNullOrWhiteSpace(text))
                     {
                         if (setError)
                         {
@@ -827,22 +845,22 @@ namespace com.arpoise.arpoiseapp
                     try
                     {
                         var layer = ArLayer.Create(text);
-                        if (!IsEmpty(layer.redirectionUrl))
+                        if (!string.IsNullOrWhiteSpace(layer.redirectionUrl))
                         {
                             uri = layer.redirectionUrl.Trim();
                         }
-                        if (!IsEmpty(layer.redirectionLayer))
+                        if (!string.IsNullOrWhiteSpace(layer.redirectionLayer))
                         {
                             layerName = layer.redirectionLayer.Trim();
                         }
-                        if (!IsEmpty(layer.redirectionUrl) || !IsEmpty(layer.redirectionLayer))
+                        if (!string.IsNullOrWhiteSpace(layer.redirectionUrl) || !string.IsNullOrWhiteSpace(layer.redirectionLayer))
                         {
                             layers.Clear();
                             nextPageKey = string.Empty;
                             continue;
                         }
                         layers.Add(layer);
-                        if (layer.morePages == false || IsEmpty(layer.nextPageKey))
+                        if (layer.morePages == false || string.IsNullOrWhiteSpace(layer.nextPageKey))
                         {
                             break;
                         }
@@ -932,7 +950,7 @@ namespace com.arpoise.arpoiseapp
                             {
                                 GameObject spriteObject = null;
                                 var spriteName = poi.line4;
-                                if (!IsEmpty(spriteName))
+                                if (!string.IsNullOrWhiteSpace(spriteName))
                                 {
                                     AssetBundle iconAssetBundle = null;
                                     if (_assetBundles.TryGetValue(iconAssetBundleUrl, out iconAssetBundle))
@@ -988,7 +1006,7 @@ namespace com.arpoise.arpoiseapp
                 var innerLayers = new Dictionary<string, bool>();
                 foreach (var layer in layers.Where(x => x.hotspots != null))
                 {
-                    foreach (var hotspot in layer.hotspots.Where(x => !IsEmpty(x.InnerLayerName)))
+                    foreach (var hotspot in layer.hotspots.Where(x => !string.IsNullOrWhiteSpace(x.InnerLayerName)))
                     {
                         innerLayers[hotspot.InnerLayerName] = layer.isDefaultLayer;
                     }
@@ -1019,7 +1037,7 @@ namespace com.arpoise.arpoiseapp
                         + ((filteredLatitude != latitude) ? "&latOfDevice=" + filteredLatitude.ToString("F6") : string.Empty)
                         + ((filteredLongitude != longitude) ? "&lonOfDevice=" + filteredLongitude.ToString("F6") : string.Empty)
                         + "&layerName=" + innerLayer
-                        + (!IsEmpty(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
+                        + (!string.IsNullOrWhiteSpace(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
                         + "&client=" + _clientApplicationName
                         + "&bundle=" + bundle
@@ -1060,7 +1078,7 @@ namespace com.arpoise.arpoiseapp
                         }
 
                         var text = request.downloadHandler.text;
-                        if (IsEmpty(text))
+                        if (string.IsNullOrWhiteSpace(text))
                         {
                             if (setError)
                             {
@@ -1084,7 +1102,7 @@ namespace com.arpoise.arpoiseapp
                                 _innerLayers[innerLayer] = new List<ArLayer> { layer };
                             }
 
-                            if (layer.morePages == false || IsEmpty(layer.nextPageKey))
+                            if (layer.morePages == false || string.IsNullOrWhiteSpace(layer.nextPageKey))
                             {
                                 break;
                             }
@@ -1106,14 +1124,14 @@ namespace com.arpoise.arpoiseapp
                 #region Download all asset bundles
                 foreach (var layer in layers.Where(x => x.hotspots != null))
                 {
-                    assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
+                    assetBundleUrls.UnionWith(layer.hotspots.Where(x => !string.IsNullOrWhiteSpace(x.BaseUrl)).Select(x => x.BaseUrl));
                 }
 
                 foreach (var layerList in _innerLayers.Values)
                 {
                     foreach (var layer in layerList.Where(x => x.hotspots != null))
                     {
-                        assetBundleUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.BaseUrl)).Select(x => x.BaseUrl));
+                        assetBundleUrls.UnionWith(layer.hotspots.Where(x => !string.IsNullOrWhiteSpace(x.BaseUrl)).Select(x => x.BaseUrl));
                     }
                 }
 
@@ -1185,19 +1203,24 @@ namespace com.arpoise.arpoiseapp
 
                 foreach (var layer in layers.Where(x => x.hotspots != null))
                 {
-                    triggerImageUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.TriggerImageURL)).Select(x => x.TriggerImageURL));
+                    triggerImageUrls.UnionWith(layer.hotspots.Where(x => !string.IsNullOrWhiteSpace(x.TriggerImageURL)).Select(x => x.TriggerImageURL));
                 }
 
                 foreach (var layerList in _innerLayers.Values)
                 {
                     foreach (var layer in layerList.Where(x => x.hotspots != null))
                     {
-                        triggerImageUrls.UnionWith(layer.hotspots.Where(x => !IsEmpty(x.TriggerImageURL)).Select(x => x.TriggerImageURL));
+                        triggerImageUrls.UnionWith(layer.hotspots.Where(x => !string.IsNullOrWhiteSpace(x.TriggerImageURL)).Select(x => x.TriggerImageURL));
                     }
                 }
 
                 webRequests = new List<Tuple<string, string, UnityWebRequest>>();
 
+                if (triggerImageUrls.Any(x => IsSlamUrl(x)))
+                {
+                    IsSlam = true;
+                    triggerImageUrls.Clear();
+                }
                 foreach (var url in triggerImageUrls)
                 {
                     if (_triggerImages.ContainsKey(url))
@@ -1260,7 +1283,7 @@ namespace com.arpoise.arpoiseapp
                 #endregion
 
                 #region Activate the Header
-                var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !IsEmpty(x));
+                var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
                 HeaderSetActive = new HeaderSetActiveActivity { LayerTitle = layerTitle, ArBehaviour = this };
                 #endregion
 
@@ -1278,14 +1301,14 @@ namespace com.arpoise.arpoiseapp
                     ErrorMessage = CreateArObjects(arObjectState, null, SceneAnchor.transform, arObjectState.ArPois);
                     arObjectState.ArPois.Clear();
 
-                    if (!IsEmpty(ErrorMessage))
+                    if (!string.IsNullOrWhiteSpace(ErrorMessage))
                     {
                         yield break;
                     }
                     if (!arObjectState.ArObjects.Any() && !ArvosApplicationName.Equals(_clientApplicationName))
                     {
-                        var message = layers.Select(x => x.noPoisMessage).FirstOrDefault(x => !IsEmpty(x));
-                        if (IsEmpty(message))
+                        var message = layers.Select(x => x.noPoisMessage).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+                        if (string.IsNullOrWhiteSpace(message))
                         {
                             message = "Sorry, there are no augments at your location!";
                         }
@@ -1336,6 +1359,8 @@ namespace com.arpoise.arpoiseapp
                             triggerObject.isActive = false;
                         }
                         HasTriggerImages = false;
+                        IsSlam = false;
+                        SlamObjects.Clear();
                         break;
                     }
                     yield return new WaitForSeconds(.1f);
@@ -1408,7 +1433,6 @@ namespace com.arpoise.arpoiseapp
             {
                 url = url.Replace("\\", string.Empty);
             }
-#if HAS_AR_CORE
             if (url.StartsWith("http://"))
             {
                 url = url.Substring(7);
@@ -1417,8 +1441,12 @@ namespace com.arpoise.arpoiseapp
             {
                 url = "https://" + url;
             }
-#endif
             return url;
+        }
+
+        protected bool IsSlamUrl(string url)
+        {
+            return !string.IsNullOrWhiteSpace(url) && "slam".Equals(url.ToLower().Trim());
         }
         #endregion
     }

@@ -36,17 +36,31 @@ namespace com.arpoise.arpoiseapp
     public class MenuButton : MonoBehaviour
     {
         public Button Button;
-        public GameObject Anchor;
+        private bool _started;
 
-        void Start()
+        // Use this for initialization
+        protected void Start()
         {
-            Button.onClick.AddListener(HandleClick);
+            if (!_started)
+            {
+                _started = true;
+                Button.onClick.AddListener(HandleClick);
+                //Debug.Log("MenuButton Start.");
+            }
+        }
+
+        private ArBehaviourUserInterface _behaviour;
+        public void Setup(ArBehaviourUserInterface behaviour)
+        {
+            Start();
+            _behaviour = behaviour;
+            //Debug.Log("MenuButton Setup.");
         }
 
         public void HandleClick()
         {
-            ArBehaviour behaviour = Anchor.GetComponent<ArBehaviour>();
-            behaviour.HandleMenuButtonClick();
+            _behaviour?.HandleMenuButtonClick();
+            //Debug.Log("MenuButton HandleClick.");
         }
     }
 }

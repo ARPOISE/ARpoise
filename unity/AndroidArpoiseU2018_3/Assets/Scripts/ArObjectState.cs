@@ -38,15 +38,15 @@ namespace com.arpoise.arpoiseapp
     {
         public volatile bool IsDirty = false;
 
-        private List<ArAnimation> _onCreateAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _onFollowAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _onFocusAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _inFocusAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _onClickAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _billboardAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _onCreateAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _onFollowAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _onFocusAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _inFocusAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _onClickAnimations = new List<ArAnimation>();
+        private readonly List<ArAnimation> _billboardAnimations = new List<ArAnimation>();
         private List<ArAnimation> _allAnimations = null;
 
-        private List<ArObject> _arObjects = new List<ArObject>();
+        private readonly List<ArObject> _arObjects = new List<ArObject>();
         public IEnumerable<ArObject> ArObjects { get { return _arObjects; } }
         public List<ArObject> ArObjectsToDelete { get; private set; }
         public List<ArObject> ArObjectsToPlace { get; private set; }
@@ -138,6 +138,7 @@ namespace com.arpoise.arpoiseapp
                 return _arObjects.Count;
             }
         }
+
         public int NumberOfAnimations
         {
             get
@@ -174,7 +175,6 @@ namespace com.arpoise.arpoiseapp
                     {
                         foreach (var arAnimation in _onFocusAnimations.Where(x => objectHit.Equals(x.GameObject)))
                         {
-                            hit = true;
                             if (!arAnimation.IsActive)
                             {
                                 arAnimation.Activate(startTicks, now);
@@ -183,7 +183,6 @@ namespace com.arpoise.arpoiseapp
 
                         foreach (var arAnimation in _inFocusAnimations.Where(x => objectHit.Equals(x.GameObject)))
                         {
-                            hit = true;
                             if (!arAnimation.IsActive)
                             {
                                 arAnimation.Activate(startTicks, now);
@@ -244,14 +243,14 @@ namespace com.arpoise.arpoiseapp
                     arAnimation.Animate(startTicks, now);
                 }
 
-                if (arAnimation.JustStopped && !ArBehaviourPosition.IsEmpty(arAnimation.FollowedBy))
+                if (arAnimation.JustStopped && !string.IsNullOrWhiteSpace(arAnimation.FollowedBy))
                 {
                     var animationsToFollow = arAnimation.FollowedBy.Split(',');
                     if (animationsToFollow != null)
                     {
                         foreach (var animationToFollow in animationsToFollow)
                         {
-                            if (!ArBehaviourPosition.IsEmpty(animationToFollow))
+                            if (!string.IsNullOrWhiteSpace(animationToFollow))
                             {
                                 var animationName = animationToFollow.Trim();
                                 foreach (var arAnimationToFollow in animations.Where(x => animationName.Equals(x.Name)))

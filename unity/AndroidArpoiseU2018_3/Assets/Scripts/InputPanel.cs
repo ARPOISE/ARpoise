@@ -41,13 +41,13 @@ namespace com.arpoise.arpoiseapp
         public Toggle ActivationToggle;
         public Button CloseButton;
 
-        private void Start()
+        protected void Start()
         {
             CloseButton.onClick.AddListener(HandleClick);
         }
 
-        private ArBehaviour _behaviour;
-        public void Activate(ArBehaviour behaviour)
+        private ArBehaviourUserInterface _behaviour;
+        public void Activate(ArBehaviourUserInterface behaviour)
         {
             _behaviour = behaviour;
 

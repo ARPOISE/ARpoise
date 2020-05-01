@@ -35,13 +35,13 @@ namespace com.arpoise.arpoiseapp
 {
     public class ArAnimation
     {
-        public static string Rotate = "rotate";
-        public static string Scale = "scale";
-        public static string Transform = "transform";
-        public static string Linear = "linear";
-        public static string Cyclic = "cyclic";
-        public static string Sine = "sine";
-        public static string Halfsine = "halfsine";
+        public const string Rotate = "rotate";
+        public const string Scale = "scale";
+        public const string Transform = "transform";
+        public const string Linear = "linear";
+        public const string Cyclic = "cyclic";
+        public const string Sine = "sine";
+        public const string Halfsine = "halfsine";
 
         public readonly long PoiId;
         public readonly GameObject Wrapper;
@@ -64,9 +64,6 @@ namespace com.arpoise.arpoiseapp
 
         public ArAnimation(long poiId, GameObject wrapper, GameObject gameObject, PoiAnimation poiAnimation, bool isActive)
         {
-            JustActivated = false;
-            JustStopped = false;
-
             PoiId = poiId;
             Wrapper = wrapper;
             GameObject = gameObject;

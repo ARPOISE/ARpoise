@@ -28,24 +28,104 @@ Arpoise, see www.Arpoise.com/
 
 */
 
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+#if HAS_AR_KIT
+using UnityEngine.XR.iOS;
+#endif
 namespace com.arpoise.arpoiseapp
 {
     public class ArBehaviourSlam : ArBehaviourImage
     {
+        private readonly List<GameObject> _imageSceneObjects = new List<GameObject>();
+        private readonly List<GameObject> _slamSceneObjects = new List<GameObject>();
+
         #region Globals
+#if HAS_AR_KIT
+        public GameObject AnchorManager;
+
+        public GameObject PointCloudParticleExample;
+        public GameObject GeneratePlanes;
+        public GameObject HitAnchor;
+#endif
+
+#if HAS_AR_CORE
+        /// <summary>
+        /// A prefab for tracking and visualizing detected planes.
+        /// </summary>
+        public GameObject DetectedPlanePrefab;
+
+        // Slam example game objects
+        public GameObject PlaneGenerator;
+        public GameObject PlaneDiscovery;
+        public GameObject PointCloud;
+#endif
         #endregion
 
         #region Start
         protected override void Start()
         {
             base.Start();
-        }
-        #endregion
 
-        #region Update
-        protected override void Update()
+#if HAS_AR_KIT
+            if (!_imageSceneObjects.Any())
+            {
+                _imageSceneObjects.Add(AnchorManager);
+            }
+            if (!_slamSceneObjects.Any())
+            {
+                _slamSceneObjects.Add(PointCloudParticleExample);
+                _slamSceneObjects.Add(GeneratePlanes);
+                _slamSceneObjects.Add(HitAnchor);
+            }
+#endif
+#if HAS_AR_CORE
+            if (!_slamSceneObjects.Any())
+            {
+                _slamSceneObjects.Add(DetectedPlanePrefab);
+                _slamSceneObjects.Add(PlaneGenerator);
+                _slamSceneObjects.Add(PlaneDiscovery);
+                _slamSceneObjects.Add(PointCloud);
+            }
+#endif
+        }
+    #endregion
+
+    #region Update
+    protected override void Update()
         {
             base.Update();
+
+            foreach (var sceneObject in _imageSceneObjects)
+            {
+                if (sceneObject != null && sceneObject.activeSelf != HasTriggerImages)
+                {
+                    sceneObject.SetActive(HasTriggerImages);
+                    //Debug.Log($"{sceneObject.name} {HasTriggerImages}");
+                }
+            }
+            foreach (var sceneObject in _slamSceneObjects)
+            {
+                if (sceneObject != null && sceneObject.activeSelf != IsSlam)
+                {
+                    sceneObject.SetActive(IsSlam);
+                    //Debug.Log($"{sceneObject.name} {IsSlam}");
+
+#if HAS_AR_KIT
+                    if (sceneObject == GeneratePlanes)
+                    {
+                        var component = GeneratePlanes.GetComponent<UnityARGeneratePlane>();
+                        component?.Update();
+                    }
+                    if (sceneObject == PointCloudParticleExample)
+                    {
+                        var component = PointCloudParticleExample.GetComponent<PointCloudParticleExample>();
+                        component?.Update();
+                    }
+#endif
+                }
+            }
         }
         #endregion
     }

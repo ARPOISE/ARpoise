@@ -27,6 +27,7 @@ Peter Graf, see www.mission-base.com/peter/
 Arpoise, see www.Arpoise.com/
 
 */
+using System;
 using UnityEngine;
 
 namespace com.arpoise.arpoiseapp
@@ -40,6 +41,7 @@ namespace com.arpoise.arpoiseapp
         public string url;
         public string line2;
         public string line3;
+        [NonSerialized]
         public Sprite icon;
     }
 }

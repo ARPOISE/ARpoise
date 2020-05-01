@@ -190,7 +190,7 @@ public class ArFlock : MonoBehaviour
 
     protected int? SetParameter(bool setValue, string value, int? defaultValue)
     {
-        if (setValue && !ArBehaviourPosition.IsEmpty(value))
+        if (setValue && !string.IsNullOrWhiteSpace(value))
         {
             int intValue;
             if (int.TryParse(value, out intValue))
@@ -203,7 +203,7 @@ public class ArFlock : MonoBehaviour
 
     protected float? SetParameter(bool setValue, string value, float? defaultValue)
     {
-        if (setValue && !ArBehaviourPosition.IsEmpty(value))
+        if (setValue && !string.IsNullOrWhiteSpace(value))
         {
             float floatValue;
             if (float.TryParse(value, out floatValue))

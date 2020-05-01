@@ -50,7 +50,6 @@ namespace com.arpoise.arpoiseapp
         private const string LoadingText = "Loading data, please wait";
         private static readonly long _initialSecond = DateTime.Now.Ticks / 10000000L;
         private long _currentSecond = _initialSecond;
-        private int _framesPerSecond = 30;
         private int _framesPerCurrentSecond = 1;
         private bool _headerButtonActivated = false;
         private ArLayerScrollList _layerScrollList = null;
@@ -58,8 +57,11 @@ namespace com.arpoise.arpoiseapp
         protected float InitialCameraAngle = 0;
         protected bool InputPanelEnabled = true;
 
+        public bool HasHitOnObject { get; private set; }
+
         #region Globals
 
+        public static int FramesPerSecond = 30;
         public GameObject InfoText = null;
         public GameObject MenuButton = null;
         public GameObject HeaderButton = null;
@@ -70,6 +72,7 @@ namespace com.arpoise.arpoiseapp
         public GameObject PanelHeaderButton = null;
         public Transform ContentPanel;
         public SimpleObjectPool ButtonObjectPool;
+
         #endregion
 
         public override bool InfoPanelIsActive()
@@ -90,7 +93,7 @@ namespace com.arpoise.arpoiseapp
         #region Buttons
         public override void HandleInfoPanelClosed()
         {
-            Debug.Log("HandleInfoPanelClosed");
+            //Debug.Log("HandleInfoPanelClosed");
 
             InfoPanel?.SetActive(false);
             PlayerPrefs.SetString(nameof(InfoPanelIsActive), false.ToString());
@@ -98,7 +101,7 @@ namespace com.arpoise.arpoiseapp
 
         public void HandleInputPanelClosed(float? latitude, float? longitude)
         {
-            Debug.Log("HandleInputPanelClosed lat " + latitude + " lon " + longitude);
+            //Debug.Log("HandleInputPanelClosed lat " + latitude + " lon " + longitude);
 
             RefreshRequest = new RefreshRequest
             {
@@ -130,7 +133,7 @@ namespace com.arpoise.arpoiseapp
 
         public override void SetHeaderActive(string layerTitle)
         {
-            if (!IsEmpty(layerTitle))
+            if (!string.IsNullOrWhiteSpace(layerTitle))
             {
                 HeaderText.GetComponent<Text>().text = layerTitle;
                 _headerButtonActivated = true;
@@ -207,9 +210,9 @@ namespace com.arpoise.arpoiseapp
 
         public void HandleLayerButtonClick(ArItem item)
         {
-            if (item != null && !IsEmpty(item.layerName) && !IsEmpty(item.url))
+            if (item != null && !string.IsNullOrWhiteSpace(item.layerName) && !string.IsNullOrWhiteSpace(item.url))
             {
-                Debug.Log("HandleLayerButtonClick " + item.itemName);
+                //Debug.Log("HandleLayerButtonClick " + item.itemName);
 
                 RefreshRequest = new RefreshRequest
                 {
@@ -280,7 +283,7 @@ namespace com.arpoise.arpoiseapp
             }
 
             // Set any error text onto the canvas
-            if (!IsEmpty(ErrorMessage))
+            if (!string.IsNullOrWhiteSpace(ErrorMessage))
             {
                 SetInfoText(ErrorMessage);
                 return;
@@ -321,22 +324,19 @@ namespace com.arpoise.arpoiseapp
 
             if (arObjectState.IsDirty)
             {
-                lock (arObjectState)
+                if (arObjectState.ArObjectsToDelete.Any())
                 {
-                    if (arObjectState.ArObjectsToDelete.Any())
-                    {
-                        arObjectState.DestroyArObjects();
-                    }
-                    if (arObjectState.ArPois.Any())
-                    {
-                        CreateArObjects(arObjectState, null, SceneAnchor.transform, arObjectState.ArPois);
-                        arObjectState.ArPois.Clear();
-                    }
-                    arObjectState.SetArObjectsToPlace();
-                    arObjectState.IsDirty = false;
+                    arObjectState.DestroyArObjects();
                 }
+                if (arObjectState.ArPois.Any())
+                {
+                    CreateArObjects(arObjectState, null, SceneAnchor.transform, arObjectState.ArPois);
+                    arObjectState.ArPois.Clear();
+                }
+                arObjectState.SetArObjectsToPlace();
+                arObjectState.IsDirty = false;
             }
-            var hit = arObjectState.HandleAnimations(StartTicks, nowTicks);
+            HasHitOnObject = arObjectState.HandleAnimations(StartTicks, nowTicks);
 
             if (_currentSecond == second)
             {
@@ -346,18 +346,18 @@ namespace com.arpoise.arpoiseapp
             {
                 if (_currentSecond == second - 1)
                 {
-                    _framesPerSecond = _framesPerCurrentSecond;
+                    FramesPerSecond = _framesPerCurrentSecond;
                 }
                 else
                 {
-                    _framesPerSecond = 1;
+                    FramesPerSecond = 1;
                 }
                 _framesPerCurrentSecond = 1;
                 _currentSecond = second;
             }
 
             // Set any error text onto the canvas
-            if (!IsEmpty(ErrorMessage))
+            if (!string.IsNullOrWhiteSpace(ErrorMessage))
             {
                 SetInfoText(ErrorMessage);
                 return;
@@ -402,7 +402,7 @@ namespace com.arpoise.arpoiseapp
                     }
                     else
                     {
-                        position = Vector3.Lerp(arObject.WrapperObject.transform.position, arObject.TargetPosition, .5f / _framesPerSecond);
+                        position = Vector3.Lerp(arObject.WrapperObject.transform.position, arObject.TargetPosition, .5f / FramesPerSecond);
                     }
                     arObject.WrapperObject.transform.position = position;
 
@@ -426,7 +426,7 @@ namespace com.arpoise.arpoiseapp
                         else
                         {
                             localScale = new Vector3(scale, scale, scale);
-                            localScale = Vector3.Lerp(arObject.WrapperObject.transform.localScale, localScale, 1f / _framesPerSecond);
+                            localScale = Vector3.Lerp(arObject.WrapperObject.transform.localScale, localScale, 1f / FramesPerSecond);
                         }
                         arObject.WrapperObject.transform.localScale = localScale;
                     }
@@ -454,16 +454,17 @@ namespace com.arpoise.arpoiseapp
                 }
 
                 var firstArObject = arObjectState.ArObjects.FirstOrDefault();
-                if (!IsEmpty(InformationMessage))
+                if (!string.IsNullOrWhiteSpace(InformationMessage))
                 {
                     // This is for debugging, put the strings used below into the information message of your layer
                     var message = InformationMessage;
                     if (message.Contains("{"))
                     {
-                        message = message.Replace("{F}", "" + _framesPerSecond);
+                        message = message.Replace("{F}", "" + FramesPerSecond);
                         message = message.Replace("{N}", "" + arObjectState.Count);
                         message = message.Replace("{A}", "" + arObjectState.NumberOfAnimations);
                         message = message.Replace("{T}", "" + TriggerObjects.Values.Count(x => x.isActive));
+                        message = message.Replace("{S}", "" + SlamObjects.Values.Count(x => x.isActive));
 
                         message = message.Replace("{I}", "" + (int)InitialHeading);
                         message = message.Replace("{D}", "" + DeviceAngle);
@@ -518,7 +519,7 @@ namespace com.arpoise.arpoiseapp
                     //+ " R " + ray.ToString()
                     //+ " R " + ray.origin.x.ToString("F1") + " " + ray.origin.y.ToString("F1") + " " + ray.origin.z.ToString("F1")
                     //+ " " + ray.direction.x.ToString("F1") + " " + ray.direction.y.ToString("F1") + " " + ray.direction.z.ToString("F1")
-                    + (hit ? " h " : string.Empty)
+                    + (HasHitOnObject ? " h " : string.Empty)
                     ;
                 SetInfoText(text);
             }
