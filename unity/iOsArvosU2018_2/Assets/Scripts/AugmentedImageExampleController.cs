@@ -42,6 +42,7 @@ namespace GoogleARCore.Examples.AugmentedImage
     using com.arpoise.arpoiseapp;
 #if HAS_AR_CORE
     using GoogleARCore;
+    using GoogleARCore.Examples.Common;
 #endif
     using System.Collections.Generic;
     using System.Linq;
@@ -173,6 +174,15 @@ namespace GoogleARCore.Examples.AugmentedImage
                     Screen.sleepTimeout = SleepTimeout.NeverSleep;
                 }
 
+                if (!_slamVisualizers.Any() && PlaneDiscovery != null)
+                {
+                    var planeDiscoveryGuide = PlaneDiscovery.GetComponent<PlaneDiscoveryGuide>();
+                    if (planeDiscoveryGuide != null && planeDiscoveryGuide.HasDetectedPlanes)
+                    {
+                        SetInfoText("Please tap on a plane.");
+                    }
+                }
+
                 if (HasHitOnObject)
                 {
                     return;
@@ -221,6 +231,7 @@ namespace GoogleARCore.Examples.AugmentedImage
                         _slamVisualizers.Add(_slamHitCount, visualizer);
                     }
                 }
+
                 return;
             }
 

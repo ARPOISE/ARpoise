@@ -54,7 +54,7 @@ namespace UnityEngine.XR.iOS
 	{
 		private readonly List<GameObject> _gameObjects = new List<GameObject>();
 
-		public ArBehaviourImage ArBehaviour { get; set; }
+		public ArBehaviourSlam ArBehaviour { get; set; }
 		public Dictionary<int, TriggerObject> SlamObjects { get; set; }
         public GameObject SceneAnchor { get; set; }
 
@@ -135,7 +135,6 @@ namespace UnityEngine.XR.iOS
                 return;
             }
 
-
             /*
 			#if UNITY_EDITOR   //we will only use this script on the editor side, though there is nothing that would prevent it from working on device
 			if (Input.GetMouseButtonDown (0)) {
@@ -190,7 +189,13 @@ namespace UnityEngine.XR.iOS
                     }
 				}
 			}
-			//#endif
+            //#endif
+
+            if (!_gameObjects.Any() && ArBehaviour.IsSlam
+                && ArBehaviour.DetectAPlaneOverLay != null && !ArBehaviour.DetectAPlaneOverLay.gameObject.activeSelf)
+            {
+                ArBehaviour.SetInfoText("Please tap on a plane.");
+            }
 		}
 	}
 }

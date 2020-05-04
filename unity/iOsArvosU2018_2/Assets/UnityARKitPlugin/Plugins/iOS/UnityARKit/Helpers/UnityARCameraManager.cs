@@ -242,6 +242,7 @@ public class UnityARCameraManager : ArBehaviourSlam
     }
 
     private long? _fitToScanOverlayActivationSecond = null;
+    private long? _detectAPlaneOverlayActivationSecond = null;
 
     protected override void Update()
     {
@@ -291,6 +292,35 @@ public class UnityARCameraManager : ArBehaviourSlam
             else
             {
                 _fitToScanOverlayActivationSecond = null;
+            }
+
+            var detectAPlaneOverlay = DetectAPlaneOverLay;
+            if (detectAPlaneOverlay != null && detectAPlaneOverlay.activeSelf)
+            {
+                long nowTicks = DateTime.Now.Ticks;
+                var second = nowTicks / 10000000L;
+                if (!_detectAPlaneOverlayActivationSecond.HasValue)
+                {
+                    _detectAPlaneOverlayActivationSecond = second;
+                }
+                else
+                {
+                    var value = _detectAPlaneOverlayActivationSecond.Value;
+                    if (value + 30 < second)
+                    {
+                        detectAPlaneOverlay.SetActive(false);
+                        _detectAPlaneOverlayActivationSecond = null;
+                        MenuButtonClick = new MenuButtonClickActivity { ArBehaviour = this };
+                    }
+                    else
+                    {
+                        SetInfoText($"Timeout in {value + 30 - second} seconds.");
+                    }
+                }
+            }
+            else
+            {
+                _detectAPlaneOverlayActivationSecond = null;
             }
         }
 

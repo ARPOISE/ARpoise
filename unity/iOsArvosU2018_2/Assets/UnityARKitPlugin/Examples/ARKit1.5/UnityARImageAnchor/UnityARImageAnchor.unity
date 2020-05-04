@@ -605,6 +605,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!224 &1024302393 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 224374982268461844, guid: 4ea85397c4a0d4c339806f032984046b,
+    type: 2}
+  m_PrefabInternal: {fileID: 1396477725}
 --- !u!1 &1054794413
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,6 +724,7 @@ MonoBehaviour:
   PointCloudParticleExample: {fileID: 932287543}
   GeneratePlanes: {fileID: 1750139659}
   HitAnchor: {fileID: 1344372044}
+  DetectAPlaneOverLay: {fileID: 1337621855}
   m_camera: {fileID: 10}
   startAlignment: 0
   planeDetection: 3
@@ -830,6 +836,93 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1620011302450986, guid: 4ea85397c4a0d4c339806f032984046b,
     type: 2}
   m_PrefabInternal: {fileID: 1396477725}
+--- !u!1 &1337621855
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1581171165135974, guid: 4ea85397c4a0d4c339806f032984046b,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1337621856}
+  - component: {fileID: 1337621859}
+  - component: {fileID: 1337621858}
+  - component: {fileID: 1337621857}
+  m_Layer: 5
+  m_Name: DetectAPlaneOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1337621856
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 224403532214951670, guid: 4ea85397c4a0d4c339806f032984046b,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1337621855}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1024302393}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: -333.21423}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1337621857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 114452222567093658, guid: 4ea85397c4a0d4c339806f032984046b,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1337621855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1254083943, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 3
+  m_AspectRatio: 0.56
+--- !u!114 &1337621858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 114530721864460120, guid: 4ea85397c4a0d4c339806f032984046b,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1337621855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -98529514, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Texture: {fileID: 2800000, guid: 4c3394a7f87f3401eb2712c3da5a2bb2, type: 3}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &1337621859
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 222527908918439540, guid: 4ea85397c4a0d4c339806f032984046b,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1337621855}
+  m_CullTransparentMesh: 0
 --- !u!1 &1344372044
 GameObject:
   m_ObjectHideFlags: 0
@@ -971,6 +1064,11 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 224589086467423880, guid: 4ea85397c4a0d4c339806f032984046b,
+        type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ea85397c4a0d4c339806f032984046b, type: 2}
   m_IsPrefabAsset: 0
@@ -1023,6 +1121,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planePrefab: {fileID: 1372998203143648, guid: f879aaf3eeb0c467eb22cbaf08dc97a4,
     type: 2}
+  DetectAPlaneOverLay: {fileID: 1337621855}
 --- !u!4 &1750139661
 Transform:
   m_ObjectHideFlags: 0

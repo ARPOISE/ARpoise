@@ -530,7 +530,7 @@ namespace com.arpoise.arpoiseapp
         public static float DisplayAnimationValueRight;
         public static float DisplayPercentage;
 
-        protected void SetInfoText(string text)
+        public void SetInfoText(string text)
         {
             var infoText = InfoText;
             if (infoText != null)

@@ -48,6 +48,9 @@ namespace com.arpoise.arpoiseapp
         public GameObject PointCloudParticleExample;
         public GameObject GeneratePlanes;
         public GameObject HitAnchor;
+        public GameObject DetectAPlaneOverLay;
+
+        private bool _myIsSlam = false;
 #endif
 
 #if HAS_AR_CORE
@@ -90,10 +93,10 @@ namespace com.arpoise.arpoiseapp
             }
 #endif
         }
-    #endregion
+        #endregion
 
-    #region Update
-    protected override void Update()
+        #region Update
+        protected override void Update()
         {
             base.Update();
 
@@ -126,6 +129,17 @@ namespace com.arpoise.arpoiseapp
 #endif
                 }
             }
+#if HAS_AR_KIT
+            if (_myIsSlam != IsSlam)
+            {
+                _myIsSlam = IsSlam;
+
+                if (DetectAPlaneOverLay != null && DetectAPlaneOverLay.gameObject.activeSelf != IsSlam)
+                {
+                    DetectAPlaneOverLay.SetActive(IsSlam);
+                }
+            }
+#endif
         }
         #endregion
     }

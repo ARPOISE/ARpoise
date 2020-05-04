@@ -50,6 +50,7 @@ namespace UnityEngine.XR.iOS
     public class UnityARGeneratePlane : MonoBehaviour
 	{
 		public GameObject planePrefab;
+        public GameObject DetectAPlaneOverLay;
         private UnityARAnchorManager unityARAnchorManager;
 
 		// Use this for initialization
@@ -62,7 +63,15 @@ namespace UnityEngine.XR.iOS
         {
             if (unityARAnchorManager != null)
             {
-                foreach (var planeAnchor in unityARAnchorManager.GetCurrentPlaneAnchors())
+                var planeAnchors = unityARAnchorManager.GetCurrentPlaneAnchors();
+                if (DetectAPlaneOverLay != null && DetectAPlaneOverLay.gameObject.activeSelf)
+                {
+                    if (planeAnchors.Count > 0)
+                    {
+                        DetectAPlaneOverLay.gameObject.SetActive(false);
+                    }
+                }
+                foreach (var planeAnchor in planeAnchors)
                 {
                     if (planeAnchor.gameObject.activeSelf != gameObject.activeSelf)
                     {
