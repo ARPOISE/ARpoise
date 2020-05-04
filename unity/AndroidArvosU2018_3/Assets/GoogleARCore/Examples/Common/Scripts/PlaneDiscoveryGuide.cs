@@ -21,7 +21,7 @@
 namespace GoogleARCore.Examples.Common
 {
     using System.Collections.Generic;
-    using GoogleARCore;
+    using System.Linq;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -126,6 +126,8 @@ namespace GoogleARCore.Examples.Common
         /// </summary>
         private List<DetectedPlane> m_DetectedPlanes = new List<DetectedPlane>();
 
+        public bool HasDetectedPlanes{ get; private set;}
+
         /// <summary>
         /// Unity's Start() method.
         /// </summary>
@@ -138,6 +140,7 @@ namespace GoogleARCore.Examples.Common
             m_MoreHelpWindow.SetActive(false);
             m_IsLostTrackingDisplayed = false;
             m_NotDetectedPlaneElapsed = DisplayGuideDelay - k_OnStartDelay;
+            HasDetectedPlanes = false;
         }
 
         /// <summary>
@@ -197,12 +200,14 @@ namespace GoogleARCore.Examples.Common
                 {
                     m_DetectedPlaneElapsed += Time.deltaTime;
                     m_NotDetectedPlaneElapsed = 0f;
+                    HasDetectedPlanes = true;
                     return;
                 }
             }
 
             m_DetectedPlaneElapsed = 0f;
             m_NotDetectedPlaneElapsed += Time.deltaTime;
+            HasDetectedPlanes = false;
         }
 
         /// <summary>
