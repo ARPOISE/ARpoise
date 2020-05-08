@@ -1,9 +1,9 @@
 # ![ARpoise Logo](/images/arvos_logo-sprite_rounded128sq.png) AR-vos Augmented Reality App
-# Image Trigger AR Examples
+# Image Trigger and SLAM AR Examples
 
 ## Overview
 
-**AR-vos** is an open source app that can do both **geolocative** and **image trigger** AR. It is part of the [**ARpoise** (**A**ugmented **R**eality **p**oint **o**f **i**nterest **s**ervice **e**nvironment)](http://arpoise.com/) open-source Augmented Reality platform.
+**AR-vos** is an open source app that can do **geolocative**, **SLAM** and **image trigger** AR. It is part of the [**ARpoise** (**A**ugmented **R**eality **p**oint **o**f **i**nterest **s**ervice **e**nvironment)](http://arpoise.com/) open-source Augmented Reality platform.
 
 **Download the AR-vos app** from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARvos) Store and the Apple [App Store](https://apps.apple.com/us/app/ar-vos/id1483218444). 
 
