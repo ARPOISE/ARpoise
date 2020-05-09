@@ -26,6 +26,8 @@
 
 In order to see the triggered augment layers, start **AR-vos** and select "Tamiko Thiel's AR" layer with the example triggers. You should then get a frame as in the image below:
 
+. 
+
 ![AR-vosExamples1](/images/AR-vosExamples1a_800w.png)
 
 . 
