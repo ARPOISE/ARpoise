@@ -96,7 +96,7 @@ The name of the iOS asset bundle has to be the Android name followed by 'i'.
 * **Scaling factor**: This values allows to scale the POI's geometry in all three dimensions.
 * **Vertical rotation**: This values allows to rotate the POI's geometry around the Y axis.
 * **Relative angle**: If this value is set to Yes, the POI's geometry will always be turned so that the same side always faces the user.
-* **URL for trigger image**: If the URL of an image file is entered into this field, POI will be treated as an image trigger POI. The POI will be shown once the trigger image is detected in the environment. If the URL contains the word **SLAM**, the POI is treated as SLAM object and will be shown once the user taps on a plane detected in the enviroment.
+* **URL for trigger image**: If the URL of an image file is entered into this field, the POI will be treated as an image trigger POI. The POI will be shown once the trigger image is detected in the environment. If the URL contains only the word **SLAM**, the POI is treated as SLAM object and will be shown once the user taps on a vertical or horizontal plane detected in the enviroment.
 * Animation-list-**Remove**: Delete the animtion from the POI.
 * **New animation** button: Allows to add a new animation to the POI.
 * **Save** button: Saves the POI's attributes to the layer's xml file.
