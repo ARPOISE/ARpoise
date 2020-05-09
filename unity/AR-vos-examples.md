@@ -89,12 +89,14 @@ from the layer list select 'SLAM Boxes' and let it load, your screen should look
 
 ![AR-vos Logo](/images/SLAM_2.PNG)
 
-- Every time you tap on a plane, more colorful animated cubes appear:
+- Every time you tap on a plane, more colorful animated cubes appear.
+- If you instead tap on the yellow center cube of a group of cubes, the group will start to spin.
+
+. 
 
 ![AR-vosExamples2](/images/SLAM_3.PNG)
 
- 
-If you instead tap on the yellow center cube of a group of cubes, the group will start to spin.
+ .
 
 The SLAM technology will make sure the boxes stay where you put them by tapping. So you can walk around the cubes and see them from the other side.
 
