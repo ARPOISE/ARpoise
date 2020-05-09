@@ -74,3 +74,32 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 ![AR-vosExamples4](/images/AR-vosExamples4a_800h.png)
 
 
+## SLAM Example
+The layer 'SLAM Boxes' is currently one of the default AR-vos layers.
+
+In order to see the layer, you have to
+
+- Start **AR-vos** and let the default layer list load, 
+from the layer list select 'SLAM Boxes' and let it load, your screen should look like this:
+
+![AR-vosExamples1](/images/SLAM_1.PNG)
+
+. 
+
+- Now move your device until it detects a plane..
+
+![AR-vos Logo](/images/SLAM_2.PNG)
+
+- Every time you tap on a plane, more colorful animated cubes appear:
+
+![AR-vosExamples2](/images/SLAM_3.PNG)
+
+ 
+If you instead tap on the yellow center cube of a group of cubes, the group will start to spin.
+
+The SLAM technology will make sure the boxes stay where you put them by tapping. So you can walk around the cubes and see them from the other side.
+
+
+
+
+

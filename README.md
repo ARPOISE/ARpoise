@@ -43,7 +43,7 @@ The examples include various image triggered AR objects.
 
 - Image trigger based **POI**s are shown to the user once the app discovers a trigger image. The image trigger files are also downloaded via an assigned asset bundle, and therefore do not need to be built into the client apps.
 
-- SLAM based **POI**s are shown to the user once the app discovers a planes and the user taps on one of them.
+- SLAM based **POI**s are shown to the user once the app discovers vertical or horizontal planes in the environment and the user taps on one of them.
 
 - Geolocative **POI**s can have an absolute world location defined by longitude and latitude or they can have a position relative to the user's device defined in meters of distance in the X, Y, and Z directions. **POI**s with absolute locations can additionally be confined into an area around the user, so as the user moves through the real world, they will be dynamically moved to be within a given area around the user.
 
