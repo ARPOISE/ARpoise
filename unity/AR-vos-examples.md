@@ -94,8 +94,10 @@ from the layer list select 'SLAM Boxes' and let it load, your screen should look
 
 ![AR-vosExamples2](/images/SLAM_3.PNG)
 
-. 
+ 
 If you instead tap on the yellow center cube of a group of cubes, the group will start to spin.
+
+The SLAM technology will make sure the boxes stay where you put them by tapping. So you can walk around the cubes and see them from the other side.
 
 
 
