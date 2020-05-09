@@ -90,7 +90,7 @@ from the layer list select 'SLAM Boxes' and let it load, your screen should look
 
 ![AR-vos Logo](/images/SLAM_2.PNG)
 
-- Now every time you tap a plane, more colorful animated cubes appear:
+- Every time you tap on a plane, more colorful animated cubes appear:
 
 ![AR-vosExamples2](/images/SLAM_3.PNG)
 
