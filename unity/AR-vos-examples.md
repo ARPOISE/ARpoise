@@ -23,11 +23,8 @@
 - **Geofencing:** Image trigger and SLAM augments can be restricted to a certain area if desired. Therefore the AR-vos app always checks your device's GPS coordinates and sends a request to the **ARpoise** back end server to see whether there are specific art works at your location. If there are you will see them; if there are none, a default layer will be shown to you. We will change this default layer periodically.
 
 ## Example Image Triggers
-The layer 'Tamiko Thiel's AR' is currently set up with just demo AR-vos layers.
 
-In order to see the triggered augment layers, you have to
-
-- Start **AR-vos** and let the default layer load, your screen should look like this:
+In order to see the triggered augment layers, start **AR-vos** and select "Tamiko Thiel's AR" layer with the example triggers. You should then get a frame as in the image below:
 
 ![AR-vosExamples1](/images/AR-vosExamples1a_800w.png)
 
