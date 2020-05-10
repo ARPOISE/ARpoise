@@ -76,10 +76,9 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 ## SLAM Example
 The layer 'SLAM Boxes' is currently one of the default AR-vos layers.
 
-In order to see the layer, you have to
+- Tap the AR-vos logo once to go back to the layers list, or restart **AR-vos** completely and let the default layer list load.
 
-- Start **AR-vos** and let the default layer list load, 
-from the layer list select 'SLAM Boxes' and let it load, your screen should look like this:
+- From the layer list select 'SLAM Boxes' and let it load, your screen should look like this:
 
 ![AR-vosExamples1](/images/SLAM_1_800h.PNG)
 
