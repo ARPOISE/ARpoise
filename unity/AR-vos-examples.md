@@ -84,7 +84,7 @@ The layer 'SLAM Boxes' is currently one of the default AR-vos layers.
 
 . 
 
-- Now move your device until it detects a plane..
+- Now move your device until it detects a plane. (If you are on Android, it might look slightly different - a grid without the blue frame.)
 
 ![AR-vos Logo](/images/SLAM_2_800h.PNG)
 
