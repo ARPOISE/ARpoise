@@ -26,7 +26,7 @@
 
 ## Example Image Triggers
 
-In order to see the triggered augment layers, start **AR-vos** and select "Tamiko Thiel's AR" layer with the example triggers. You should then get a frame as in the image below:
+In order to see the triggered augment layers, start **AR-vos** and select the "Example Triggers" layer with the example triggers. You should then get a frame as in the image below:
 
 . 
 
