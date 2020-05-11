@@ -62,7 +62,7 @@ A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the J
 
 . 
 
-![doorwayExample4](/images/AR-vosExamples4a_doorTrigger_800h.png)
+![doorwayExample4](https://www.arpoise.com/TI/arvos_doorExample_155248_800h.png)
 
 . 
 
