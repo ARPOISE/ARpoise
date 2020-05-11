@@ -34,7 +34,7 @@ In order to see the triggered augment layers, start **AR-vos** and select "Tamik
 
 - Now point your device at the **AR-vos** logo, which we have set up as an example trigger.
 
-![AR-vos Logo](/images/AR-vosExamples2a_logo800x600.png)
+![AR-vos Logo](www.arpoise.com/TI/arvos_logo_rgb-weiss1024.jpg)
 
 The following example augment should appear - some colorful animated cubes:
 
