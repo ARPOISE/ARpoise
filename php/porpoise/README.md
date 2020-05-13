@@ -28,7 +28,7 @@ NOTES: (This should be moved to the AssetBundle tutorial):
 - The content of each of the **POI**s of your layer needs to be created as a Unity prefab and needs to be put into an Unity asset bundle made available on the web. The asset bundle is referenced by the **POI**'s definition in your layer.
 - One thing we found is that asset bundles created for Android do not work on iOS and vice versa. Therefore you need to provide **two** asset bundles, one for Android and one for iOS. As you can only enter one asset bundle url in the ARpoise PorPOISe configuration of any POI, ARpoise assumes that the asset bundle name given is the one of the Android asset bundle. The name of the iOS asset bundle has to be the Android name followed by the letter 'i'. 
 - Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle", you also need to create and make available the iOS asset bundle with the url ".../MyAssetBundlei". 
-- **Note: you HAVE to make assets for both Android and iOS, otherwise your layer will not work!**
+- **Note: you HAVE to make asset bundles with your assets for both Android and iOS, otherwise your layer will not work!**
 - **Note: The asset bundles and trigger images you make available on the web and reference in the POI definitions need to be accessable via https**.
 - **Note: The trigger images you make available on the web and reference in the POI definitions need to be in jpg format**, see https://en.wikipedia.org/wiki/JPEG.
 
