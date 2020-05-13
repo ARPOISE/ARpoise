@@ -30,8 +30,8 @@ NOTES: (This should be moved to the AssetBundle tutorial):
 - Thus if the file name in the url of your Android asset bundle is, e.g. ".../MyAssetBundle", you also need to create and make available the iOS asset bundle with the url ".../MyAssetBundlei". 
 - **Note: you HAVE to make assets for both Android and iOS, otherwise your layer will not work!**
 - **Note: The asset bundles and trigger images you make available on the web and reference in the POI definitions need to be accessable via https**.
-- **Note: The trigger images you make available on the web and reference in the POI definitions need to be in jpg format**.
-See https://en.wikipedia.org/wiki/JPEG.
+- **Note: The trigger images you make available on the web and reference in the POI definitions need to be in jpg format**, see https://en.wikipedia.org/wiki/JPEG.
+
 ## Functionality
 
 If you are setting up your own porPOIse:
