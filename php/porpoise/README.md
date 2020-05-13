@@ -31,7 +31,7 @@ NOTES: (This should be moved to the AssetBundle tutorial):
 - **Note: you HAVE to make assets for both Android and iOS, otherwise your layer will not work!**
 - **Note: The asset bundles and trigger images you make available on the web and reference in the POI definitions need to be accessable via https**.
 - **Note: The trigger images you make available on the web and reference in the POI definitions need to be in jpg format**.
-https://en.wikipedia.org/wiki/JPEG
+See https://en.wikipedia.org/wiki/JPEG.
 ## Functionality
 
 If you are setting up your own porPOIse:
