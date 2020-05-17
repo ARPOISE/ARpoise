@@ -62,10 +62,10 @@ A mandala with [Eisai](https://en.wikipedia.org/wiki/Eisai) should appear: the J
 
 Close and reopen the layer again.
 
-- Now try this doorway, which we set as a trigger image for King Ludwig II of Bavaria. 
-  - Note that this is a north-facing facade, and therefore has constant lighting with no shadows. 
-  - Also, although there are reflections on the glass panes, they are small relative to the rest of the doorway and therefore should not disturb the overall reading of the trigger image. A glass door - or even worse, a glass facade - makes for very difficult trigger image, as the reflections change constantly.
-  - This trigger image will probably only work during the day. To also use this doorway as a trigger during the night, we would have to set up another layer with a photo of the doorway under those lighting conditions.
+Now try this photo of a doorway below, which we set as a trigger image for King Ludwig II of Bavaria. Of course the photo is always the same and should always work. But the real life doorway is trickier:
+- Note that this is a north-facing facade, and therefore has constant lighting with no shadows. 
+- Also, although there are reflections on the glass panes, they are small relative to the rest of the doorway and therefore should not disturb the overall reading of the trigger image. A glass door - or even worse, a glass facade - makes for very difficult trigger image, as the reflections change constantly.
+- This trigger image will probably only work during the day. To also use this doorway as a trigger during the night, we would have to set up another layer with a photo of the doorway under those lighting conditions.
 
 . 
 
