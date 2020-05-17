@@ -110,7 +110,9 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 
  .
 
-The SLAM technology will make sure the boxes stay where you put them, and you can walk around the cubes and see them from the other side. So for instance if you had placed a 3D sculpture as an augment in the room, you could walk around it and see it from all sides.
+The SLAM technology will make sure the boxes stay where you put them, and you can walk around the cubes and see them from the other side. 
+
+So for instance you can make a 3D sculpture, place it life sized as an augment in the room, and then walk around it and see it from all sides.
 
 
 
