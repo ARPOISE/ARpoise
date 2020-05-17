@@ -92,14 +92,17 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 
 . 
 
-- Now move your device until it detects a plane. (If you are on Android, it might look slightly different - a grid without the blue frame.)
+- Now scan your room with your device until it detects a plane. (If you are on Android, the scan screen might look slightly different.) Note that if it can't find a plane within 30 seconds, it will stop trying.
+- Once it detects a plane, in this example you can tap a location on that plane in the display, and it will fix an augment at that place. (In other SLAM layers, the creator might have the augments  locate themselves automatically on the planes.)
+
+. 
 
 ![AR-vos Logo](/images/SLAM_2a_800h.png)
 
 . 
 
-- Every time you tap on a plane, more colorful animated cubes appear.
-- If you instead tap on the yellow center cube of a group of cubes, the group will start to spin.
+- In the SLAM Boxes example, every time you tap on a plane, more colorful animated cubes appear.
+- If you  tap on the yellow center cube of any group of cubes, the group will start to spin.
 
 ![AR-vosExamples2](/images/SLAM_3a_800h.png)
 
