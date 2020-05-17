@@ -73,12 +73,13 @@ Now try this photo of a doorway below, which we set as a trigger image for King 
 
 . 
 
-The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) should appear, larger than life! 
+The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) should appear, larger than life! Notice he hops around a little - when you create your own image trigger layers you need watch out for this and take it into consideration.
 
 . 
 
 ![AR-vosExamples4](/images/AR-vosExamples4a_800h.png)
 
+. 
 
 ## SLAM Example
 The layer 'SLAM Boxes' is currently one of the default AR-vos layers.
