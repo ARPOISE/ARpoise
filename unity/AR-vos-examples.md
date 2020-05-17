@@ -26,7 +26,7 @@ In order to see the triggered augment layers, start **AR-vos** and select the "E
 
 . 
 
-![AR-vosExamples1](/images/AR-vosExamples1b_800w.png)
+![AR-vosExamples1](/images/AR-vosExamples1b_800w.jpg)
 
 . 
 
