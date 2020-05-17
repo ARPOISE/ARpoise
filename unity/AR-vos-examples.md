@@ -93,7 +93,7 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 . 
 
 - Now scan your room with your device until it detects a plane. (If you are on Android, the scan screen might look slightly different.) Note that if it can't find a plane within 30 seconds, it will stop trying.
-- Once it detects a plane, in this example you can tap a location on that plane in the display, and it will fix an augment at that place. (In other SLAM layers, the creator might have the augments  locate themselves automatically on the planes.)
+- Once it detects a plane, in this example you can tap a location on that plane in the display, and it will fix an augment at that place. (In other SLAM layers, the creator might have the augments place themselves automatically on the planes.)
 
 . 
 
@@ -101,14 +101,16 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 
 . 
 
-- In the SLAM Boxes example, every time you tap on a plane, more colorful animated cubes appear.
-- If you  tap on the yellow center cube of any group of cubes, the group will start to spin.
+- If you tap on the yellow center cube of any group of cubes, the group will start to spin.
+- In the SLAM Boxes example, every time you tap somewhere on a plane, more colorful animated cubes appear.
+
+. 
 
 ![AR-vosExamples2](/images/SLAM_3a_800h.png)
 
  .
 
-The SLAM technology will make sure the boxes stay where you put them by tapping. So you can walk around the cubes and see them from the other side.
+The SLAM technology will make sure the boxes stay where you put them, and you can walk around the cubes and see them from the other side. So for instance if you had placed a 3D sculpture as an augment in the room, you could walk around it and see it from all sides.
 
 
 
