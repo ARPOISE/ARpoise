@@ -69,7 +69,7 @@ Now try this photo of a doorway below, which we set as a trigger image for King 
 
 . 
 
-![doorwayExample4](images/AR-vosExamples4a_doorTrigger_800h.png)
+![doorwayExample4](/images/AR-vosExamples4a_doorTrigger_800h.png)
 
 . 
 
