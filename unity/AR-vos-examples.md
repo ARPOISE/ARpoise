@@ -86,6 +86,8 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 
 - From the layer list select 'Example SLAM Boxes' and let it load. Your screen should look like this:
 
+. 
+
 ![AR-vos SLAM Examples1a](/images/SLAM_1a_800h.png)
 
 . 
