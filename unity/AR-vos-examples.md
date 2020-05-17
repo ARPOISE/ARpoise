@@ -44,7 +44,7 @@ The following example augment should appear - some colorful animated cubes. Clic
 
 . 
 
-Close the layer by clicking once on the AR-vos logo menu (upper right in our example). This takes you back to the menu of available layers.
+Close the layer by clicking once on the AR-vos logo menu (upper left in our example). This takes you back to the menu of available layers.
 - Click the "Example Triggers" layer again.
 - Now point your device at this example trigger, the Japanese character for "Zen":
 
@@ -82,9 +82,7 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 . 
 
 ## SLAM Example
-The layer 'SLAM Boxes' is currently one of the default AR-vos layers.
-
-- Tap the AR-vos logo once to go back to the layers list, or restart **AR-vos** completely and let the default layer list load.
+Tap the AR-vos logo once to go back to the layers list. (If you ever have problems getting a new layer try closing the app completely and restarting.)
 
 - From the layer list select 'SLAM Boxes' and let it load, your screen should look like this:
 
