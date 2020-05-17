@@ -38,7 +38,7 @@ In order to see the triggered augment layers, start **AR-vos** and select the "E
 
 . 
 
-The following example augment should appear - some colorful animated cubes:
+The following example augment should appear - some colorful animated cubes. Tap the yellow cube in the center to set the cubes spinning!
 
 ![AR-vosExamples2](/images/AR-vosExamples2a_800w.png)
 
