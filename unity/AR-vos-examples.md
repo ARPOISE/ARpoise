@@ -38,12 +38,14 @@ In order to see the triggered augment layers, start **AR-vos** and select the "E
 
 . 
 
-The following example augment should appear - some colorful animated cubes. Tap the yellow cube in the center to set the cubes spinning!
+The following example augment should appear - some colorful animated cubes. Click on the yellow cube in the center to set the cubes spinning!
 
 ![AR-vosExamples2](/images/AR-vosExamples2a_800w.png)
 
 . 
 
+Close the layer by clicking once on the AR-vos logo menu (upper right in our example). This takes you back to the menu of available layers.
+- Click the "Example Triggers" layer again.
 - Now point your device at this example trigger, the Japanese character for "Zen":
 
 .
