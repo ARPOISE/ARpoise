@@ -82,9 +82,9 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 . 
 
 ## SLAM Example
-Tap the AR-vos logo once to go back to the layers list. (If you ever have problems getting a new layer try closing the app completely and restarting.)
+- Tap the AR-vos logo once to go back to the layers list. (If you ever have problems getting a new layer try closing the app completely and restarting.)
 
-- From the layer list select 'SLAM Boxes' and let it load, your screen should look like this:
+- From the layer list select 'Example SLAM Boxes' and let it load. Your screen should look like this:
 
 ![AR-vosExamples1](/images/SLAM_1_800h.PNG)
 
