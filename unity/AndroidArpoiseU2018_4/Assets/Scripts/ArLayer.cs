@@ -29,6 +29,7 @@ Arpoise, see www.Arpoise.com/
 */
 
 using System;
+using System.Globalization;
 using UnityEngine;
 
 namespace com.arpoise.arpoiseapp
@@ -103,6 +104,36 @@ namespace com.arpoise.arpoiseapp
         public float size = 0;
         public string triggerImageURL = string.Empty;
         public float triggerImageWidth = 0;
+
+        public float[] RelativeLocation
+        {
+            get
+            {
+                var relativePosition = relativeLocation;
+                if (string.IsNullOrWhiteSpace(relativePosition))
+                {
+                    relativePosition = "0,0,0";
+                }
+                var parts = relativePosition.Split(',');
+
+                double value;
+                var xOffset = (float)(parts.Length > 0 && double.TryParse(parts[0].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out value) ? value : 0);
+                var yOffset = (float)(parts.Length > 1 && double.TryParse(parts[1].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out value) ? value : 0);
+                var zOffset = (float)(parts.Length > 2 && double.TryParse(parts[2].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out value) ? value : 0);
+                return new float[] { xOffset, yOffset, zOffset };
+            }
+            set
+            {
+                if (value != null)
+                {
+                    relativeLocation = $"{(value.Length > 0 ? value[0].ToString(CultureInfo.InvariantCulture) : "0")},{(value.Length > 1 ? value[1].ToString(CultureInfo.InvariantCulture) : "0")},{(value.Length > 2 ? value[2].ToString(CultureInfo.InvariantCulture) : "0")}";
+                }
+                else
+                {
+                    relativeLocation = string.Empty;
+                }
+            }
+        }
     }
 
     [Serializable]
@@ -186,6 +217,12 @@ namespace com.arpoise.arpoiseapp
                 }
                 return name;
             }
+        }
+
+        public Poi Clone()
+        {
+            var s = JsonUtility.ToJson(this);
+            return JsonUtility.FromJson<Poi>(s);
         }
     }
 

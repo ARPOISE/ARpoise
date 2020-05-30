@@ -29,11 +29,9 @@ public static class OpenSourceInitializer
     {
         var trackablePlaceholders = Object.FindObjectsOfType<DefaultTrackableBehaviourPlaceholder>().ToList();
         var initErrorsPlaceholders = Object.FindObjectsOfType<DefaultInitializationErrorHandlerPlaceHolder>().ToList();
-        var modelRecoEventPlaceholders = Object.FindObjectsOfType<DefaultModelRecoEventHandlerPlaceHolder>().ToList();
         
         trackablePlaceholders.ForEach(ReplaceTrackablePlaceHolder);
         initErrorsPlaceholders.ForEach(ReplaceInitErrorPlaceHolder);
-        modelRecoEventPlaceholders.ForEach(ReplaceModelRecoEventPlaceHolder);
     }
     
     static void ReplaceTrackablePlaceHolder(DefaultTrackableBehaviourPlaceholder placeHolder)
@@ -52,14 +50,6 @@ public static class OpenSourceInitializer
         Object.DestroyImmediate(placeHolder);
     }
 
-    static void ReplaceModelRecoEventPlaceHolder(DefaultModelRecoEventHandlerPlaceHolder placeHolder)
-    {
-        var go = placeHolder.gameObject;
-        go.AddComponent<DefaultModelRecoEventHandler>();
-
-        Object.DestroyImmediate(placeHolder);
-    }
-
     class DefaultBehaviourAttacher : IDefaultBehaviourAttacher
     {
         public void AddDefaultTrackableBehaviour(GameObject go)
@@ -70,11 +60,6 @@ public static class OpenSourceInitializer
         public void AddDefaultInitializationErrorHandler(GameObject go)
         {
             go.AddComponent<DefaultInitializationErrorHandler>();
-        }
-
-        public void AddDefaultModelRecoEventHandler(GameObject modelReco)
-        {
-            modelReco.AddComponent<DefaultModelRecoEventHandler>();
         }
     }
 }

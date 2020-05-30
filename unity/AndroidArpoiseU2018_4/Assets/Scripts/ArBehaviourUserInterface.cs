@@ -252,6 +252,10 @@ namespace com.arpoise.arpoiseapp
         #endregion
 
         #region Update
+
+        private long _arObjectId = -1;
+        private static System.Random _random = new System.Random();
+
         protected virtual void Update()
         {
             var menuButtonSetActive = MenuButtonSetActive;
@@ -337,6 +341,46 @@ namespace com.arpoise.arpoiseapp
                 arObjectState.IsDirty = false;
             }
             HasHitOnObject = arObjectState.HandleAnimations(StartTicks, nowTicks);
+
+            var toBeDuplicated = arObjectState.ArObjectsToBeDuplicated();
+            foreach (var arObject in toBeDuplicated)
+            {
+                var poi = arObject.Poi.Clone();
+                if (IsSlamUrl(poi.TriggerImageURL))
+                {
+                    poi.poiObject.triggerImageURL = string.Empty;
+
+                    var relativeLocation = poi.poiObject.RelativeLocation;
+                    relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                    relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                    poi.poiObject.RelativeLocation = relativeLocation;
+                    CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
+                }
+                else if (!string.IsNullOrWhiteSpace(poi.TriggerImageURL))
+                {
+                    poi.poiObject.triggerImageURL = string.Empty;
+
+                    var relativeLocation = poi.poiObject.RelativeLocation;
+                    relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                    relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                    poi.poiObject.RelativeLocation = relativeLocation;
+                    CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
+                }
+                else if (!string.IsNullOrWhiteSpace(poi?.poiObject?.relativeLocation))
+                {
+                    var relativeLocation = poi.poiObject.RelativeLocation;
+                    relativeLocation[0] += (_random.Next(2001) - 1000) / 100f;
+                    relativeLocation[2] += (_random.Next(2001) - 1000) / 100f;
+                    poi.poiObject.RelativeLocation = relativeLocation;
+                    CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
+                }
+                else
+                {
+                    poi.lat += _random.Next(201) - 100;
+                    poi.lon += _random.Next(201) - 100;
+                    CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
+                }
+            }
 
             if (_currentSecond == second)
             {
@@ -530,7 +574,7 @@ namespace com.arpoise.arpoiseapp
         public static float DisplayAnimationValueRight;
         public static float DisplayPercentage;
 
-        protected void SetInfoText(string text)
+        public void SetInfoText(string text)
         {
             var infoText = InfoText;
             if (infoText != null)

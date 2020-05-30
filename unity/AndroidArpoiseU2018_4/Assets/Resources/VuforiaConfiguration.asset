@@ -20,8 +20,9 @@ MonoBehaviour:
     maxSimultaneousImageTargets: 1
     maxSimultaneousObjectTargets: 1
     useDelayedLoadingObjectTargets: 0
-    version: 8.1.7
-    eulaAcceptedVersions: '{"Values":["7.5","8.0","7.1","8.1"]}'
+    modelTargetRecoWhileExtendedTracked: 1
+    version: 8.3.8
+    eulaAcceptedVersions: '{"Values":["7.5","8.0","7.1","8.1","8.3"]}'
   digitalEyewear:
     cameraOffset: 0.06
     distortionRenderingLayer: 31
@@ -55,6 +56,7 @@ MonoBehaviour:
   deviceTracker:
     autoInitTracker: 1
     autoStartTracker: 1
+    arcoreRequirement: 0
     trackingMode: 0
     posePrediction: 0
     modelCorrectionMode: 2
