@@ -484,7 +484,9 @@ HTML;
         foreach (array(
             "scale",
             "rotate",
-            "transform"
+            "transform",
+            "fade",
+            "destroy"
         ) as $animationType) {
             $result .= sprintf("<option value=\"%s\"%s>%s</option>", $animationType, ($selected == $animationType ? " selected" : ""), $animationType);
         }
