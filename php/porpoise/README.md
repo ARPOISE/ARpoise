@@ -105,13 +105,18 @@ The name of the iOS asset bundle has to be the Android name followed by 'i'.
 The following properties of an animation can be edited:
 * **Name**: The name is optional, it is used when one animation specifies that it should be followed by other animations.
 * **Event**: 
-  * **onCreate** - the animation is started when the POI is loaded;
+  * **onCreate** - the animation is started when the POI is loaded.
   * **onFollow** - the animation is started when it's predecessor animation ends.
   * **onClick** - the animation is started when the POI is clicked by the user; In order for the **onClick**, **onFocus**, and **inFocus** animations to work, the POI's Unity game object needs to include a Collider component.
   * **onFocus** - the animation is started when the POI is looked at by the user;
   * **inFocus** - the animation is started when the POI is looked at by the user and is stopped once the POI loses the focus;
   
-* **Type**: **rotate**, **transform**, **scale**.
+* **Type**: 
+  * **rotate**, rotate the POI around an axis.
+  * **transform**, transform the POI to another location.
+  * **scale**, scale the size of the POI.
+  * **fade**, fade the POI between full visibility and invisibility.
+  * **destroy**, destroy the POI.
 * **Length**: Length of the animation in seconds.
 * **Delay**: Delay of the animation in seconds, onCreate-animations will only start after this delay.
 * **Interpolation**:
