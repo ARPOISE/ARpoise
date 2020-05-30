@@ -44,8 +44,28 @@ namespace com.arpoise.arpoiseapp
         private readonly List<ArAnimation> _inFocusAnimations = new List<ArAnimation>();
         private readonly List<ArAnimation> _onClickAnimations = new List<ArAnimation>();
         private readonly List<ArAnimation> _billboardAnimations = new List<ArAnimation>();
-        private List<ArAnimation> _allAnimations = null;
 
+        private List<ArAnimation> _allAnimations = null;
+        private List<ArAnimation> AllAnimations
+        {
+            get
+            {
+                if (_allAnimations == null)
+                {
+                    _allAnimations = _onCreateAnimations
+                        .Concat(_onFollowAnimations)
+                        .Concat(_onFocusAnimations)
+                        .Concat(_inFocusAnimations)
+                        .Concat(_onClickAnimations)
+                        .ToList();
+                }
+                return _allAnimations;
+            }
+            set
+            {
+                _allAnimations = value;
+            }
+        }
         private readonly List<ArObject> _arObjects = new List<ArObject>();
         public IEnumerable<ArObject> ArObjects { get { return _arObjects; } }
         public List<ArObject> ArObjectsToDelete { get; private set; }
@@ -67,37 +87,37 @@ namespace com.arpoise.arpoiseapp
         public void AddOnCreateAnimation(ArAnimation animation)
         {
             _onCreateAnimations.Add(animation);
-            _allAnimations = null;
+            AllAnimations = null;
         }
 
         public void AddOnFollowAnimation(ArAnimation animation)
         {
             _onFollowAnimations.Add(animation);
-            _allAnimations = null;
+            AllAnimations = null;
         }
 
         public void AddOnFocusAnimation(ArAnimation animation)
         {
             _onFocusAnimations.Add(animation);
-            _allAnimations = null;
+            AllAnimations = null;
         }
 
         public void AddInFocusAnimation(ArAnimation animation)
         {
             _inFocusAnimations.Add(animation);
-            _allAnimations = null;
+            AllAnimations = null;
         }
 
         public void AddOnClickAnimation(ArAnimation animation)
         {
             _onClickAnimations.Add(animation);
-            _allAnimations = null;
+            AllAnimations = null;
         }
 
         public void AddBillboardAnimation(ArAnimation animation)
         {
             _billboardAnimations.Add(animation);
-            _allAnimations = null;
+            AllAnimations = null;
         }
 
         private void RemoveFromAnimations(ArObject arObject)
@@ -108,7 +128,7 @@ namespace com.arpoise.arpoiseapp
             _onFocusAnimations.RemoveAll(x => arObject.Id == x.PoiId);
             _inFocusAnimations.RemoveAll(x => arObject.Id == x.PoiId);
             _onClickAnimations.RemoveAll(x => arObject.Id == x.PoiId);
-            _allAnimations = null;
+            AllAnimations = null;
         }
 
         public void Add(ArObject arObject)
@@ -116,17 +136,22 @@ namespace com.arpoise.arpoiseapp
             _arObjects.Add(arObject);
         }
 
+        private void DestroyArObject(ArObject arObject)
+        {
+            RemoveFromAnimations(arObject);
+            foreach (var child in arObject.ArObjects)
+            {
+                RemoveFromAnimations(child);
+            }
+            _arObjects.Remove(arObject);
+            Object.Destroy(arObject.WrapperObject);
+        }
+
         public void DestroyArObjects()
         {
             foreach (var arObject in ArObjectsToDelete)
             {
-                RemoveFromAnimations(arObject);
-                foreach (var child in arObject.ArObjects)
-                {
-                    RemoveFromAnimations(child);
-                }
-                _arObjects.Remove(arObject);
-                Object.Destroy(arObject.WrapperObject);
+                DestroyArObject(arObject);
             }
             ArObjectsToDelete.Clear();
         }
@@ -143,12 +168,7 @@ namespace com.arpoise.arpoiseapp
         {
             get
             {
-                var animations = _allAnimations;
-                if (animations != null)
-                {
-                    return animations.Count;
-                }
-                return 0;
+                return AllAnimations.Count;
             }
         }
 
@@ -215,12 +235,7 @@ namespace com.arpoise.arpoiseapp
                 }
             }
 
-            var animations = _allAnimations;
-            if (animations == null)
-            {
-                _allAnimations = animations = _inFocusAnimations.Concat(_onFollowAnimations)
-                    .Concat(_onFocusAnimations).Concat(_onCreateAnimations).Concat(_onClickAnimations).ToList();
-            }
+            var animations = AllAnimations;
 
             foreach (var arAnimation in animations)
             {
@@ -273,7 +288,31 @@ namespace com.arpoise.arpoiseapp
                     }
                 }
             }
+            var toBeDestroyed = animations.Where(x => x.IsToBeDestroyed).ToList();
+            foreach (var arAnimation in toBeDestroyed)
+            {
+                var arObject = ArObjects.FirstOrDefault(x => x.Id == arAnimation.PoiId);
+                if (arObject != null)
+                {
+                    DestroyArObject(arObject);
+                }
+            }
+
             return hit;
+        }
+
+        public List<ArObject> ArObjectsToBeDuplicated()
+        {
+            var result = new List<ArObject>();
+            foreach (var arAnimation in AllAnimations.Where(x => x.IsToBeDuplicated))
+            {
+                arAnimation.IsToBeDuplicated = false;
+                foreach (var arObject in ArObjects.Where(x => x.Id == arAnimation.PoiId))
+                {
+                    result.Add(arObject);
+                }
+            }
+            return result.Distinct().ToList();
         }
     }
 }
