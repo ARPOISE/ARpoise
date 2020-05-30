@@ -119,7 +119,7 @@ The following properties of an animation can be edited:
   
   ![BackEndImg4](/images/BackEnd4.PNG)
   
-  **Note:** In order for a fade animation to work the rendering mode of the material of the prefab of the POI needs to be set to 'Fade' in Unity.
+  **Note:** In order for a fade animation to work the rendering mode of the material of the POI's prefab needs to be set to 'Fade' in Unity.
   
   ![BackEndImg5](/images/BackEnd5.PNG)
   * **destroy**, destroy the POI.
