@@ -2,8 +2,8 @@
 # ARpoise -Android- App
 
 ## Overview
-This directory contains the Unity 3D project used to build the **ARpoise** -Android- app with Unity 3D version 2018.3.14.
-If you clone and open this project with Unity 3D, version 2018.3.14, you should be able to build **ARpoise**.
+This directory contains the Unity 3D project used to build the **ARpoise** -Android- app with Unity 3D version 2018.4.23.
+If you clone and open this project with Unity 3D, version 2018.4.23, you should be able to build **ARpoise**.
 
 The **ARpoise** -Android- app has been submitted to the Google Play Store. You do not need to build it yourself.
 
