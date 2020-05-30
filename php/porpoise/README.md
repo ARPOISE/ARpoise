@@ -116,6 +116,7 @@ The following properties of an animation can be edited:
   * **transform**, transform the POI to another location.
   * **scale**, scale the size of the POI.
   * **fade**, fade the POI between full visibility and invisibility.
+  ![BackEndImg4](/images/BackEnd4.png)
   * **destroy**, destroy the POI.
 * **Length**: Length of the animation in seconds.
 * **Delay**: Delay of the animation in seconds, onCreate-animations will only start after this delay.
