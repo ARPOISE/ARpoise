@@ -115,9 +115,8 @@ The following properties of an animation can be edited:
   * **rotate**, rotate the POI around an axis.
   * **transform**, transform the POI to another location.
   * **scale**, scale the size of the POI.
-  * **fade**, fade the POI between full visibility and invisibility,
+  * **fade**, fade the POI between full visibility and invisibility, e.g. the animation shown below fades a POI within 10 seconds from 1 (full visibility) to 0 (invisble) and back again.
   ![BackEndImg4](/images/BackEnd4.PNG)
-  e.g. the animation shown above fades a POI within 10 seconds from 1 (full visibility) to 0 (invisble) and back again.
   * **destroy**, destroy the POI.
 * **Length**: Length of the animation in seconds.
 * **Delay**: Delay of the animation in seconds, onCreate-animations will only start after this delay.
