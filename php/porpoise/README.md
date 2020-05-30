@@ -116,6 +116,7 @@ The following properties of an animation can be edited:
   * **transform**, transform the POI to another location.
   * **scale**, scale the size of the POI.
   * **fade**, fade the POI between full visibility and invisibility, e.g. the animation shown below fades a POI within 10 seconds from 1 (full visibility) to 0 (invisble) and back again.
+  
   ![BackEndImg4](/images/BackEnd4.PNG)
   * **destroy**, destroy the POI.
 * **Length**: Length of the animation in seconds.
