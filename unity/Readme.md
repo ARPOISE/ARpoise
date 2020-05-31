@@ -22,7 +22,7 @@ The examples include versions of the following pieces:
 - [Lotus Meditation](https://www.tamikothiel.com/AR/lotus-meditation.html) by Tamiko Thiel and /p.
 - [Gardens of the Anthropocene](https://tamikothiel.com/gota/index.html) by Tamiko Thiel.
 
-## AR-vos ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) Examples
+## ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) AR-vos Examples
 The document [AR-vos-examples](AR-vos-examples.md) explains how to see some examples for **AR-vos**.
 The examples include various image triggered and SLAM AR objects.
 
@@ -45,7 +45,7 @@ The examples include various image triggered and SLAM AR objects.
   - iOS AR-vos now uses Unity 2018.4.23 LTS as build environment.
   - Added the two new animation types 'Fade' and 'Destroy'.
 
-- **iOS ARpoise 1.8 (20200522), May 28, 2020 at 10:13 PM**
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **iOS ARpoise 1.8 (20200522), May 28, 2020 at 10:13 PM**
   - Added the two new animation types 'Fade' and 'Destroy'.
 
 - **Android AR-vos 1.5 (200522), May 23, 2020 at 4:10 PM**
@@ -53,6 +53,6 @@ The examples include various image triggered and SLAM AR objects.
   - Android AR-vos now uses Unity 2018.4.23 LTS as build environment.
   - Added the two new animation types 'Fade' and 'Destroy'. 
 
-- **Android ARpoise 1.7 (200522), May 23, 2020 at 1:46 PM**
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.7 (200522), May 23, 2020 at 1:46 PM**
   - Android ARpoise now uses Unity 2018.4.23 LTS as build environment.
   - Added the two new animation types 'Fade' and 'Destroy'.
