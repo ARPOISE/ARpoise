@@ -33,7 +33,7 @@ The examples include various image triggered and SLAM AR objects.
 
 - **ARpoise** dynamically downloads the Unity 3d prefabs shown.
 
-- **AR-vos** is an image trigger, a SLAM based and a geolocative AR application. It uses ARCore on Android and ARKit on iOS.
+- **AR-vos** is an image trigger, a SLAM, and a geolocative AR application. It uses ARCore on Android and ARKit on iOS.
 
 - **AR-vos** dynamically downloads the trigger images used and the Unity 3d prefabs shown once the image triggers.
 
