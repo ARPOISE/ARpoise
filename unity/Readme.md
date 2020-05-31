@@ -38,3 +38,6 @@ The examples include various image triggered and SLAM AR objects.
 - **AR-vos** dynamically downloads the trigger images used and the Unity 3d prefabs shown once the image triggers.
 
 - **AR-vos** allows the prefabs shown to either be triggered by an image or to be placed by SLAM or to be location based or to be relative to the user.
+
+## Release Notes
+- **iOS AR-vos 1.2 (20200522), May 28, 2020 at 10:45 PM** App Store Release.
