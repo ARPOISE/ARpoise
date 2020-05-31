@@ -37,6 +37,7 @@ namespace com.arpoise.arpoiseapp
     public class ArObject
     {
         public bool IsDirty = true;
+        public readonly Poi Poi;
         public readonly long Id = 0;
         public readonly string GameObjectName;
         public readonly string BaseUrl;
@@ -54,10 +55,11 @@ namespace com.arpoise.arpoiseapp
         private List<KeyValuePair<Renderer, Color>> _rendererColorPairs = null;
 
         public ArObject(
-            long id, string text, string gameObjectName, string baseUrl, GameObject wrapperObject, GameObject gameObject,
-            float latitude, float longitude, float relativeAltitude, bool isRelative
+            Poi poi, long id, string text, string gameObjectName, string baseUrl, GameObject wrapperObject,
+            GameObject gameObject, float latitude, float longitude, float relativeAltitude, bool isRelative
             )
         {
+            Poi = poi.Clone();
             Id = id;
             Text = text;
             GameObjectName = gameObjectName;

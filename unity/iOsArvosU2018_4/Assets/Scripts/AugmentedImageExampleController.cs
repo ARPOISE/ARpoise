@@ -79,6 +79,7 @@ namespace GoogleARCore.Examples.AugmentedImage
         }
 
         private int _slamHitCount = 0;
+        private string _layerWebUrl = null;
 
         /// <summary>
         /// The Unity Update method.
@@ -119,6 +120,27 @@ namespace GoogleARCore.Examples.AugmentedImage
             }
 
             var fitToScanOverlay = FitToScanOverlay;
+
+            if (_layerWebUrl != LayerWebUrl)
+            {
+                _layerWebUrl = LayerWebUrl;
+                if (_slamVisualizers.Any())
+                {
+                    foreach (var visualizer in _slamVisualizers.Values)
+                    {
+                        GameObject.Destroy(visualizer.gameObject);
+                    }
+                    _slamVisualizers.Clear();
+                }
+                if (_visualizers.Any())
+                {
+                    foreach (var visualizer in _visualizers.Values)
+                    {
+                        GameObject.Destroy(visualizer.gameObject);
+                    }
+                    _visualizers.Clear();
+                }
+            }
 
             if (!IsSlam)
             {
@@ -220,10 +242,8 @@ namespace GoogleARCore.Examples.AugmentedImage
                             ErrorMessage = $"No slam object for database index {index}, {SlamObjects.Keys.Min()} is minimum.";
                         }
 
-                        AugmentedImageVisualizer visualizer = null;
-
                         Anchor anchor = hit.Trackable.CreateAnchor(hit.Pose);
-                        visualizer = Instantiate(AugmentedImageVisualizerPrefab, anchor.transform);
+                        AugmentedImageVisualizer  visualizer = Instantiate(AugmentedImageVisualizerPrefab, anchor.transform);
                         visualizer.Pose = hit.Pose;
                         visualizer.TriggerObject = triggerObject;
                         visualizer.ArBehaviour = this;
@@ -250,6 +270,12 @@ namespace GoogleARCore.Examples.AugmentedImage
                     if (!TriggerObjects.TryGetValue(image.DatabaseIndex, out triggerObject))
                     {
                         ErrorMessage = "No trigger object for database index " + image.DatabaseIndex;
+                        return;
+                    }
+                    if (triggerObject.layerWebUrl != _layerWebUrl)
+                    {
+                        // This image was loaded for a different layer
+                        continue;
                     }
 
                     // Create an anchor to ensure that ARCore keeps tracking this augmented image.
