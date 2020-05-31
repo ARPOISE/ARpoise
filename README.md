@@ -16,7 +16,7 @@ The **AR-vos** app can be downloaded from the [Google Play](https://play.google.
 If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content, you should start by reading this document. As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read the documentation for it in [/php/porpoise](php/porpoise/README.md).
 Also see the [documentation](/documentation/README.md) folder and read the [Creating Asset Bundles](/documentation/CreatingAssetBundles.md) document.
 
-## ARpoise Examples
+## ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) ARpoise Examples
 The document [ARpoise-examples](/unity/ARpoise-examples.md) explains how to see some examples for **ARpoise**.
 The examples include versions of the following pieces:
 - [Reign of Gold](https://www.tamikothiel.com/AR/reign-of-gold.html) by Tamiko Thiel.
@@ -24,7 +24,7 @@ The examples include versions of the following pieces:
 - [Lotus Meditation](https://www.tamikothiel.com/AR/lotus-meditation.html) by Tamiko Thiel and /p.
 - [Gardens of the Anthropocene](https://tamikothiel.com/gota/index.html) by Tamiko Thiel.
 
-## AR-vos Examples
+## ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) AR-vos Examples
 The document [AR-vos-examples](/unity/AR-vos-examples.md) explains how to see some examples for **AR-vos**.
 The examples include various image triggered AR objects.
 
