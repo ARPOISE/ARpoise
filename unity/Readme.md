@@ -41,8 +41,7 @@ The examples include various image triggered and SLAM AR objects.
 
 ## Release Notes
 - **iOS AR-vos 1.2 (20200522), May 28, 2020 at 10:45 PM** App Store Release.
-
--- Fixed Bug xxxx
--- iOS AR-vos now uses Unity 2018.4.23 LTS as build environment.
--- Added two new animation types 'Fade' and 'Destroy'.
+  - Fixed Bug xxxx
+  - iOS AR-vos now uses Unity 2018.4.23 LTS as build environment.
+  - Added two new animation types 'Fade' and 'Destroy'.
 
