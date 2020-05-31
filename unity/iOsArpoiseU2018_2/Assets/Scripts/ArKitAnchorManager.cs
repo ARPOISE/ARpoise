@@ -95,6 +95,11 @@ public class ArKitAnchorManager : MonoBehaviour
                 {
                     _gameObjects.Add(null);
                 }
+                if (triggerObject.layerWebUrl != ArBehaviour.LayerWebUrl)
+                {
+                    _gameObjects.Add(null);
+                    return;
+                }
 
                 var arObjectState = ArBehaviour.ArObjectState;
                 if (arObjectState != null && _gameObjects[index] == null)
@@ -168,6 +173,11 @@ public class ArKitAnchorManager : MonoBehaviour
                         while (index >= _gameObjects.Count)
                         {
                             _gameObjects.Add(null);
+                        }
+                        if (triggerObject.layerWebUrl != ArBehaviour.LayerWebUrl)
+                        {
+                            _gameObjects.Add(null);
+                            return;
                         }
 
                         var arObjectState = ArBehaviour.ArObjectState;

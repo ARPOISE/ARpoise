@@ -29,6 +29,8 @@ Arpoise, see www.Arpoise.com/
 */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace com.arpoise.arpoiseapp
@@ -38,6 +40,10 @@ namespace com.arpoise.arpoiseapp
         public const string Rotate = "rotate";
         public const string Scale = "scale";
         public const string Transform = "transform";
+        public const string Destroy = "destroy";
+        public const string Duplicate = "duplicate";
+        public const string Fade = "fade";
+
         public const string Linear = "linear";
         public const string Cyclic = "cyclic";
         public const string Sine = "sine";
@@ -62,6 +68,9 @@ namespace com.arpoise.arpoiseapp
 
         private long _startTicks = 0;
 
+        public bool IsToBeDestroyed { get; private set; }
+        public bool IsToBeDuplicated { get; set; }
+
         public ArAnimation(long poiId, GameObject wrapper, GameObject gameObject, PoiAnimation poiAnimation, bool isActive)
         {
             PoiId = poiId;
@@ -75,15 +84,20 @@ namespace com.arpoise.arpoiseapp
                 _delayTicks = (long)(10000000.0 * poiAnimation.delay);
                 if (poiAnimation.type != null)
                 {
-                    _type = poiAnimation.type.ToLower().Contains(Rotate) ? Rotate
-                        : poiAnimation.type.ToLower().Contains(Scale) ? Scale
+                    var type = poiAnimation.type.ToLower();
+                    _type = type.Contains(Rotate) ? Rotate
+                        : type.Contains(Scale) ? Scale
+                        : type.Contains(Destroy) ? Destroy
+                        : type.Contains(Duplicate) ? Duplicate
+                        : type.Contains(Fade) ? Fade
                         : Transform;
                 }
                 if (poiAnimation.interpolation != null)
                 {
-                    _interpolation = poiAnimation.interpolation.ToLower().Contains(Cyclic) ? Cyclic : Linear;
-                    _interpolationType = poiAnimation.interpolation.ToLower().Contains(Halfsine) ? Halfsine
-                        : poiAnimation.interpolation.ToLower().Contains(Sine) ? Sine
+                    var interpolation = poiAnimation.interpolation.ToLower();
+                    _interpolation = interpolation.Contains(Cyclic) ? Cyclic : Linear;
+                    _interpolationType = interpolation.Contains(Halfsine) ? Halfsine
+                        : interpolation.Contains(Sine) ? Sine
                         : string.Empty;
                 }
                 _persisting = poiAnimation.persist;
@@ -106,6 +120,8 @@ namespace com.arpoise.arpoiseapp
             _startTicks = 0;
             Animate(worldStartTicks, nowTicks);
         }
+
+        private float? _initialA = null;
 
         public void Animate(long worldStartTicks, long nowTicks)
         {
@@ -181,7 +197,6 @@ namespace com.arpoise.arpoiseapp
             {
                 animationValue = -animationValue;
             }
-
             var animationFactor = from + (to - from) * animationValue;
 
             if (Rotate.Equals(_type))
@@ -208,6 +223,51 @@ namespace com.arpoise.arpoiseapp
                     _axis.z * animationFactor
                     );
             }
+            else if (Fade.Equals(_type))
+            {
+                var gameObject = GameObject;
+
+                var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
+                Renderer objectRenderer = gameObject.GetComponent<MeshRenderer>();
+                if (objectRenderer != null)
+                {
+                    rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+                }
+                else
+                {
+                    foreach (var child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
+                    {
+                        if (child != null)
+                        {
+                            objectRenderer = child.GetComponent<MeshRenderer>();
+                            if (objectRenderer != null)
+                            {
+                                rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+                            }
+                        }
+                    }
+                }
+                if (rendererColorPairs.Any())
+                {
+                    foreach (var pair in rendererColorPairs)
+                    {
+                        var color = pair.Value;
+                        if (_initialA == null)
+                        {
+                            _initialA = color.a;
+                        }
+                        pair.Key.material.color = new Color(color.r, color.g, color.b, animationFactor);
+                    }
+                }
+            }
+            else if (Destroy.Equals(_type))
+            {
+                IsToBeDestroyed = true;
+            }
+            else if (JustActivated && Duplicate.Equals(_type))
+            {
+                IsToBeDuplicated = true;
+            }
         }
 
         public void Stop(long worldStartTicks, long nowTicks, bool animate = true)
@@ -232,6 +292,42 @@ namespace com.arpoise.arpoiseapp
                 else if (Transform.Equals(_type))
                 {
                     Wrapper.transform.localPosition = Vector3.zero;
+                }
+                else if (Fade.Equals(_type))
+                {
+                    if (_initialA.HasValue)
+                    {
+                        var gameObject = GameObject;
+
+                        var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
+                        Renderer objectRenderer = gameObject.GetComponent<MeshRenderer>();
+                        if (objectRenderer != null)
+                        {
+                            rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+                        }
+                        else
+                        {
+                            foreach (var child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
+                            {
+                                if (child != null)
+                                {
+                                    objectRenderer = child.GetComponent<MeshRenderer>();
+                                    if (objectRenderer != null)
+                                    {
+                                        rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+                                    }
+                                }
+                            }
+                        }
+                        if (rendererColorPairs.Any())
+                        {
+                            foreach (var pair in rendererColorPairs)
+                            {
+                                var color = pair.Value;
+                                pair.Key.material.color = new Color(color.r, color.g, color.b, _initialA.Value);
+                            }
+                        }
+                    }
                 }
             }
         }
