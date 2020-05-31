@@ -40,7 +40,7 @@ The examples include various image triggered and SLAM AR objects.
 - **AR-vos** allows the prefabs shown to either be triggered by an image or to be placed by SLAM or to be location based or to be relative to the user.
 
 ## Release Notes
-- **iOS AR-vos 1.2 (20200522), May 28, 2020 at 10:45 PM**
+- ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **iOS AR-vos 1.2 (20200522), May 28, 2020 at 10:45 PM**
   - Fixed Bug #8.
   - iOS AR-vos now uses Unity 2018.4.23 LTS as build environment.
   - Added the two new animation types 'Fade' and 'Destroy'.
@@ -48,7 +48,7 @@ The examples include various image triggered and SLAM AR objects.
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **iOS ARpoise 1.8 (20200522), May 28, 2020 at 10:13 PM**
   - Added the two new animation types 'Fade' and 'Destroy'.
 
-- **Android AR-vos 1.5 (200522), May 23, 2020 at 4:10 PM**
+- ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.5 (200522), May 23, 2020 at 4:10 PM**
   - Fixed Bug #8.
   - Android AR-vos now uses Unity 2018.4.23 LTS as build environment.
   - Added the two new animation types 'Fade' and 'Destroy'. 
