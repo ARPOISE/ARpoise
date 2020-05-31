@@ -47,7 +47,7 @@ The examples include various image triggered and SLAM AR objects.
 - **iOS ARpoise 1.8 (20200522), May 28, 2020 at 10:13 PM**
   - Fixed Bug #8.
   - Added two new animation types 'Fade' and 'Destroy'.
- - **Android AR-vos 1.5 (200522), May 23, 2020 at 4:10 PM**
+- **Android AR-vos 1.5 (200522), May 23, 2020 at 4:10 PM**
   - Fixed Bug #8.
   - Android AR-vos now uses Unity 2018.4.23 LTS as build environment.
   - Added two new animation types 'Fade' and 'Destroy'. 
