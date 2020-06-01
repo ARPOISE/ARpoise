@@ -39,7 +39,7 @@ The examples include various image triggered AR objects.
 
 - Using the porPOIse back end, the functions available to content creators include dynamically adding **POI**s, removing them, placing them within world coordinates or relative to the user, and animations described in the next point.
 
-- Unity-created 3D content of ARpoise can include animations in FBX files created in 3D modeling and animation programs. Furthermore, using the porPOIse back end, content creators can give **POI**s ARpoise level animations like scale, rotation, and transformation to be started 'on create', 'on focus', 'in focus', or 'on click' of a **POI**.
+- Unity-created 3D content of ARpoise can include animations in FBX files created in 3D modeling and animation programs. Furthermore, using the porPOIse back end, content creators can give **POI**s ARpoise level animations like scale, rotation, transformation, and fade to be started 'on create', 'on focus', 'in focus', or 'on click' of a **POI**.
 
 - Image trigger based **POI**s are shown to the user once the app discovers a trigger image. The image trigger files are also downloaded via an assigned asset bundle, and therefore do not need to be built into the client apps.
 
