@@ -27,6 +27,6 @@ The **AR-vos** -Android- app has been submitted to the Google Play Store. You do
 
   - Then the app displays a 'Fit the image you're scanning' frame and shows the camera image as the background of the frame.
 
-  - Once AR Core reports back that an trigger image has been found in the camera view, the app shows the Unity prefab of the **POI** at the image trigger location.
+  - Once ARCore reports back that an trigger image has been found in the camera view, the app shows the Unity prefab of the **POI** at the image trigger location.
 
 - If a SLAM layer is selected, the app tries to detect vertical and horizontal planes in the environment. Once a plane ist detected, the user can place objects on it by tapping on the plane.
