@@ -19,7 +19,7 @@ The **AR-vos** -iOS- app has been submitted to the Apple App Store. You do not n
 
 - Connects to the porpoise service of the selected layer and downloads the list of **POI**s of the layer.
 
-- The **AR-vos** -iOS- app can handle image trigger based layers and geolocative layers.
+- The **AR-vos** -iOS- app can handle image trigger based layers, SLAM layers and geolocative layers.
 
 - If a geolocative layer is selected, the app downloads the Unity asset bundle of each **POI** of the layer and loads the **POI**'s Unity prefab from the asset bundle.
 
