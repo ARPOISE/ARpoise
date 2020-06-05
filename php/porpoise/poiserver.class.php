@@ -91,7 +91,7 @@ class LayarPOIServer
     );
 
     protected $optionalResponseFieldsDefaults = array(
-        "bleachingValue" => 0,
+        "bleachingValue" => -1,
         "refreshInterval" => 300,
         "visibilityRange" => 1500,
         "areaSize" => 0,
