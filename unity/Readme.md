@@ -40,6 +40,12 @@ The examples include various image triggered and SLAM AR objects.
 - **AR-vos** allows the prefabs shown to either be triggered by an image or to be placed by SLAM or to be location based or to be relative to the user.
 
 ## Release Notes
+- ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.6 (200608), Jun 08, 2020**
+  - Fixed Bug #10. Destroy of POIs with absolute GPS coordinates works now.
+
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.8 (200608), Jun 08, 2020**
+  - Fixed Bug #10. Destroy of POIs with absolute GPS coordinates works now.
+  
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **iOS AR-vos 1.2 (20200522), May 28, 2020 at 10:45 PM**
   - Fixed Bug #8.
   - iOS AR-vos now uses Unity 2018.4.23 LTS as build environment.
