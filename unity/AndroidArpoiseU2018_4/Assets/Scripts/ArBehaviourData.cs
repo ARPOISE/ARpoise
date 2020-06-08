@@ -133,7 +133,7 @@ namespace com.arpoise.arpoiseapp
         protected override IEnumerator GetData()
         {
             var os = "Android";
-            var bundle = "200529";
+            var bundle = "200609";
 #if UNITY_IOS
             os = "iOS";
             bundle = "20" + bundle;

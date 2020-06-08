@@ -145,6 +145,7 @@ namespace com.arpoise.arpoiseapp
             }
             _arObjects.Remove(arObject);
             Object.Destroy(arObject.WrapperObject);
+            SetArObjectsToPlace();
         }
 
         public void DestroyArObjects()
@@ -297,7 +298,6 @@ namespace com.arpoise.arpoiseapp
                     DestroyArObject(arObject);
                 }
             }
-
             return hit;
         }
 
