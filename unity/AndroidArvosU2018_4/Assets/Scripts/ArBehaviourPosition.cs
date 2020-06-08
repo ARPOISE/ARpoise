@@ -242,14 +242,19 @@ namespace com.arpoise.arpoiseapp
 #if UNITY_EDITOR
             // If in editor mode, set a fixed initial location and forget about the location service
             //
-            FilteredLatitude = OriginalLatitude = 48.158464f;
+            FilteredLatitude = OriginalLatitude = 48.158404f;
             FilteredLongitude = OriginalLongitude = 11.578708f;
 
             Debug.Log("UNITY_EDITOR fixed location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
 
             while (FilteredLatitude <= 90)
             {
-                yield return new WaitForSeconds(3600f);
+                var arObjectState = ArObjectState;
+                if (arObjectState != null)
+                {
+                    PlaceArObjects(arObjectState);
+                }
+                yield return new WaitForSeconds(.1f);
             }
             // End of editor mode
 #endif
