@@ -41,14 +41,8 @@ The examples include various image triggered and SLAM AR objects.
 
 ## Release Notes
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **iOS AR-vos 1.3 (20200608), Jun 8, 2020 at 3:47 PM**
-  - Fixed Bug #10. Destroy of POIs with absolute GPS coordinates works now.
-
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **iOS ARpoise 1.9 (20200608), Jun 8, 2020 at 3:57 PM**
-  - Fixed Bug #10. Destroy of POIs with absolute GPS coordinates works now.
-  
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.6 (200608), Jun 08, 2020**
-  - Fixed Bug #10. Destroy of POIs with absolute GPS coordinates works now.
-
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.8 (200608), Jun 08, 2020**
   - Fixed Bug #10. Destroy of POIs with absolute GPS coordinates works now.
   
