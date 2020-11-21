@@ -24,62 +24,21 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblCgi.c,v $
- Revision 1.4  2019/07/13 18:41:42  peter
- Improved handling of append
+ Revision 1.3  2020/11/11 23:40:31  peter
+ Working on nextVideo
 
- Revision 1.3  2019/02/07 21:15:35  peter
- Cleaning up after tests of ARpoise
+ Revision 1.2  2020/11/10 21:55:52  peter
+ Working on the online version of Lend Me Your Face.
 
- Revision 1.51  2019/02/07 21:11:57  peter
- Cleaning up after tests of ARpoise
+ Revision 1.1  2020/11/10 16:14:44  peter
+ *** empty log message ***
 
- Revision 1.50  2019/01/26 15:11:14  peter
- Multiple lines are comma separated in pblCgiFileToMap
-
- Revision 1.49  2018/04/30 16:10:03  peter
- Linux port
-
- Revision 1.48  2018/04/30 14:21:40  peter
- Added try open and time to string with format
-
- Revision 1.47  2018/04/29 20:33:57  peter
- Changed error message
-
- Revision 1.46  2018/04/29 18:37:45  peter
- Added replace method
-
- Revision 1.45  2018/04/26 14:06:39  peter
- Added the cookie handling
-
- Revision 1.44  2018/04/16 14:18:00  peter
- Improved handling of start time
-
- Revision 1.43  2018/04/07 19:32:05  peter
- Re-added function that is needed
-
- Revision 1.42  2018/04/07 18:52:34  peter
- Cleanup
-
- Revision 1.41  2018/03/15 22:27:46  peter
- Working on cgi tests
-
- Revision 1.40  2018/03/11 00:23:25  peter
- Cleanup of split to list handling
-
- Revision 1.39  2018/03/10 21:49:21  peter
- Integration with ArvosDirectoryService
-
- Revision 1.38  2018/03/10 16:22:21  peter
- More work on cgi functions
-
- Revision 1.37  2018/02/23 23:20:24  peter
- Started to work on the cgi code
  */
 
  /*
   * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
   */
-char* pblCgi_c_id = "$Id: pblCgi.c,v 1.4 2019/07/13 18:41:42 peter Exp $";
+char* pblCgi_c_id = "$Id: pblCgi.c,v 1.3 2020/11/11 23:40:31 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -96,27 +55,29 @@ char* pblCgi_c_id = "$Id: pblCgi.c,v 1.4 2019/07/13 18:41:42 peter Exp $";
 /*****************************************************************************/
 /* #defines                                                                  */
 /*****************************************************************************/
-#define PBL_CGI_MAX_SIZE_OF_BUFFER_ON_STACK		(64 * 1024)
+#define PBL_CGI_MAX_SIZE_OF_BUFFER_ON_STACK		(15 * 1024)
 #define PBL_CGI_MAX_QUERY_PARAMETERS_COUNT		128
-#define PBL_CGI_MAX_POST_INPUT_LEN				(1024 * 1024)
+#define PBL_CGI_MAX_POST_INPUT_LEN				(16 * 1024 * 1024)
 
 /*****************************************************************************/
 /* Variables                                                                 */
 /*****************************************************************************/
 
-PblMap * pblCgiConfigMap = NULL;
+PblMap* pblCgiConfigMap = NULL;
 
 struct timeval pblCgiStartTime;
 
-FILE * pblCgiTraceFile = NULL;
-char * pblCgiQueryString = NULL;
+FILE* pblCgiTraceFile = NULL;
+char* pblCgiQueryString = NULL;
+char* pblCgiPostData = NULL;
+int pblCgiContentLength = -1;
 
-char * pblCgiCookieKey = PBL_CGI_COOKIE;
-char * pblCgiCookieTag = PBL_CGI_COOKIE "=";
+char* pblCgiCookieKey = PBL_CGI_COOKIE;
+char* pblCgiCookieTag = PBL_CGI_COOKIE "=";
 
-static char * pblCgiMalloc(char * tag, size_t size)
+static char* pblCgiMalloc(char* tag, size_t size)
 {
-	char * result = pbl_malloc(tag, size);
+	char* result = pbl_malloc(tag, size);
 	if (!result)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -124,24 +85,24 @@ static char * pblCgiMalloc(char * tag, size_t size)
 	return result;
 }
 
-static char * contentType = NULL;
-static void pblCgiSetContentType(char * type)
+static char* contentType = NULL;
+static void pblCgiSetContentType(char* type)
 {
 	if (!contentType)
 	{
-		char * cookie = pblCgiValue(PBL_CGI_COOKIE);
-		char * cookiePath = pblCgiValue(PBL_CGI_COOKIE_PATH);
-		char * cookieDomain = pblCgiValue(PBL_CGI_COOKIE_DOMAIN);
+		char* cookie = pblCgiValue(PBL_CGI_COOKIE);
+		char* cookiePath = pblCgiValue(PBL_CGI_COOKIE_PATH);
+		char* cookieDomain = pblCgiValue(PBL_CGI_COOKIE_DOMAIN);
 
 		contentType = type;
 
 		if (cookie && cookiePath && cookieDomain)
 		{
-			char * format = "Content-Type: %s\n";
+			char* format = "Content-Type: %s\n";
 			printf(format, contentType);
 			PBL_CGI_TRACE(format, contentType);
 
-			format = "Set-Cookie: %s%s; Path=%s; DOMAIN=%s; HttpOnly\n\n";
+			format = "Set-Cookie: %s%s; Path=%s; Domain=%s; Max-Age=31536000; HttpOnly; Secure; SameSite=Strict\n\n";
 			printf(format, pblCgiCookieTag, cookie, cookiePath, cookieDomain);
 			PBL_CGI_TRACE(format, pblCgiCookieTag, cookie, cookiePath, cookieDomain);
 		}
@@ -162,12 +123,12 @@ static char pblCgiCheckChar(char c)
 	return c;
 }
 
-static char * pblCgiDecodeQueryString(char * source)
+static char* pblCgiDecodeQueryString(char* source)
 {
-	static char * tag = "pblCgiDecodeQueryString";
-	char * sourcePtr = source;
-	char * destinationPtr;
-	char * destination;
+	static char* tag = "pblCgiDecodeQueryString";
+	char* sourcePtr = source;
+	char* destinationPtr;
+	char* destination;
 	char buffer[3];
 	int i;
 
@@ -190,7 +151,7 @@ static char * pblCgiDecodeQueryString(char * source)
 #else
 			sscanf(buffer, "%x", &i);
 #endif
-			*destinationPtr++ = pblCgiCheckChar(i);
+			* destinationPtr++ = pblCgiCheckChar(i);
 			sourcePtr += 3;
 		}
 		else
@@ -215,21 +176,21 @@ static char * pblCgiDecodeQueryString(char * source)
 *
 * @return PblMap * retPtr != NULL: The pointer to the map.
 */
-PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
+PblMap* pblCgiFileToMap(PblMap* map, char* filePath)
 {
-	static char * tag = "pblCgiFileToMap";
+	static char* tag = "pblCgiFileToMap";
 
 	if (!map)
 	{
 		map = pblCgiNewMap();
 	}
 
-	FILE * stream = pblCgiFopen(filePath, "r");
+	FILE* stream = pblCgiFopen(filePath, "r");
 	char line[PBL_CGI_MAX_LINE_LENGTH + 1];
 
 	while (fgets(line, sizeof(line) - 1, stream))
 	{
-		char * ptr = line;
+		char* ptr = line;
 
 		while (isspace(*ptr))
 		{
@@ -241,7 +202,7 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 			continue;
 		}
 
-		char * key = ptr;
+		char* key = ptr;
 		while (*ptr && !isspace(*ptr))
 		{
 			ptr++;
@@ -252,20 +213,20 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 			*ptr++ = '\0';
 		}
 
-		char * value = pblCgiStrTrim(ptr);
+		char* value = pblCgiStrTrim(ptr);
 
 		if (pblMapGetStr(map, key))
 		{
 			// Multiple lines are comma separated
-			char * newValue = pbl_mem2dup(NULL, ", ", 2, value, strlen(value) + 1);
+			char* newValue = pbl_mem2dup(NULL, ", ", 2, value, strlen(value) + 1);
 			int rc = pblMapAppendStrStr(map, key, newValue);
 			PBL_FREE(newValue)
-			if (rc < 0)
-			{
-				pblCgiExitOnError("%s: Failed to append a string, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
-			}
+				if (rc < 0)
+				{
+					pblCgiExitOnError("%s: Failed to append a string, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+				}
 		}
- 		else if (pblMapAddStrStr(map, key, value) < 0)
+		else if (pblMapAddStrStr(map, key, value) < 0)
 		{
 			pblCgiExitOnError("%s: Failed to append a string, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
@@ -278,9 +239,9 @@ PblMap * pblCgiFileToMap(PblMap * map, char * filePath)
 /**
 * Get the value given for the key in the configuration.
 */
-char * pblCgiConfigValue(char * key, char * defaultValue)
+char* pblCgiConfigValue(char* key, char* defaultValue)
 {
-	static char * tag = "pblCgiConfigValue";
+	static char* tag = "pblCgiConfigValue";
 
 	if (!pblCgiConfigMap)
 	{
@@ -290,7 +251,7 @@ char * pblCgiConfigValue(char * key, char * defaultValue)
 	{
 		pblCgiExitOnError("%s: Empty key not allowed in cgi-configuration file!\n", tag);
 	}
-	char * value = pblMapGetStr(pblCgiConfigMap, key);
+	char* value = pblMapGetStr(pblCgiConfigMap, key);
 	if (!value)
 	{
 		return defaultValue;
@@ -298,13 +259,13 @@ char * pblCgiConfigValue(char * key, char * defaultValue)
 	return value;
 }
 
-void pblCgiInitTrace(struct timeval * startTime, char * traceFilePath)
+void pblCgiInitTrace(struct timeval* startTime, char* traceFilePath)
 {
 	pblCgiStartTime = *startTime;
 
 	if (traceFilePath && *traceFilePath)
 	{
-		FILE * stream;
+		FILE* stream = NULL;
 
 #ifdef WIN32
 		errno_t err = fopen_s(&stream, traceFilePath, "r");
@@ -319,15 +280,18 @@ void pblCgiInitTrace(struct timeval * startTime, char * traceFilePath)
 		}
 #endif
 
-		fclose(stream);
+		if (stream)
+		{
+			fclose(stream);
+		}
 
 		pblCgiTraceFile = pblCgiFopen(traceFilePath, "a");
 		fputs("\n", pblCgiTraceFile);
 		fputs("\n", pblCgiTraceFile);
 		PBL_CGI_TRACE("----------------------------------------> Started");
 
-		extern char **environ;
-		char ** envp = environ;
+		extern char** environ;
+		char** envp = environ;
 
 		while (envp && *envp)
 		{
@@ -336,10 +300,10 @@ void pblCgiInitTrace(struct timeval * startTime, char * traceFilePath)
 	}
 }
 
-static PblMap * queryMap = NULL;
-static void pblCgiSetQueryValue(char * key, char * value)
+static PblMap* queryMap = NULL;
+static void pblCgiSetQueryValue(char* key, char* value)
 {
-	static char * tag = "pblCgiSetQueryValue";
+	static char* tag = "pblCgiSetQueryValue";
 
 	if (!queryMap)
 	{
@@ -364,9 +328,9 @@ static void pblCgiSetQueryValue(char * key, char * value)
 /**
 * Get the value for an iteration given for the key in the query.
 */
-char * pblCgiQueryValueForIteration(char * key, int iteration)
+char* pblCgiQueryValueForIteration(char* key, int iteration)
 {
-	static char * tag = "pblCgiQueryValueForIteration";
+	static char* tag = "pblCgiQueryValueForIteration";
 
 	if (!queryMap)
 	{
@@ -378,19 +342,19 @@ char * pblCgiQueryValueForIteration(char * key, int iteration)
 	}
 	if (iteration >= 0)
 	{
-		char * iterationKey = pblCgiSprintf("%s_%d", key, iteration);
-		char * value = pblMapGetStr(queryMap, iterationKey);
+		char* iterationKey = pblCgiSprintf("%s_%d", key, iteration);
+		char* value = pblMapGetStr(queryMap, iterationKey);
 		PBL_FREE(iterationKey);
 		return value ? value : "";
 	}
-	char * value = pblMapGetStr(queryMap, key);
+	char* value = pblMapGetStr(queryMap, key);
 	return value ? value : "";
 }
 
 /**
 * Get the value given for the key in the query.
 */
-char * pblCgiQueryValue(char * key)
+char* pblCgiQueryValue(char* key)
 {
 	return pblCgiQueryValueForIteration(key, -1);
 }
@@ -398,9 +362,9 @@ char * pblCgiQueryValue(char * key)
 /**
 * Trace function
 */
-void pblCgiTrace(const char * format, ...)
+void pblCgiTrace(const char* format, ...)
 {
-	static char * tag = "pblCgiTrace";
+	static char* tag = "pblCgiTrace";
 
 	if (!pblCgiTraceFile)
 	{
@@ -417,11 +381,11 @@ void pblCgiTrace(const char * format, ...)
 	if (rc < 0)
 	{
 		pblCgiExitOnError("%s: Printing of format '%s' and size %lu failed with errno=%d\n",
-		 tag, format, sizeof(buffer) - 1, errno);
+			tag, format, sizeof(buffer) - 1, errno);
 	}
 	buffer[sizeof(buffer) - 1] = '\0';
 
-	char * now = pblCgiStrFromTime(time((time_t*)NULL));
+	char* now = pblCgiStrFromTime(time((time_t*)NULL));
 	fputs(now, pblCgiTraceFile);
 	PBL_FREE(now);
 
@@ -438,7 +402,7 @@ void pblCgiTrace(const char * format, ...)
 /**
  * Print an error message and exit the program.
  */
-void pblCgiExitOnError(const char * format, ...)
+void pblCgiExitOnError(const char* format, ...)
 {
 	pblCgiSetContentType("text/html");
 
@@ -451,7 +415,7 @@ void pblCgiExitOnError(const char * format, ...)
 		"<p><hr><p>\n"
 		"<h1>An error occurred</h1>\n");
 
-	char * scriptName = pblCgiGetEnv("SCRIPT_NAME");
+	char* scriptName = pblCgiGetEnv("SCRIPT_NAME");
 	if (!scriptName || !*scriptName)
 	{
 		scriptName = "unknown";
@@ -491,7 +455,7 @@ void pblCgiExitOnError(const char * format, ...)
 /**
  * Like sprintf, copies the value to the heap.
  */
-char * pblCgiSprintf(const char * format, ...)
+char* pblCgiSprintf(const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -512,11 +476,11 @@ char * pblCgiSprintf(const char * format, ...)
 /**
  * Tests whether a NULL terminated string array contains a string
  */
-int pblCgiStrArrayContains(char ** array, char * string)
+int pblCgiStrArrayContains(char** array, char* string)
 {
 	for (int i = 0;; i++)
 	{
-		char * ptr = array[i];
+		char* ptr = array[i];
 		if (!ptr)
 		{
 			break;
@@ -532,9 +496,9 @@ int pblCgiStrArrayContains(char ** array, char * string)
 /**
  * Copies at most n bytes, the result is always 0 terminated
  */
-char * pblCgiStrNCpy(char *dest, char *string, size_t n)
+char* pblCgiStrNCpy(char* dest, char* string, size_t n)
 {
-	char * ptr = dest;
+	char* ptr = dest;
 	while (--n && (*ptr++ = *string++))
 		;
 
@@ -545,7 +509,7 @@ char * pblCgiStrNCpy(char *dest, char *string, size_t n)
 	return dest;
 }
 
-static char * pblCgiStrTrimStart(char * string)
+static char* pblCgiStrTrimStart(char* string)
 {
 	for (; *string; string++)
 	{
@@ -557,14 +521,14 @@ static char * pblCgiStrTrimStart(char * string)
 	return string;
 }
 
-static void pblCgiStrTrimEnd(char * string)
+static void pblCgiStrTrimEnd(char* string)
 {
 	if (!string)
 	{
 		return;
 	}
 
-	char * ptr = (string + strlen(string)) - 1;
+	char* ptr = (string + strlen(string)) - 1;
 	while (ptr >= string)
 	{
 		if (isspace(*ptr))
@@ -581,7 +545,7 @@ static void pblCgiStrTrimEnd(char * string)
 /**
  * Trim the string, remove blanks at start and end.
  */
-char * pblCgiStrTrim(char * string)
+char* pblCgiStrTrim(char* string)
 {
 	pblCgiStrTrimEnd(string);
 	return pblCgiStrTrimStart(string);
@@ -590,7 +554,7 @@ char * pblCgiStrTrim(char * string)
 /**
  * Test if a string is NULL or white space only
  */
-int pblCgiStrIsNullOrWhiteSpace(char * string)
+int pblCgiStrIsNullOrWhiteSpace(char* string)
 {
 	if (string)
 	{
@@ -605,21 +569,27 @@ int pblCgiStrIsNullOrWhiteSpace(char * string)
 	return 1;
 }
 
-char * pblCgiStrRangeDup(char * start, char * end)
+/**
+ * Duplicate the bytes between start and end
+ */
+char* pblCgiStrRangeDup(char* start, char* end)
 {
-	static char * tag = "pblCgiStrRangeDup";
+	static char* tag = "pblCgiStrRangeDup";
 
 	start = pblCgiStrTrimStart(start);
 	int length = end - start;
 	if (length > 0)
 	{
-		char * value = pbl_memdup(tag, start, length + 1);
+		char* value = pbl_memdup(tag, start, length + 1);
 		if (!value)
 		{
 			pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
-		value[length] = '\0';
-		pblCgiStrTrimEnd(value);
+		else
+		{
+			value[length] = '\0';
+			pblCgiStrTrimEnd(value);
+		}
 		return value;
 	}
 	return pblCgiStrDup("");
@@ -628,7 +598,7 @@ char * pblCgiStrRangeDup(char * start, char * end)
 /**
  * String equals, handles NULLs.
  */
-int pblCgiStrEquals(char * s1, char * s2)
+int pblCgiStrEquals(char* s1, char* s2)
 {
 	return !pblCgiStrCmp(s1, s2);
 }
@@ -636,7 +606,7 @@ int pblCgiStrEquals(char * s1, char * s2)
 /**
  * Like strcmp, handles NULLs.
  */
-int pblCgiStrCmp(char * s1, char * s2)
+int pblCgiStrCmp(char* s1, char* s2)
 {
 	if (!s1)
 	{
@@ -658,9 +628,9 @@ int pblCgiStrCmp(char * s1, char * s2)
  *
  * If an error occurs, the program exits with an error message.
  */
-char * pblCgiStrDup(char * string)
+char* pblCgiStrDup(char* string)
 {
-	static char * tag = "pblCgiStrDup";
+	static char* tag = "pblCgiStrDup";
 
 	if (!string)
 	{
@@ -679,10 +649,10 @@ char * pblCgiStrDup(char * string)
  *
  * If an error occurs, the program exits with an error message.
  */
-char * pblCgiStrCat(char * s1, char * s2)
+char* pblCgiStrCat(char* s1, char* s2)
 {
-	static char * tag = "pblCgiStrCat";
-	char * result = NULL;
+	static char* tag = "pblCgiStrCat";
+	char* result = NULL;
 	size_t len1 = 0;
 	size_t len2 = 0;
 
@@ -712,13 +682,13 @@ char * pblCgiStrCat(char * s1, char * s2)
 /*
  * Replace the oldValue with newValue. The result is a malloced string.
  */
-char * pblCgiStrReplace(char * string, char * oldValue, char * newValue)
+char* pblCgiStrReplace(char* string, char* oldValue, char* newValue)
 {
-	char * tag = "pblCgiStrReplace";
-	char * ptr = string;
+	char* tag = "pblCgiStrReplace";
+	char* ptr = string;
 	int length = strlen(oldValue);
 
-	PblStringBuilder * stringBuilder = pblStringBuilderNew();
+	PblStringBuilder* stringBuilder = pblStringBuilderNew();
 	if (!stringBuilder)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -726,7 +696,7 @@ char * pblCgiStrReplace(char * string, char * oldValue, char * newValue)
 
 	for (;;)
 	{
-		char * ptr2 = strstr(ptr, oldValue);
+		char* ptr2 = strstr(ptr, oldValue);
 		if (!ptr2)
 		{
 			if (pblStringBuilderAppendStr(stringBuilder, ptr) == ((size_t)-1))
@@ -751,7 +721,7 @@ char * pblCgiStrReplace(char * string, char * oldValue, char * newValue)
 		ptr = ptr2 + length;
 	}
 
-	char * result = pblStringBuilderToString(stringBuilder);
+	char* result = pblStringBuilderToString(stringBuilder);
 	if (!result)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -765,7 +735,7 @@ char * pblCgiStrReplace(char * string, char * oldValue, char * newValue)
  *
  * If an error occurs, the program exits with an error message.
  */
-char * pblCgiStrFromTime(time_t t)
+char* pblCgiStrFromTime(time_t t)
 {
 	return pblCgiStrFromTimeAndFormat(t, "%02d.%02d.%02d %02d:%02d:%02d");
 }
@@ -775,19 +745,19 @@ char * pblCgiStrFromTime(time_t t)
 *
 * If an error occurs, the program exits with an error message.
 */
-char * pblCgiStrFromTimeAndFormat(time_t t, char * format)
+char* pblCgiStrFromTimeAndFormat(time_t t, char* format)
 {
-	struct tm *tm;
+	struct tm* tm;
 
 #ifdef _WIN32
 
 	struct tm windowsTm;
 	tm = &windowsTm;
-	localtime_s(tm, (time_t *) &(t));
+	localtime_s(tm, (time_t*)&(t));
 
 #else
 
-	tm = localtime((time_t *) &(t));
+	tm = localtime((time_t*)&(t));
 
 #endif
 	return pblCgiSprintf(format, (tm->tm_year + 1900) % 100, tm->tm_mon + 1, tm->tm_mday,
@@ -803,7 +773,7 @@ char * pblCgiStrFromTimeAndFormat(time_t t, char * format)
  *
  * 	char * results[size + 1];
  */
-int pblCgiStrSplit(char * string, char * splitString, size_t size, char * results[])
+int pblCgiStrSplit(char* string, char* splitString, size_t size, char* results[])
 {
 	unsigned int index = 0;
 	if (size < 1)
@@ -814,7 +784,7 @@ int pblCgiStrSplit(char * string, char * splitString, size_t size, char * result
 	size_t length = strlen(splitString);
 	results[0] = NULL;
 
-	char * ptr = string;
+	char* ptr = string;
 
 	for (;;)
 	{
@@ -823,17 +793,17 @@ int pblCgiStrSplit(char * string, char * splitString, size_t size, char * result
 			return index;
 		}
 
-		char * ptr2 = strstr(ptr, splitString);
+		char* ptr2 = strstr(ptr, splitString);
 		if (!ptr2)
 		{
-			char * value = pblCgiStrDup(ptr);
+			char* value = pblCgiStrDup(ptr);
 			results[index] = pblCgiStrDup(pblCgiStrTrim(value));
 			results[++index] = NULL;
 			PBL_FREE(value);
 
 			return index;
 		}
-		char * value = pblCgiStrRangeDup(ptr, ptr2);
+		char* value = pblCgiStrRangeDup(ptr, ptr2);
 		results[index] = pblCgiStrDup(pblCgiStrTrim(value));
 		results[++index] = NULL;
 		PBL_FREE(value);
@@ -846,24 +816,24 @@ int pblCgiStrSplit(char * string, char * splitString, size_t size, char * result
 /**
 * Split a string to a list.
 */
-PblList * pblCgiStrSplitToList(char * string, char * splitString)
+PblList* pblCgiStrSplitToList(char* string, char* splitString)
 {
-	static char * tag = "pblCgiSplitToList";
-	PblList * list = pblListNewArrayList();
+	static char* tag = "pblCgiSplitToList";
+	PblList* list = pblListNewArrayList();
 	if (!list)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 	}
 
 	size_t length = strlen(splitString);
-	char * ptr = string;
+	char* ptr = string;
 
 	for (;;)
 	{
-		char * ptr2 = strstr(ptr, splitString);
+		char* ptr2 = strstr(ptr, splitString);
 		if (!ptr2)
 		{
-			char * value = pblCgiStrDup(ptr);
+			char* value = pblCgiStrDup(ptr);
 			if (pblListAdd(list, pblCgiStrDup(pblCgiStrTrim(value))) < 0)
 			{
 				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -872,7 +842,7 @@ PblList * pblCgiStrSplitToList(char * string, char * splitString)
 			break;
 		}
 
-		char * value = pblCgiStrRangeDup(ptr, ptr2);
+		char* value = pblCgiStrRangeDup(ptr, ptr2);
 		if (pblListAdd(list, pblCgiStrDup(pblCgiStrTrim(value))) < 0)
 		{
 			pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -883,7 +853,7 @@ PblList * pblCgiStrSplitToList(char * string, char * splitString)
 	return list;
 }
 
-static const char *pblCgiHexDigits = "0123456789abcdef";
+static const char* pblCgiHexDigits = "0123456789abcdef";
 
 /**
  * Convert a buffer to a hex byte string
@@ -892,10 +862,10 @@ static const char *pblCgiHexDigits = "0123456789abcdef";
  *
  * return The malloced hex string.
  */
-char * pblCgiStrToHexFromBuffer(unsigned char * buffer, size_t length)
+char* pblCgiStrToHexFromBuffer(unsigned char* buffer, size_t length)
 {
-	static char * tag = "pblCgiStrToHexFromBuffer";
-	char * hexString = pblCgiMalloc(tag, 2 * length + 1);
+	static char* tag = "pblCgiStrToHexFromBuffer";
+	char* hexString = pblCgiMalloc(tag, 2 * length + 1);
 
 	unsigned char c;
 	int stringIndex = 0;
@@ -912,9 +882,9 @@ char * pblCgiStrToHexFromBuffer(unsigned char * buffer, size_t length)
 /**
  * Get the cookie, if any is given.
  */
-char * pblCgiGetCoockie(char * cookieKey, char * cookieTag)
+char* pblCgiGetCoockie(char* cookieKey, char* cookieTag)
 {
-	char * cookie = pblCgiStrDup(pblCgiGetEnv("HTTP_COOKIE"));
+	char* cookie = pblCgiStrDup(pblCgiGetEnv("HTTP_COOKIE"));
 	if (cookie && *cookie)
 	{
 		cookie = strstr(cookie, cookieTag);
@@ -932,7 +902,7 @@ char * pblCgiGetCoockie(char * cookieKey, char * cookieTag)
 	{
 		return NULL;
 	}
-	for (char * ptr = cookie; *ptr; ptr++)
+	for (char* ptr = cookie; *ptr; ptr++)
 	{
 		if (!strchr(pblCgiHexDigits, *ptr))
 		{
@@ -946,9 +916,9 @@ char * pblCgiGetCoockie(char * cookieKey, char * cookieTag)
 /**
 * Like fopen, needed for Windows port
 */
-FILE * pblCgiTryFopen(char * filePath, char * openType)
+FILE* pblCgiTryFopen(char* filePath, char* openType)
 {
-	FILE * stream;
+	FILE* stream;
 
 #ifdef WIN32
 
@@ -976,10 +946,10 @@ FILE * pblCgiTryFopen(char * filePath, char * openType)
 /**
 * Like fopen, needed for Windows port
 */
-FILE * pblCgiFopen(char * filePath, char * openType)
+FILE* pblCgiFopen(char* filePath, char* openType)
 {
-	static char * tag = "pblCgiFopen";
-	FILE * stream = pblCgiTryFopen(filePath, openType);
+	static char* tag = "pblCgiFopen";
+	FILE* stream = pblCgiTryFopen(filePath, openType);
 	if (stream)
 	{
 		return stream;
@@ -1017,11 +987,11 @@ FILE * pblCgiFopen(char * filePath, char * openType)
 /**
  * Like getenv, needed for Windows port
  */
-char * pblCgiGetEnv(char * name)
+char* pblCgiGetEnv(char* name)
 {
 #ifdef WIN32
 
-	char *value;
+	char* value;
 	size_t len;
 	_dupenv_s(&value, &len, name);
 	return value;
@@ -1044,10 +1014,10 @@ char * pblCgiGetEnv(char * name)
  *      script 'key1=value1&key2=value2'
  *
  */
-void pblCgiParseQuery(int argc, char * argv[])
+void pblCgiParseQuery(int argc, char* argv[])
 {
-	static char * tag = "pblCgiParseQuery";
-	char * ptr = NULL;
+	static char* tag = "pblCgiParseQuery";
+	char* ptr = NULL;
 
 	pblCgiQueryString = "";
 
@@ -1079,7 +1049,7 @@ void pblCgiParseQuery(int argc, char * argv[])
 		{
 			pblCgiQueryString = pblCgiStrCat(ptr, "&");
 		}
-		size_t length = strlen(pblCgiQueryString);
+		size_t lengthOfQueryString = strlen(pblCgiQueryString);
 
 		ptr = pblCgiGetEnv("CONTENT_LENGTH");
 		if (ptr && *ptr)
@@ -1087,29 +1057,37 @@ void pblCgiParseQuery(int argc, char * argv[])
 			int contentLength = atoi(ptr);
 			if (contentLength > 0)
 			{
-				if (length + contentLength >= PBL_CGI_MAX_POST_INPUT_LEN)
+				if (contentLength >= PBL_CGI_MAX_POST_INPUT_LEN)
 				{
-					pblCgiExitOnError("%s: POST input too long, %d bytes\n", tag,
-						length + contentLength);
+					pblCgiExitOnError("%s: POST input too long, %d bytes\n", tag, contentLength);
 				}
 
-				pblCgiQueryString = realloc(pblCgiQueryString, length + contentLength + 1);
+				int bytesToAllocate = lengthOfQueryString + contentLength + 1;
+				pblCgiQueryString = realloc(pblCgiQueryString, bytesToAllocate);
 				if (!pblCgiQueryString)
 				{
 					pblCgiExitOnError("%s: Out of memory\n", tag);
 				}
 
+				char* endOfAllocatedBytes = pblCgiQueryString + bytesToAllocate;
+
 				int c;
-				ptr = pblCgiQueryString + length;
-				while (contentLength-- > 0)
+				int numberOfBytesRead = 0;
+				pblCgiPostData = ptr = pblCgiQueryString + lengthOfQueryString;
+				while (ptr < endOfAllocatedBytes - 1)
 				{
 					if ((c = getchar()) == EOF)
 					{
 						break;
 					}
+					numberOfBytesRead++;
 					*ptr++ = c;
 				}
-				*ptr = '\0';
+				pblCgiContentLength = numberOfBytesRead;
+				while (ptr < endOfAllocatedBytes)
+				{
+					*ptr++ = '\0';
+				}
 			}
 		}
 	}
@@ -1120,8 +1098,8 @@ void pblCgiParseQuery(int argc, char * argv[])
 
 	PBL_CGI_TRACE("In %s", pblCgiQueryString);
 
-	char * keyValuePairs[PBL_CGI_MAX_QUERY_PARAMETERS_COUNT + 1];
-	char * keyValuePair[2 + 1];
+	char* keyValuePairs[PBL_CGI_MAX_QUERY_PARAMETERS_COUNT + 1];
+	char* keyValuePair[2 + 1];
 
 	pblCgiStrSplit(pblCgiQueryString, "&", PBL_CGI_MAX_QUERY_PARAMETERS_COUNT, keyValuePairs);
 	for (int i = 0; keyValuePairs[i]; i++)
@@ -1129,11 +1107,11 @@ void pblCgiParseQuery(int argc, char * argv[])
 		pblCgiStrSplit(keyValuePairs[i], "=", 2, keyValuePair);
 		if (keyValuePair[0])
 		{
-			char * key = pblCgiDecodeQueryString(keyValuePair[0]);
+			char* key = pblCgiDecodeQueryString(keyValuePair[0]);
 
 			if (keyValuePair[1])
 			{
-				char * value = pblCgiDecodeQueryString(keyValuePair[1]);
+				char* value = pblCgiDecodeQueryString(keyValuePair[1]);
 				pblCgiSetQueryValue(pblCgiStrTrim(key), pblCgiStrTrim(value));
 				PBL_FREE(value);
 			}
@@ -1150,12 +1128,12 @@ void pblCgiParseQuery(int argc, char * argv[])
 	}
 }
 
-static char * pblCgiReplaceLowerThan(char * string, char *ptr2)
+static char* pblCgiReplaceLowerThan(char* string, char* ptr2)
 {
-	static char * tag = "pblCgiReplaceLowerThan";
-	char * ptr = string;
+	static char* tag = "pblCgiReplaceLowerThan";
+	char* ptr = string;
 
-	PblStringBuilder * stringBuilder = pblStringBuilderNew();
+	PblStringBuilder* stringBuilder = pblStringBuilderNew();
 	if (!stringBuilder)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -1185,7 +1163,7 @@ static char * pblCgiReplaceLowerThan(char * string, char *ptr2)
 				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 			}
 
-			char * result = pblStringBuilderToString(stringBuilder);
+			char* result = pblStringBuilderToString(stringBuilder);
 			if (!result)
 			{
 				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -1198,17 +1176,17 @@ static char * pblCgiReplaceLowerThan(char * string, char *ptr2)
 	return NULL;
 }
 
-static char * pblCgiReplaceVariable(char * string, int iteration)
+static char* pblCgiReplaceVariable(char* string, int iteration)
 {
-	static char * tag = "pblCgiReplaceVariable";
-	static char * startPattern = "<!--?";
-	static char * startPattern2 = "<?";
+	static char* tag = "pblCgiReplaceVariable";
+	static char* startPattern = "<!--?";
+	static char* startPattern2 = "<?";
 
 	int startPatternLength;
-	char * endPattern;
+	char* endPattern;
 	int endPatternLength;
 
-	char * ptr = strchr(string, '<');
+	char* ptr = strchr(string, '<');
 	if (!ptr)
 	{
 		return string;
@@ -1216,7 +1194,7 @@ static char * pblCgiReplaceVariable(char * string, int iteration)
 
 	size_t length = ptr - string;
 
-	char * ptr2 = strstr(ptr, startPattern);
+	char* ptr2 = strstr(ptr, startPattern);
 	if (!ptr2)
 	{
 		ptr2 = strstr(ptr, startPattern2);
@@ -1233,7 +1211,7 @@ static char * pblCgiReplaceVariable(char * string, int iteration)
 	}
 	else
 	{
-		char * ptr3 = strstr(ptr, startPattern2);
+		char* ptr3 = strstr(ptr, startPattern2);
 		if (ptr3 && ptr3 < ptr2)
 		{
 			ptr2 = ptr3;
@@ -1249,7 +1227,7 @@ static char * pblCgiReplaceVariable(char * string, int iteration)
 		}
 	}
 
-	PblStringBuilder * stringBuilder = pblStringBuilderNew();
+	PblStringBuilder* stringBuilder = pblStringBuilderNew();
 	if (!stringBuilder)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -1263,7 +1241,7 @@ static char * pblCgiReplaceVariable(char * string, int iteration)
 		}
 	}
 
-	char * result;
+	char* result;
 
 	for (int i = 0; i < 1000000; i++)
 	{
@@ -1289,8 +1267,8 @@ static char * pblCgiReplaceVariable(char * string, int iteration)
 			return result;
 		}
 
-		char * key = pblCgiStrRangeDup(ptr, ptr2);
-		char * value = NULL;
+		char* key = pblCgiStrRangeDup(ptr, ptr2);
+		char* value = NULL;
 		if (iteration >= 0)
 		{
 			value = pblCgiValueForIteration(key, iteration);
@@ -1303,7 +1281,7 @@ static char * pblCgiReplaceVariable(char * string, int iteration)
 
 		if (value && *value)
 		{
-			char * pointer = strstr(value, "<");
+			char* pointer = strstr(value, "<");
 			if (!pointer)
 			{
 				if (pblStringBuilderAppendStr(stringBuilder, value) == ((size_t)-1))
@@ -1352,7 +1330,7 @@ static char * pblCgiReplaceVariable(char * string, int iteration)
 		}
 		else
 		{
-			char * ptr3 = strstr(ptr, startPattern2);
+			char* ptr3 = strstr(ptr, startPattern2);
 			if (ptr3 && ptr3 < ptr2)
 			{
 				ptr2 = ptr3;
@@ -1372,25 +1350,25 @@ static char * pblCgiReplaceVariable(char * string, int iteration)
 	return NULL;
 }
 
-static char * pblCgiPrintStr(char * string, FILE * outStream, int iteration);
+static char* pblCgiPrintStr(char* string, FILE* outStream, int iteration);
 
-static char * pblCgiSkip(char * string, char * skipKey, FILE * outStream, int iteration)
+static char* pblCgiSkip(char* string, char* skipKey, FILE* outStream, int iteration)
 {
 	string = pblCgiReplaceVariable(string, -1);
 
 	for (;;)
 	{
-		char * ptr = strstr(string, "<!--#ENDIF");
+		char* ptr = strstr(string, "<!--#ENDIF");
 		if (!ptr)
 		{
 			return skipKey;
 		}
 		ptr += 10;
 
-		char *ptr2 = strstr(ptr, "-->");
+		char* ptr2 = strstr(ptr, "-->");
 		if (ptr2)
 		{
-			char * key = pblCgiStrRangeDup(ptr, ptr2);
+			char* key = pblCgiStrRangeDup(ptr, ptr2);
 			if (!strcmp(skipKey, key))
 			{
 				PBL_FREE(skipKey);
@@ -1407,13 +1385,13 @@ static char * pblCgiSkip(char * string, char * skipKey, FILE * outStream, int it
 	return skipKey;
 }
 
-static char * pblCgiPrintStr(char * string, FILE * outStream, int iteration)
+static char* pblCgiPrintStr(char* string, FILE* outStream, int iteration)
 {
 	string = pblCgiReplaceVariable(string, iteration);
 
 	for (;;)
 	{
-		char * ptr = strstr(string, "<!--#");
+		char* ptr = strstr(string, "<!--#");
 		if (!ptr)
 		{
 			fputs(string, outStream);
@@ -1429,10 +1407,10 @@ static char * pblCgiPrintStr(char * string, FILE * outStream, int iteration)
 		{
 			ptr += 10;
 
-			char *ptr2 = strstr(ptr, "-->");
+			char* ptr2 = strstr(ptr, "-->");
 			if (ptr2)
 			{
-				char * key = pblCgiStrRangeDup(ptr, ptr2);
+				char* key = pblCgiStrRangeDup(ptr, ptr2);
 				if (!pblCgiValue(key) && !pblCgiValueForIteration(key, iteration))
 				{
 					return pblCgiSkip(ptr2 + 1, key, outStream, iteration);
@@ -1447,10 +1425,10 @@ static char * pblCgiPrintStr(char * string, FILE * outStream, int iteration)
 		{
 			ptr += 11;
 
-			char *ptr2 = strstr(ptr, "-->");
+			char* ptr2 = strstr(ptr, "-->");
 			if (ptr2)
 			{
-				char * key = pblCgiStrRangeDup(ptr, ptr2);
+				char* key = pblCgiStrRangeDup(ptr, ptr2);
 				if (pblCgiValue(key) || pblCgiValueForIteration(key, iteration))
 				{
 					return pblCgiSkip(ptr2 + 1, key, outStream, iteration);
@@ -1465,7 +1443,7 @@ static char * pblCgiPrintStr(char * string, FILE * outStream, int iteration)
 		{
 			ptr += 7;
 
-			char *ptr2 = strstr(ptr, "-->");
+			char* ptr2 = strstr(ptr, "-->");
 			if (ptr2)
 			{
 				string = ptr2 + 3;
@@ -1479,10 +1457,10 @@ static char * pblCgiPrintStr(char * string, FILE * outStream, int iteration)
 	return NULL;
 }
 
-static char * pblCgiHandleFor(PblList * list, char * line, char * forKey)
+static char* pblCgiHandleFor(PblList* list, char* line, char* forKey)
 {
-	static char * tag = "pblCgiHandleFor";
-	char * ptr = strstr(line, "<!--#");
+	static char* tag = "pblCgiHandleFor";
+	char* ptr = strstr(line, "<!--#");
 	if (!ptr)
 	{
 		if (pblListAdd(list, pblCgiStrDup(line)) < 0)
@@ -1496,24 +1474,26 @@ static char * pblCgiHandleFor(PblList * list, char * line, char * forKey)
 		if (ptr > line)
 		{
 			int length = ptr - line;
-			char * value = pbl_memdup(tag, line, length + 1);
+			char* value = pbl_memdup(tag, line, length + 1);
 			if (!value)
 			{
 				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 			}
-			value[length] = '\0';
-
-			if (pblListAdd(list, value) < 0)
+			else
 			{
-				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+				value[length] = '\0';
+				if (pblListAdd(list, value) < 0)
+				{
+					pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+				}
 			}
 		}
 		ptr += 11;
 
-		char * ptr2 = strstr(ptr, "-->");
+		char* ptr2 = strstr(ptr, "-->");
 		if (ptr2)
 		{
-			char * key = pblCgiStrRangeDup(ptr, ptr2);
+			char* key = pblCgiStrRangeDup(ptr, ptr2);
 			if (!strcmp(forKey, key))
 			{
 				PBL_FREE(key);
@@ -1532,12 +1512,12 @@ static char * pblCgiHandleFor(PblList * list, char * line, char * forKey)
 	return forKey;
 }
 
-static PblList * pblCgiReadFor(char * inputLine, char * forKey, FILE * stream)
+static PblList* pblCgiReadFor(char* inputLine, char* forKey, FILE* stream)
 {
-	static char * tag = "pblCgiReadFor";
+	static char* tag = "pblCgiReadFor";
 	char line[PBL_CGI_MAX_LINE_LENGTH + 1];
 
-	PblList * list = pblListNewLinkedList();
+	PblList* list = pblListNewLinkedList();
 	if (!list)
 	{
 		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -1561,9 +1541,9 @@ static PblList * pblCgiReadFor(char * inputLine, char * forKey, FILE * stream)
 	return list;
 }
 
-static void pblCgiPrintFor(PblList * lines, char * forKey, FILE * outStream)
+static void pblCgiPrintFor(PblList* lines, char* forKey, FILE* outStream)
 {
-	static char * tag = "pblCgiPrintFor";
+	static char* tag = "pblCgiPrintFor";
 	int hasNext;
 
 	for (unsigned long iteration = 0; 1; iteration++)
@@ -1573,24 +1553,24 @@ static void pblCgiPrintFor(PblList * lines, char * forKey, FILE * outStream)
 			return;
 		}
 
-		char * skipKey = NULL;
+		char* skipKey = NULL;
 		PblIterator iteratorBuffer;
-		PblIterator * iterator = &iteratorBuffer;
+		PblIterator* iterator = &iteratorBuffer;
 
-		if (pblIteratorInit((PblCollection *)lines, iterator) < 0)
+		if (pblIteratorInit((PblCollection*)lines, iterator) < 0)
 		{
 			pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
 		while ((hasNext = pblIteratorHasNext(iterator)) > 0)
 		{
-			char * line = (char*)pblIteratorNext(iterator);
+			char* line = (char*)pblIteratorNext(iterator);
 			if (line == (void*)-1)
 			{
 				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 			}
 			if (line)
 			{
-				char * ptr = strstr(line, "<!--#");
+				char* ptr = strstr(line, "<!--#");
 				if (!ptr)
 				{
 					if (!skipKey)
@@ -1618,17 +1598,17 @@ static void pblCgiPrintFor(PblList * lines, char * forKey, FILE * outStream)
 /**
 * Print a template
 */
-void pblCgiPrint(char * directory, char * fileName, char * contentType)
+void pblCgiPrint(char* directory, char* fileName, char* contentType)
 {
-	static char * tag = "pblCgiPrint";
+	static char* tag = "pblCgiPrint";
 
 	PBL_CGI_TRACE("Directory=%s", directory);
 	PBL_CGI_TRACE("FileName=%s", fileName);
 	PBL_CGI_TRACE("ContentType=%s", contentType);
 
-	char * filePath = pblCgiStrCat(directory, fileName);
-	char * skipKey = NULL;
-	FILE * stream = pblCgiFopen(filePath, "r");
+	char* filePath = pblCgiStrCat(directory, fileName);
+	char* skipKey = NULL;
+	FILE* stream = pblCgiFopen(filePath, "r");
 	PBL_FREE(filePath);
 
 	if (contentType)
@@ -1640,8 +1620,8 @@ void pblCgiPrint(char * directory, char * fileName, char * contentType)
 
 	while ((fgets(line, sizeof(line) - 1, stream)))
 	{
-		char * start = line;
-		char * ptr = strstr(line, "<!--#");
+		char* start = line;
+		char* ptr = strstr(line, "<!--#");
 		if (!ptr)
 		{
 			if (!skipKey)
@@ -1665,10 +1645,10 @@ void pblCgiPrint(char * directory, char * fileName, char * contentType)
 			}
 			ptr += 12;
 
-			char * ptr2 = strstr(ptr, "-->");
+			char* ptr2 = strstr(ptr, "-->");
 			if (ptr2)
 			{
-				char * includeFileName = pblCgiStrRangeDup(ptr, ptr2);
+				char* includeFileName = pblCgiStrRangeDup(ptr, ptr2);
 				pblCgiPrint(directory, includeFileName, NULL);
 				PBL_FREE(includeFileName);
 
@@ -1684,17 +1664,17 @@ void pblCgiPrint(char * directory, char * fileName, char * contentType)
 			}
 			ptr += 8;
 
-			char * ptr2 = strstr(ptr, "-->");
+			char* ptr2 = strstr(ptr, "-->");
 			if (ptr2)
 			{
-				char * forKey = pblCgiStrRangeDup(ptr, ptr2);
-				PblList * lines = pblCgiReadFor(ptr2 + 3, forKey, stream);
+				char* forKey = pblCgiStrRangeDup(ptr, ptr2);
+				PblList* lines = pblCgiReadFor(ptr2 + 3, forKey, stream);
 				if (lines)
 				{
 					pblCgiPrintFor(lines, forKey, stdout);
 					while (pblListSize(lines))
 					{
-						char * p = pblListPop(lines);
+						char* p = pblListPop(lines);
 						if ((void*)-1 == p)
 						{
 							pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
@@ -1719,14 +1699,14 @@ void pblCgiPrint(char * directory, char * fileName, char * contentType)
 /**
 * Create a new empty map
 */
-PblMap * pblCgiNewMap(void)
+PblMap* pblCgiNewMap(void)
 {
-	PblMap * map = pblMapNewHashMap();
+	PblMap* map = pblMapNewHashMap();
 	if (!map)
 	{
 		pblCgiExitOnError("Failed to create a map, pbl_errno = %d\n", pbl_errno);
 	}
-	if (pblSetEnsureCapacity((PblSet *)map, 16) < 0)
+	if (pblSetEnsureCapacity((PblSet*)map, 16) < 0)
 	{
 		pblCgiExitOnError("Failed to set initial capacity of map, pbl_errno = %d, message='%s'\n", pbl_errno, pbl_errstr);
 	}
@@ -1736,7 +1716,7 @@ PblMap * pblCgiNewMap(void)
 /**
 * Test if a map is empty
 */
-int pblCgiMapIsEmpty(PblMap * map)
+int pblCgiMapIsEmpty(PblMap* map)
 {
 	return 0 == pblMapSize(map);
 }
@@ -1744,7 +1724,7 @@ int pblCgiMapIsEmpty(PblMap * map)
 /**
 * Release the memory used by a map
 */
-void pblCgiMapFree(PblMap * map)
+void pblCgiMapFree(PblMap* map)
 {
 	if (map)
 	{
@@ -1752,9 +1732,9 @@ void pblCgiMapFree(PblMap * map)
 	}
 }
 
-static PblMap * valueMap = NULL;
+static PblMap* valueMap = NULL;
 
-PblMap * pblCgiValueMap()
+PblMap* pblCgiValueMap()
 {
 	if (!valueMap)
 	{
@@ -1765,7 +1745,7 @@ PblMap * pblCgiValueMap()
 /**
 * Set a value for the given key.
 */
-void pblCgiSetValue(char * key, char * value)
+void pblCgiSetValue(char* key, char* value)
 {
 	pblCgiSetValueForIteration(key, value, -1);
 }
@@ -1773,7 +1753,7 @@ void pblCgiSetValue(char * key, char * value)
 /**
 * Set a value for the given key for a loop iteration.
 */
-void pblCgiSetValueForIteration(char * key, char * value, int iteration)
+void pblCgiSetValueForIteration(char* key, char* value, int iteration)
 {
 	pblCgiSetValueToMap(key, value, iteration, pblCgiValueMap());
 }
@@ -1781,9 +1761,9 @@ void pblCgiSetValueForIteration(char * key, char * value, int iteration)
 /**
 * Set a value for the given key for a loop iteration into a map.
 */
-void pblCgiSetValueToMap(char * key, char * value, int iteration, PblMap * map)
+void pblCgiSetValueToMap(char* key, char* value, int iteration, PblMap* map)
 {
-	static char * tag = "pblCgiSetValueToMap";
+	static char* tag = "pblCgiSetValueToMap";
 
 	if (!key || !*key)
 	{
@@ -1795,7 +1775,7 @@ void pblCgiSetValueToMap(char * key, char * value, int iteration, PblMap * map)
 	}
 	if (iteration >= 0)
 	{
-		char * iteratedKey = pblCgiSprintf("%s_%d", key, iteration);
+		char* iteratedKey = pblCgiSprintf("%s_%d", key, iteration);
 
 		if (pblMapAddStrStr(map, iteratedKey, value) < 0)
 		{
@@ -1809,7 +1789,7 @@ void pblCgiSetValueToMap(char * key, char * value, int iteration, PblMap * map)
 		PBL_FREE(iteratedKey);
 
 		iteratedKey = pblCgiSprintf("IDX_%d", iteration);
-		char * index = pblMapGetStr(map, iteratedKey);
+		char* index = pblMapGetStr(map, iteratedKey);
 		if (!index)
 		{
 			index = pblCgiSprintf("%d", iteration);
@@ -1841,7 +1821,7 @@ void pblCgiSetValueToMap(char * key, char * value, int iteration, PblMap * map)
 /**
 * Clear the value for the given key.
 */
-void pblCgiUnSetValue(char * key)
+void pblCgiUnSetValue(char* key)
 {
 	pblCgiUnSetValueForIteration(key, -1);
 }
@@ -1863,7 +1843,7 @@ void pblCgiClearValues()
 /**
 * Clear the value for the given key for a loop iteration.
 */
-void pblCgiUnSetValueForIteration(char * key, int iteration)
+void pblCgiUnSetValueForIteration(char* key, int iteration)
 {
 	if (!valueMap)
 	{
@@ -1875,7 +1855,7 @@ void pblCgiUnSetValueForIteration(char * key, int iteration)
 /**
 * Clear the value for the given key for a loop iteration from a map.
 */
-void pblCgiUnSetValueFromMap(char * key, int iteration, PblMap * map)
+void pblCgiUnSetValueFromMap(char* key, int iteration, PblMap* map)
 {
 	if (!key || !*key)
 	{
@@ -1884,7 +1864,7 @@ void pblCgiUnSetValueFromMap(char * key, int iteration, PblMap * map)
 
 	if (iteration >= 0)
 	{
-		char * iteratedKey = pblCgiSprintf("%s_%d", key, iteration);
+		char* iteratedKey = pblCgiSprintf("%s_%d", key, iteration);
 
 		pblMapUnmapStr(map, iteratedKey);
 		PBL_CGI_TRACE("Del %s=", iteratedKey);
@@ -1900,17 +1880,17 @@ void pblCgiUnSetValueFromMap(char * key, int iteration, PblMap * map)
 /**
 * Get the value for the given key.
 */
-char * pblCgiValue(char * key)
+char* pblCgiValue(char* key)
 {
 	return pblCgiValueForIteration(key, -1);
 }
 
-static char * pblCgiDurationKey = PBL_CGI_KEY_DURATION;
+static char* pblCgiDurationKey = PBL_CGI_KEY_DURATION;
 
 /**
 * Get the value for the given key for a loop iteration.
 */
-char * pblCgiValueForIteration(char * key, int iteration)
+char* pblCgiValueForIteration(char* key, int iteration)
 {
 	if (*key && *key == *pblCgiDurationKey && !strcmp(pblCgiDurationKey, key))
 	{
@@ -1927,9 +1907,9 @@ char * pblCgiValueForIteration(char * key, int iteration)
 /**
 * Get the value for the given key for a loop iteration from a map.
 */
-char * pblCgiValueFromMap(char * key, int iteration, PblMap * map)
+char* pblCgiValueFromMap(char* key, int iteration, PblMap* map)
 {
-	static char * tag = "pblCgiValueFromMap";
+	static char* tag = "pblCgiValueFromMap";
 
 	if (*key && *key == *pblCgiDurationKey && !strcmp(pblCgiDurationKey, key))
 	{
@@ -1938,7 +1918,7 @@ char * pblCgiValueFromMap(char * key, int iteration, PblMap * map)
 
 		unsigned long duration = now.tv_sec * 1000000 + now.tv_usec;
 		duration -= pblCgiStartTime.tv_sec * 1000000 + pblCgiStartTime.tv_usec;
-		char * string = pblCgiSprintf("%lu", duration);
+		char* string = pblCgiSprintf("%lu", duration);
 		PBL_CGI_TRACE("Duration=%s microseconds", string);
 		return string;
 	}
@@ -1949,8 +1929,8 @@ char * pblCgiValueFromMap(char * key, int iteration, PblMap * map)
 	}
 	if (iteration >= 0)
 	{
-		char * iteratedKey = pblCgiSprintf("%s_%d", key, iteration);
-		char * value = pblMapGetStr(map, iteratedKey);
+		char* iteratedKey = pblCgiSprintf("%s_%d", key, iteration);
+		char* value = pblMapGetStr(map, iteratedKey);
 		PBL_FREE(iteratedKey);
 		return value;
 	}
@@ -1963,7 +1943,7 @@ char * pblCgiValueFromMap(char * key, int iteration, PblMap * map)
 #include <Windows.h>
 #include <stdint.h> // portable: uint64_t   MSVC: __int64 
 
-int gettimeofday(struct timeval * tp, struct timezone * tzp)
+int gettimeofday(struct timeval* tp, struct timezone* tzp)
 {
 	// Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
 	// This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
@@ -1983,7 +1963,5 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp)
 	tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
 	return 0;
 }
-
-extern int getpid();
 
 #endif
