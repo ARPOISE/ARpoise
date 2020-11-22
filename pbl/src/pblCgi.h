@@ -26,41 +26,11 @@
  please see: http://www.mission-base.com/.
 
 $Log: pblCgi.h,v $
-Revision 1.1  2019/01/19 00:03:55  peter
-PBL for arpoise directory service
+Revision 1.2  2020/11/10 21:55:52  peter
+Working on the online version of Lend Me Your Face.
 
-Revision 1.1  2018/07/20 15:25:27  peter
+Revision 1.1  2020/11/10 16:14:43  peter
 *** empty log message ***
-
-Revision 1.33  2018/04/30 14:21:40  peter
-Added try open and time to string with format
-
-Revision 1.32  2018/04/29 18:37:45  peter
-Added replace method
-
-Revision 1.31  2018/04/26 14:06:39  peter
-Added the cookie handling
-
-Revision 1.30  2018/04/16 14:18:00  peter
-Improved handling of start time
-
-Revision 1.29  2018/04/07 19:32:05  peter
-Re-added function that is needed
-
-Revision 1.28  2018/04/07 18:52:34  peter
-Cleanup
-
-Revision 1.27  2018/03/10 21:49:22  peter
-Integration with ArvosDirectoryService
-
-Revision 1.26  2018/03/10 19:08:59  peter
-Removed warnings found by Visual Studio 2017 Version 15.6.0.
-
-Revision 1.25  2018/03/10 16:22:21  peter
-More work on cgi functions
-
-Revision 1.24  2018/02/23 23:20:24  peter
-Started to work on the cgi code
 
  */
 
@@ -115,6 +85,8 @@ extern "C"
 	extern char * pblCgiQueryString;
 	extern char * pblCgiCookieKey;
 	extern char * pblCgiCookieTag;
+	extern char * pblCgiPostData;
+	extern int pblCgiContentLength;
 
 	/*****************************************************************************/
 	/* Function declarations                                                     */
