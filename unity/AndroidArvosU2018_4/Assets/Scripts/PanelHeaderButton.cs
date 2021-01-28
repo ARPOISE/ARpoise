@@ -58,8 +58,11 @@ namespace com.arpoise.arpoiseapp
 
         public void HandleClick()
         {
-            _behaviour?.HandlePanelHeaderButtonClick();
-            //Debug.Log("PanelHeaderButton HandleClick.");
+            if (_behaviour != null)
+            {
+                _behaviour.HandlePanelHeaderButtonClick();
+                //Debug.Log("PanelHeaderButton HandleClick.");
+            }
         }
     }
 }

@@ -42,6 +42,7 @@ namespace GoogleARCore.Examples.AugmentedImage
     using com.arpoise.arpoiseapp;
 #if HAS_AR_CORE
     using GoogleARCore;
+    using System;
 #endif
     using UnityEngine;
 
@@ -56,6 +57,9 @@ namespace GoogleARCore.Examples.AugmentedImage
         /// </summary>
         public AugmentedImage Image;
 
+        /// <summary>
+        /// The hit pose use to place the TriggerObject.
+        /// </summary>
         public Pose? Pose = null;
 
         /// <summary>
@@ -78,7 +82,14 @@ namespace GoogleARCore.Examples.AugmentedImage
         /// </summary>
         public GameObject FrameUpperRight;
 
+        /// <summary>
+        /// The object to visualize.
+        /// </summary>
         public TriggerObject TriggerObject { get; set; }
+
+        /// <summary>
+        /// The behaviour.
+        /// </summary>
         public ArBehaviourImage ArBehaviour { get; set; }
 
         private GameObject _gameObject = null;
@@ -86,10 +97,22 @@ namespace GoogleARCore.Examples.AugmentedImage
 
         public void Start()
         {
-            FrameLowerLeft?.SetActive(false);
-            FrameLowerRight?.SetActive(false);
-            FrameUpperLeft?.SetActive(false);
-            FrameUpperRight?.SetActive(false);
+            if (FrameLowerLeft != null)
+            {
+                FrameLowerLeft.SetActive(false);
+            }
+            if (FrameLowerRight != null)
+            {
+                FrameLowerRight.SetActive(false);
+            }
+            if (FrameUpperLeft != null)
+            {
+                FrameUpperLeft.SetActive(false);
+            }
+            if (FrameUpperRight != null)
+            {
+                FrameUpperRight.SetActive(false);
+            }
         }
 
         private bool _first = true;

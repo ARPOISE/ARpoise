@@ -93,6 +93,7 @@ namespace com.arpoise.arpoiseapp
             PlayerPrefs.SetString("ArpoiseSettingsLongitude", LonInputField.text);
             PlayerPrefs.SetString("ArpoiseSettingsActivated", ActivationToggle.isOn ? true.ToString() : string.Empty);
 
+            //Debug.Log("InputPanel " + false);
             GameObject.SetActive(false);
             if (_behaviour != null)
             {

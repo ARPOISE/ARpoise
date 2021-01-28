@@ -113,7 +113,7 @@ namespace com.arpoise.arpoiseapp
 
         #region Protecteds
 
-        protected List<ArItem> LayerItemList = null;
+        protected readonly List<ArItem> LayerItemList = new List<ArItem>();
         protected bool IsNewLayer = false;
 
         protected bool? MenuEnabled = null;
@@ -133,11 +133,10 @@ namespace com.arpoise.arpoiseapp
         protected override IEnumerator GetData()
         {
             var os = "Android";
-            var bundle = "200609";
 #if UNITY_IOS
             os = "iOS";
-            bundle = "20" + bundle;
 #endif
+            var bundle = "20210128";
             long count = 0;
             string layerName = ArpoiseDirectoryLayer;
             string uri = ArpoiseDirectoryUrl;
@@ -168,9 +167,9 @@ namespace com.arpoise.arpoiseapp
                 var nextPageKey = string.Empty;
 
                 IsSlam = false;
-                SlamObjects.Clear();
 
                 #region Download all pages of the layer
+                var layerWebUrl = LayerWebUrl;
                 LayerWebUrl = null;
                 for (; ; )
                 {
@@ -189,10 +188,13 @@ namespace com.arpoise.arpoiseapp
                     ;
 
                     url = FixUrl(url);
+                    //Debug.Log("Loading Url " + url);
                     var request = UnityWebRequest.Get(url);
                     request.certificateHandler = new ArpoiseCertificateHandler();
                     request.timeout = 30;
+                    //Debug.Log("SendWebRequest " + url);
                     yield return request.SendWebRequest();
+                    //Debug.Log("Webrequest sent " + url);
 
                     var maxWait = request.timeout * 100;
                     while (!(request.isNetworkError || request.isHttpError) && !request.isDone && maxWait > 0)
@@ -246,12 +248,14 @@ namespace com.arpoise.arpoiseapp
                         {
                             layers.Clear();
                             nextPageKey = string.Empty;
+                            //Debug.Log("Redirected to " + layer.redirectionUrl);
                             continue;
                         }
                         layers.Add(layer);
                         if (layer.morePages == false || string.IsNullOrWhiteSpace(layer.nextPageKey))
                         {
                             LayerWebUrl = uri + "?layerName=" + layerName;
+                            //Debug.Log("Loaded Layer " + layerName);
                             break;
                         }
                         nextPageKey = layer.nextPageKey;
@@ -348,7 +352,7 @@ namespace com.arpoise.arpoiseapp
                                         spriteObject = iconAssetBundle.LoadAsset<GameObject>(spriteName);
                                     }
                                 }
-                                var sprite = spriteObject?.GetComponent<SpriteRenderer>().sprite;
+                                var sprite = spriteObject != null ? spriteObject.GetComponent<SpriteRenderer>().sprite : (Sprite)null; ;
 
                                 itemList.Add(new ArItem
                                 {
@@ -366,7 +370,8 @@ namespace com.arpoise.arpoiseapp
 
                     if (itemList.Any())
                     {
-                        LayerItemList = itemList;
+                        LayerItemList.Clear();
+                        LayerItemList.AddRange(itemList);
 
                         // There are different layers to show
                         MenuButtonClick = new MenuButtonClickActivity { ArBehaviour = this };
@@ -378,6 +383,7 @@ namespace com.arpoise.arpoiseapp
                             RefreshRequest = null;
                             if (refreshRequest != null)
                             {
+                                //Debug.Log("RefreshRequest " + refreshRequest.layerName + ", " + refreshRequest.url);
                                 count = 0;
                                 layerName = refreshRequest.layerName;
                                 uri = refreshRequest.url;
@@ -611,6 +617,10 @@ namespace com.arpoise.arpoiseapp
                     IsSlam = true;
                     triggerImageUrls.Clear();
                 }
+                if (!IsSlam || LayerWebUrl != layerWebUrl)
+                {
+                    SlamObjects.Clear();
+                }
                 foreach (var url in triggerImageUrls)
                 {
                     if (TriggerImages.ContainsKey(url))
@@ -738,6 +748,7 @@ namespace com.arpoise.arpoiseapp
                     RefreshRequest = null;
                     if (refreshRequest != null)
                     {
+                        //Debug.Log("RefreshRequest " + refreshRequest.layerName + ", " + refreshRequest.url);
                         count = 0;
                         layerName = refreshRequest.layerName;
                         uri = refreshRequest.url;
@@ -750,7 +761,6 @@ namespace com.arpoise.arpoiseapp
                         }
                         HasTriggerImages = false;
                         IsSlam = false;
-                        SlamObjects.Clear();
                         break;
                     }
                     yield return new WaitForSeconds(.1f);
@@ -771,6 +781,7 @@ namespace com.arpoise.arpoiseapp
 
         public virtual void HandleMenuButtonClick()
         {
+            //Debug.Log("ArBehaviourData.HandleMenuButtonClick");
         }
 
         public virtual void SetHeaderActive(string layerTitle)

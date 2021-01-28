@@ -43,6 +43,7 @@ namespace GoogleARCore.Examples.AugmentedImage
 #if HAS_AR_CORE
     using GoogleARCore;
     using GoogleARCore.Examples.Common;
+    using System;
 #endif
     using System.Collections.Generic;
     using System.Linq;
@@ -114,7 +115,7 @@ namespace GoogleARCore.Examples.AugmentedImage
             }
             else if (Session.Status.IsError())
             {
-                ShowAndroidToastMessage("ARCore encountered a problem connecting.  Please start the app again.");
+                ShowAndroidToastMessage("ARCore encountered a problem connecting. Please start the app again.");
                 _isQuitting = true;
                 Invoke("DoQuit", 1.5f);
             }
@@ -131,6 +132,7 @@ namespace GoogleARCore.Examples.AugmentedImage
                         GameObject.Destroy(visualizer.gameObject);
                     }
                     _slamVisualizers.Clear();
+                    VisualizedSlamObjects.Clear();
                 }
                 if (_visualizers.Any())
                 {
@@ -152,6 +154,7 @@ namespace GoogleARCore.Examples.AugmentedImage
                         GameObject.Destroy(visualizer.gameObject);
                     }
                     _slamVisualizers.Clear();
+                    VisualizedSlamObjects.Clear();
                 }
             }
 
@@ -180,8 +183,10 @@ namespace GoogleARCore.Examples.AugmentedImage
 
             if (IsSlam)
             {
-                if (!SlamObjects.Any())
+                var slamObjectsAvailable = AvailableSlamObjects.Any();
+                if (!slamObjectsAvailable)
                 {
+                    SetInfoText("All augments placed.");
                     return;
                 }
 
@@ -230,25 +235,21 @@ namespace GoogleARCore.Examples.AugmentedImage
                         Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
                             hit.Pose.rotation * Vector3.up) < 0)
                     {
-                        Debug.Log("Hit at back of the current DetectedPlane");
+                        //Debug.Log("Hit at back of the current DetectedPlane");
                     }
                     else
                     {
-                        int index = _slamHitCount++ % SlamObjects.Count;
-
-                        TriggerObject triggerObject = null;
-                        if (!SlamObjects.TryGetValue(index, out triggerObject))
-                        {
-                            ErrorMessage = $"No slam object for database index {index}, {SlamObjects.Keys.Min()} is minimum.";
-                        }
+                        int index = _slamHitCount++ % AvailableSlamObjects.Count;
+                        TriggerObject triggerObject = AvailableSlamObjects[index];
 
                         Anchor anchor = hit.Trackable.CreateAnchor(hit.Pose);
-                        AugmentedImageVisualizer  visualizer = Instantiate(AugmentedImageVisualizerPrefab, anchor.transform);
+                        AugmentedImageVisualizer visualizer = Instantiate(AugmentedImageVisualizerPrefab, anchor.transform);
                         visualizer.Pose = hit.Pose;
                         visualizer.TriggerObject = triggerObject;
                         visualizer.ArBehaviour = this;
 
                         _slamVisualizers.Add(_slamHitCount, visualizer);
+                        VisualizedSlamObjects.Add(triggerObject);
                     }
                 }
 
@@ -272,7 +273,7 @@ namespace GoogleARCore.Examples.AugmentedImage
                         ErrorMessage = "No trigger object for database index " + image.DatabaseIndex;
                         return;
                     }
-                    if (triggerObject.layerWebUrl != _layerWebUrl)
+                    if (!triggerObject.isActive || triggerObject.layerWebUrl != _layerWebUrl)
                     {
                         // This image was loaded for a different layer
                         continue;
@@ -284,8 +285,13 @@ namespace GoogleARCore.Examples.AugmentedImage
                     visualizer.Image = image;
                     visualizer.TriggerObject = triggerObject;
                     visualizer.ArBehaviour = this;
+                    visualizer.TriggerObject.LastUpdateTime = DateTime.Now;
 
                     _visualizers.Add(image.DatabaseIndex, visualizer);
+                }
+                else if (image.TrackingState == TrackingState.Tracking && visualizer != null)
+                {
+                    visualizer.TriggerObject.LastUpdateTime = DateTime.Now;
                 }
                 else if (image.TrackingState == TrackingState.Stopped && visualizer != null)
                 {
@@ -294,11 +300,28 @@ namespace GoogleARCore.Examples.AugmentedImage
                 }
             }
 
+            // Delete non active image visualizers
+            foreach (var visualizer in _visualizers.Values.ToList())
+            {
+                if (visualizer.TriggerObject?.poi != null)
+                {
+                    var trackingTimeout = visualizer.TriggerObject.poi.TrackingTimeout;
+                    if (trackingTimeout > 0)
+                    {
+                        if (visualizer.TriggerObject.LastUpdateTime.AddMilliseconds(trackingTimeout) < DateTime.Now)
+                        {
+                            _visualizers.Remove(visualizer.Image.DatabaseIndex);
+                            GameObject.Destroy(visualizer.gameObject);
+                        }
+                    }
+                }
+            }
+
             if (fitToScanOverlay != null)
             {
                 // Show the fit-to-scan overlay if there are no images that are Tracking.
                 var hasActiveObjects = _visualizers.Values.Any(x => x.Image.TrackingState == TrackingState.Tracking);
-                var setActive = !hasActiveObjects && !LayerPanelIsActive();
+                var setActive = !hasActiveObjects && !LayerPanelIsActive;
                 if (fitToScanOverlay.activeSelf != setActive)
                 {
                     fitToScanOverlay.SetActive(setActive);

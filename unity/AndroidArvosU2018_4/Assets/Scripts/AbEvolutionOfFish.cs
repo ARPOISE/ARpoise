@@ -409,10 +409,8 @@ public class AbEvolutionOfFish : ArFlock
     private float _difference = 0;
     private int _count = 0;
 
-    protected new void Update()
+    protected void Update()
     {
-        base.Update();
-
         if (ArCamera == null)
         {
             ArCamera = Camera.main.gameObject;
