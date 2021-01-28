@@ -46,6 +46,7 @@ Arpoise, see www.Arpoise.com/
 */
 
 using com.arpoise.arpoiseapp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -59,71 +60,13 @@ public class ArKitAnchorManager : MonoBehaviour
     private readonly List<GameObject> _gameObjects = new List<GameObject>();
 
     public ArBehaviourImage ArBehaviour { get; set; }
-    public Dictionary<int, TriggerObject> TriggerObjects { get; set; }
     public GameObject FitToScanOverlay { get; set; }
-#endif
+
     // Use this for initialization
     protected void Start()
     {
-#if HAS_AR_KIT
-        UnityARSessionNativeInterface.ARImageAnchorAddedEvent += AddImageAnchor;
         UnityARSessionNativeInterface.ARImageAnchorUpdatedEvent += UpdateImageAnchor;
         UnityARSessionNativeInterface.ARImageAnchorRemovedEvent += RemoveImageAnchor;
-#endif
-    }
-
-#if HAS_AR_KIT
-    private bool _hasTriggerObjects = false;
-
-    private void AddImageAnchor(ARImageAnchor arImageAnchor)
-    {
-        if (ArBehaviour.IsSlam)
-        {
-            return;
-        }
-        //Debug.LogFormat("Anchor added[{0}] : tracked {1}, name '{2}'", arImageAnchor.Identifier, arImageAnchor.IsTracked, arImageAnchor.ReferenceImageName);
-        int index;
-        if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
-        {
-            TriggerObject triggerObject;
-            var triggerObjects = TriggerObjects;
-            if (triggerObjects != null && triggerObjects.TryGetValue(index, out triggerObject))
-            {
-                //Debug.LogFormat("Index {0} trigger object {1}", index, triggerObject != null);
-
-                while (index >= _gameObjects.Count)
-                {
-                    _gameObjects.Add(null);
-                }
-                if (triggerObject.layerWebUrl != ArBehaviour.LayerWebUrl)
-                {
-                    _gameObjects.Add(null);
-                    return;
-                }
-
-                var arObjectState = ArBehaviour.ArObjectState;
-                if (arObjectState != null && _gameObjects[index] == null)
-                {
-                    GameObject newGameObject;
-                    var result = ArBehaviour.CreateArObject(
-                        arObjectState,
-                        triggerObject.gameObject,
-                        null,
-                        transform,
-                        triggerObject.poi,
-                        triggerObject.poi.id,
-                        out newGameObject
-                        );
-                    if (!string.IsNullOrWhiteSpace(result))
-                    {
-                        ArBehaviour.ErrorMessage = result;
-                        return;
-                    }
-                    _gameObjects[index] = newGameObject;
-                    newGameObject.SetActive(true);
-                }
-            }
-        }
     }
 
     private void UpdateImageAnchor(ARImageAnchor arImageAnchor)
@@ -142,10 +85,21 @@ public class ArKitAnchorManager : MonoBehaviour
             {
                 gameObjectToAHandle = _gameObjects[index];
             }
-            //Debug.LogFormat("Index {0} game object {1}", index, gameObjectToAHandle != null);
+                    
+            TriggerObject triggerObject = null;
+            ArBehaviour.TriggerObjects.TryGetValue(index, out triggerObject);
+            //Debug.LogFormat("Index {0}, GO {1}, TO {2}, tracked {3}", index, gameObjectToAHandle != null, triggerObject != null, arImageAnchor.IsTracked);
+
             if (gameObjectToAHandle != null)
             {
-                if (arImageAnchor.IsTracked)
+                if (triggerObject == null || !triggerObject.isActive || triggerObject.layerWebUrl != ArBehaviour.LayerWebUrl) 
+                {
+                    if (gameObjectToAHandle.activeSelf)
+                    {
+                        gameObjectToAHandle.SetActive(false);
+                    }
+                }
+                else if (arImageAnchor.IsTracked)
                 {
                     gameObjectToAHandle.transform.localPosition = UnityARMatrixOps.GetPosition(arImageAnchor.Transform);
                     gameObjectToAHandle.transform.localRotation = UnityARMatrixOps.GetRotation(arImageAnchor.Transform);
@@ -153,55 +107,41 @@ public class ArKitAnchorManager : MonoBehaviour
                     {
                         gameObjectToAHandle.SetActive(true);
                     }
-                }
-                else if (gameObjectToAHandle.activeSelf)
-                {
-                    //gameObjectToAHandle.SetActive(false);
+                    triggerObject.LastUpdateTime = DateTime.Now;
                 }
             }
-            else if (_hasTriggerObjects)
+            else if (triggerObject != null)
             {
-                //Debug.LogFormat("Anchor re-added[{0}] : tracked {1}, name '{2}'", arImageAnchor.Identifier, arImageAnchor.IsTracked, arImageAnchor.ReferenceImageName);
-                if (arImageAnchor.ReferenceImageName != null && int.TryParse(arImageAnchor.ReferenceImageName, out index) && index >= 0)
+                if (!triggerObject.isActive || triggerObject.layerWebUrl != ArBehaviour.LayerWebUrl)
                 {
-                    TriggerObject triggerObject;
-                    var triggerObjects = TriggerObjects;
-                    if (triggerObjects != null && triggerObjects.TryGetValue(index, out triggerObject))
+                    return;
+                }
+                while (index >= _gameObjects.Count)
+                {
+                    _gameObjects.Add(null);
+                }
+
+                var arObjectState = ArBehaviour.ArObjectState;
+                if (arObjectState != null && _gameObjects[index] == null)
+                {
+                    GameObject newGameObject;
+                        var result = ArBehaviour.CreateArObject(
+                        arObjectState,
+                        triggerObject.gameObject,
+                        null,
+                        transform,
+                        triggerObject.poi,
+                        triggerObject.poi.id,
+                        out newGameObject
+                        );
+                    if (!string.IsNullOrWhiteSpace(result))
                     {
-                        //Debug.LogFormat("Index {0} trigger object {1}", index, triggerObject != null);
-
-                        while (index >= _gameObjects.Count)
-                        {
-                            _gameObjects.Add(null);
-                        }
-                        if (triggerObject.layerWebUrl != ArBehaviour.LayerWebUrl)
-                        {
-                            _gameObjects.Add(null);
-                            return;
-                        }
-
-                        var arObjectState = ArBehaviour.ArObjectState;
-                        if (arObjectState != null && _gameObjects[index] == null)
-                        {
-                            GameObject newGameObject;
-                            var result = ArBehaviour.CreateArObject(
-                                arObjectState,
-                                triggerObject.gameObject,
-                                null,
-                                transform,
-                                triggerObject.poi,
-                                triggerObject.poi.id,
-                                out newGameObject
-                                );
-                            if (!string.IsNullOrWhiteSpace(result))
-                            {
-                                ArBehaviour.ErrorMessage = result;
-                                return;
-                            }
-                            _gameObjects[index] = newGameObject;
-                            newGameObject.SetActive(true);
-                        }
+                        ArBehaviour.ErrorMessage = result;
+                        return;
                     }
+                    _gameObjects[index] = newGameObject;
+                    newGameObject.SetActive(true);
+                    triggerObject.LastUpdateTime = DateTime.Now;
                 }
             }
         }
@@ -230,27 +170,64 @@ public class ArKitAnchorManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        UnityARSessionNativeInterface.ARImageAnchorAddedEvent -= AddImageAnchor;
         UnityARSessionNativeInterface.ARImageAnchorUpdatedEvent -= UpdateImageAnchor;
         UnityARSessionNativeInterface.ARImageAnchorRemovedEvent -= RemoveImageAnchor;
     }
 
-    private void Update()
+    public void Update()
     {
         var fitToScanOverlay = FitToScanOverlay;
         if (fitToScanOverlay != null)
         {
             var hasActiveObjects = false;
-            var triggerObjects = TriggerObjects;
-            _hasTriggerObjects = triggerObjects != null && triggerObjects.Values.Any(x => x.isActive);
-            if (_hasTriggerObjects)
+            var hasTriggerObjects = !ArBehaviour.IsSlam && ArBehaviour.TriggerObjects.Values.Any(x => x.isActive);
+            if (hasTriggerObjects)
             {
                 hasActiveObjects = _gameObjects.Any(x => x != null && x.activeSelf);
             }
-            var setActive = _hasTriggerObjects && !hasActiveObjects && !ArBehaviour.LayerPanelIsActive() && !ArBehaviour.IsSlam;
+            var setActive = hasTriggerObjects && !hasActiveObjects && !ArBehaviour.LayerPanelIsActive && !ArBehaviour.IsSlam;
             if (fitToScanOverlay.activeSelf != setActive)
             {
                 fitToScanOverlay.SetActive(setActive);
+            }
+        }
+
+        for (int index = 0; index < _gameObjects.Count; index++)
+        {
+            var gameObjectToAHandle = _gameObjects[index];
+            if (gameObjectToAHandle == null || !gameObjectToAHandle.activeSelf)
+            {
+                continue;
+            }
+            //Debug.LogFormat("Index {0}, GO {1}", index, gameObjectToAHandle.activeSelf);
+
+            TriggerObject triggerObject = null;
+            if (!ArBehaviour.IsSlam && ArBehaviour.TriggerObjects.TryGetValue(index, out triggerObject))
+            {
+                var isActive = true;
+                if (!triggerObject.isActive || triggerObject.layerWebUrl != ArBehaviour.LayerWebUrl)
+                {
+                    isActive = false;
+                }
+                else if (triggerObject?.poi != null)
+                {
+                    var trackingTimeout = triggerObject.poi.TrackingTimeout;
+                    if (trackingTimeout > 0)
+                    {
+                        if (triggerObject.LastUpdateTime.AddMilliseconds(trackingTimeout) < DateTime.Now)
+                        {
+                            isActive = false;
+                        }
+                    }
+                }
+                if (!isActive)
+                {
+                    gameObjectToAHandle.SetActive(false);
+                }
+            }
+            else
+            {
+                gameObjectToAHandle.SetActive(false);
             }
         }
     }

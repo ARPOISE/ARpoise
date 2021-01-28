@@ -38,7 +38,7 @@ using UnityEngine.Android;
 
 namespace com.arpoise.arpoiseapp
 {
-    public class ArBehaviourPosition : MonoBehaviour
+    public class ArBehaviourPosition : ArBehaviourMultiUser
     {
         #region Globals
 
@@ -83,16 +83,6 @@ namespace com.arpoise.arpoiseapp
         protected long StartTicks = 0;
 
         public virtual bool InfoPanelIsActive()
-        {
-            return false;
-        }
-
-        public virtual bool InputPanelIsActive()
-        {
-            return false;
-        }
-
-        public virtual bool LayerPanelIsActive()
         {
             return false;
         }
@@ -242,14 +232,19 @@ namespace com.arpoise.arpoiseapp
 #if UNITY_EDITOR
             // If in editor mode, set a fixed initial location and forget about the location service
             //
-            FilteredLatitude = OriginalLatitude = 48.158464f;
+            FilteredLatitude = OriginalLatitude = 48.158404f;
             FilteredLongitude = OriginalLongitude = 11.578708f;
 
             Debug.Log("UNITY_EDITOR fixed location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
 
             while (FilteredLatitude <= 90)
             {
-                yield return new WaitForSeconds(3600f);
+                var arObjectState = ArObjectState;
+                if (arObjectState != null)
+                {
+                    PlaceArObjects(arObjectState);
+                }
+                yield return new WaitForSeconds(.1f);
             }
             // End of editor mode
 #endif
@@ -292,7 +287,7 @@ namespace com.arpoise.arpoiseapp
                         }
                         if (!_locationService.isEnabledByUser)
                         {
-                            ErrorMessage = $"Please enable the location service for the {AppName} app.";
+                            ErrorMessage = $"Please enable the location service for the {AppName} app!";
                             yield break;
                         }
                     }

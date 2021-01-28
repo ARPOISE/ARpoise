@@ -163,10 +163,8 @@ public class EvolutionOfFish : ArFlock
     private Vector3 _lastForward;
     private float _difference = 0.01f;
     private Vector3 _nearScale = new Vector3(0, 2, 0);
-    protected new void Update()
+    protected void Update()
     {
-        base.Update();
-
         if (ArCamera == null)
         {
             return;
