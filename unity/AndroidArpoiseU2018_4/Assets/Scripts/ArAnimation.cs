@@ -43,6 +43,7 @@ namespace com.arpoise.arpoiseapp
         public const string Destroy = "destroy";
         public const string Duplicate = "duplicate";
         public const string Fade = "fade";
+        //public const string Bleach = "bleach";
 
         public const string Linear = "linear";
         public const string Cyclic = "cyclic";
@@ -90,6 +91,7 @@ namespace com.arpoise.arpoiseapp
                         : type.Contains(Destroy) ? Destroy
                         : type.Contains(Duplicate) ? Duplicate
                         : type.Contains(Fade) ? Fade
+                        //: type.Contains(Bleach) ? Bleach
                         : Transform;
                 }
                 if (poiAnimation.interpolation != null)
@@ -122,6 +124,27 @@ namespace com.arpoise.arpoiseapp
         }
 
         private float? _initialA = null;
+        private float? _initialR = null;
+        private float? _initialG = null;
+        private float? _initialB = null;
+
+        public bool HandleOpenUrl(string s)
+        {
+            if (!string.IsNullOrWhiteSpace(s))
+            {
+                var openUrl = "openUrl:";
+                if (openUrl.Equals(s.Substring(0, openUrl.Length), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var url = s.Substring(openUrl.Length);
+                    if (!string.IsNullOrWhiteSpace(url))
+                    {
+                        Application.OpenURL(url);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         public void Animate(long worldStartTicks, long nowTicks)
         {
@@ -199,7 +222,7 @@ namespace com.arpoise.arpoiseapp
             }
             var animationFactor = from + (to - from) * animationValue;
 
-            if (Rotate.Equals(_type))
+            if (Rotate.Equals(_type) && Wrapper != null && Wrapper.transform != null)
             {
                 Wrapper.transform.localEulerAngles = new Vector3(
                     _axis.x * animationFactor,
@@ -207,7 +230,7 @@ namespace com.arpoise.arpoiseapp
                     _axis.z * animationFactor
                     );
             }
-            else if (Scale.Equals(_type))
+            else if (Scale.Equals(_type) && Wrapper != null && Wrapper.transform != null)
             {
                 Wrapper.transform.localScale = new Vector3(
                     _axis.x == 0 ? 1 : _axis.x * animationFactor,
@@ -215,7 +238,7 @@ namespace com.arpoise.arpoiseapp
                     _axis.z == 0 ? 1 : _axis.z * animationFactor
                     );
             }
-            else if (Transform.Equals(_type))
+            else if (Transform.Equals(_type) && Wrapper != null && Wrapper.transform != null)
             {
                 Wrapper.transform.localPosition = new Vector3(
                     _axis.x * animationFactor,
@@ -225,41 +248,12 @@ namespace com.arpoise.arpoiseapp
             }
             else if (Fade.Equals(_type))
             {
-                var gameObject = GameObject;
-
-                var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
-                Renderer objectRenderer = gameObject.GetComponent<MeshRenderer>();
-                if (objectRenderer != null)
-                {
-                    rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
-                }
-                else
-                {
-                    foreach (var child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
-                    {
-                        if (child != null)
-                        {
-                            objectRenderer = child.GetComponent<MeshRenderer>();
-                            if (objectRenderer != null)
-                            {
-                                rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
-                            }
-                        }
-                    }
-                }
-                if (rendererColorPairs.Any())
-                {
-                    foreach (var pair in rendererColorPairs)
-                    {
-                        var color = pair.Value;
-                        if (_initialA == null)
-                        {
-                            _initialA = color.a;
-                        }
-                        pair.Key.material.color = new Color(color.r, color.g, color.b, animationFactor);
-                    }
-                }
+                SetFadeValue(animationFactor);
             }
+            //else if (Bleach.Equals(_type))
+            //{
+            //    SetBleachingValue(animationFactor);
+            //}
             else if (Destroy.Equals(_type))
             {
                 IsToBeDestroyed = true;
@@ -267,6 +261,10 @@ namespace com.arpoise.arpoiseapp
             else if (JustActivated && Duplicate.Equals(_type))
             {
                 IsToBeDuplicated = true;
+            }
+            if (JustActivated)
+            {
+                HandleOpenUrl(Name);
             }
         }
 
@@ -279,7 +277,7 @@ namespace com.arpoise.arpoiseapp
             JustStopped = true;
             IsActive = false;
 
-            if (!_persisting)
+            if (!_persisting && Wrapper != null && Wrapper.transform != null)
             {
                 if (Rotate.Equals(_type))
                 {
@@ -297,39 +295,123 @@ namespace com.arpoise.arpoiseapp
                 {
                     if (_initialA.HasValue)
                     {
-                        var gameObject = GameObject;
+                        SetFadeValue(_initialA.Value);
+                    }
+                }
+                //else if (Bleach.Equals(_type))
+                //{
+                //    if (_initialR.HasValue)
+                //    {
+                //        SetBleachingValue(0);
+                //    }
+                //}
+            }
+        }
 
-                        var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
-                        Renderer objectRenderer = gameObject.GetComponent<MeshRenderer>();
-                        if (objectRenderer != null)
+        private void SetFadeValue(float value)
+        {
+            var gameObject = GameObject;
+            if (gameObject == null)
+            {
+                return;
+            }
+
+            //particle system also have renderers that could be accessed
+            //var ps = gameObject.GetComponent<ParticleSystem>();
+            //var x = ps.shape.meshRenderer.material.color;
+            //var y = ps.shape.spriteRenderer.material.color;
+            //var z = ps.shape.skinnedMeshRenderer.material.color;
+
+            var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
+            Renderer objectRenderer = gameObject.GetComponent<MeshRenderer>();
+            if (objectRenderer != null && objectRenderer.material != null && objectRenderer.material.color != null)
+            {
+                rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+            }
+            else
+            {
+                foreach (var child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
+                {
+                    if (child != null)
+                    {
+                        objectRenderer = child.GetComponent<MeshRenderer>();
+                        if (objectRenderer != null && objectRenderer.material != null && objectRenderer.material.color != null)
                         {
                             rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
-                        }
-                        else
-                        {
-                            foreach (var child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
-                            {
-                                if (child != null)
-                                {
-                                    objectRenderer = child.GetComponent<MeshRenderer>();
-                                    if (objectRenderer != null)
-                                    {
-                                        rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
-                                    }
-                                }
-                            }
-                        }
-                        if (rendererColorPairs.Any())
-                        {
-                            foreach (var pair in rendererColorPairs)
-                            {
-                                var color = pair.Value;
-                                pair.Key.material.color = new Color(color.r, color.g, color.b, _initialA.Value);
-                            }
                         }
                     }
                 }
             }
+            if (rendererColorPairs.Any())
+            {
+                foreach (var pair in rendererColorPairs)
+                {
+                    var color = pair.Value;
+                    if (_initialA == null)
+                    {
+                        _initialA = color.a;
+                    }
+                    pair.Key.material.color = new Color(color.r, color.g, color.b, value);
+                }
+            }
         }
+
+        // This does not really work, it was work in progress from October 2020, a version of Nothing of him
+        //
+        //private void SetBleachingValue(float value)
+        //{
+        //    var gameObject = GameObject;
+        //    if (gameObject == null)
+        //    {
+        //        return;
+        //    }
+
+        //    Renderer objectRenderer;
+        //    var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
+        //    objectRenderer = gameObject.GetComponent<MeshRenderer>();
+        //    if (objectRenderer != null && objectRenderer.material != null && objectRenderer.material.color != null)
+        //    {
+        //        rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+        //    }
+        //    else
+        //    {
+        //        foreach (var child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
+        //        {
+        //            if (child != null)
+        //            {
+        //                objectRenderer = child.GetComponent<MeshRenderer>();
+        //                if (objectRenderer != null && objectRenderer.material != null && objectRenderer.material.color != null)
+        //                {
+        //                    rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+        //                }
+        //            }
+        //        }
+        //    }
+        //    if (rendererColorPairs.Any())
+        //    {
+        //        foreach (var pair in rendererColorPairs)
+        //        {
+        //            var color = pair.Value;
+        //            if (_initialR == null)
+        //            {
+        //                _initialR = color.r;
+        //            }
+        //            if (_initialG == null)
+        //            {
+        //                _initialG = color.g;
+        //            }
+        //            if (_initialB == null)
+        //            {
+        //                _initialB = color.b;
+        //            }
+        //            pair.Key.material.color = new Color(
+        //                _initialR.Value + value * ((1f - _initialR.Value) / 100f),
+        //                _initialG.Value + value * ((1f - _initialG.Value) / 100f),
+        //                _initialB.Value + value * ((1f - _initialB.Value) / 100f),
+        //                color.a
+        //                );
+        //        }
+        //    }
+        //}
     }
 }

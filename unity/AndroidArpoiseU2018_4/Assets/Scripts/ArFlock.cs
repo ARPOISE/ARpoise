@@ -231,8 +231,4 @@ public class ArFlock : MonoBehaviour
         RenderSettings.fogDensity = 0.03F;
         RenderSettings.fog = true;
     }
-
-    protected void Update()
-    {
-    }
 }

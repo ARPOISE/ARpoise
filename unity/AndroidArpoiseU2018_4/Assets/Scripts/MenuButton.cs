@@ -59,8 +59,11 @@ namespace com.arpoise.arpoiseapp
 
         public void HandleClick()
         {
-            _behaviour?.HandleMenuButtonClick();
-            //Debug.Log("MenuButton HandleClick.");
+            if (_behaviour != null)
+            {
+                _behaviour.HandleMenuButtonClick();
+                //Debug.Log("MenuButton HandleClick.");
+            }
         }
     }
 }

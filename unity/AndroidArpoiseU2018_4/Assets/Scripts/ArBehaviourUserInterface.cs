@@ -80,14 +80,68 @@ namespace com.arpoise.arpoiseapp
             return InfoPanel != null && InfoPanel.activeSelf;
         }
 
-        public override bool InputPanelIsActive()
+        public bool MenuButtonIsActive
         {
-            return InputPanel != null && InputPanel.activeSelf;
+            get { return MenuButton != null && MenuButton.activeSelf; }
+            set
+            {
+                if (MenuButton != null)
+                {
+                    if (MenuButton.activeSelf != value)
+                    {
+                        MenuButton.SetActive(value);
+                        //Debug.Log("MenuButton " + MenuButton.activeSelf);
+                    }
+                }
+            }
         }
 
-        public override bool LayerPanelIsActive()
+        public bool HeaderButtonIsActive
         {
-            return LayerPanel != null && LayerPanel.activeSelf;
+            get { return HeaderButton != null && HeaderButton.activeSelf; }
+            set
+            {
+                if (HeaderButton != null)
+                {
+                    if (HeaderButton.activeSelf != value)
+                    {
+                        HeaderButton.SetActive(value);
+                        //Debug.Log("HeaderButton " + HeaderButton.activeSelf);
+                    }
+                }
+            }
+        }
+
+        public bool InputPanelIsActive
+        {
+            get { return InputPanel != null && InputPanel.activeSelf; }
+            set
+            {
+                if (InputPanel != null)
+                {
+                    if (InputPanel.activeSelf != value)
+                    {
+                        InputPanel.SetActive(value);
+                        //Debug.Log("InputPanel " + InputPanel.activeSelf);
+                    }
+                }
+            }
+        }
+
+        public bool LayerPanelIsActive
+        {
+            get { return LayerPanel != null && LayerPanel.activeSelf; }
+            set
+            {
+                if (LayerPanel != null)
+                {
+                    if (LayerPanel.activeSelf != value)
+                    {
+                        LayerPanel.SetActive(value);
+                        //Debug.Log("LayerPanel " + LayerPanel.activeSelf);
+                    }
+                }
+            }
         }
 
         #region Buttons
@@ -95,7 +149,10 @@ namespace com.arpoise.arpoiseapp
         {
             //Debug.Log("HandleInfoPanelClosed");
 
-            InfoPanel?.SetActive(false);
+            if (InfoPanel != null)
+            {
+                InfoPanel.SetActive(false);
+            }
             PlayerPrefs.SetString(nameof(InfoPanelIsActive), false.ToString());
         }
 
@@ -103,13 +160,14 @@ namespace com.arpoise.arpoiseapp
         {
             //Debug.Log("HandleInputPanelClosed lat " + latitude + " lon " + longitude);
 
-            RefreshRequest = new RefreshRequest
+            var refreshRequest = new RefreshRequest
             {
                 url = ArpoiseDirectoryUrl,
                 layerName = ArpoiseDirectoryLayer,
                 latitude = latitude,
                 longitude = longitude
             };
+            RefreshRequest = refreshRequest;
         }
 
         private long _lastButtonSecond = 0;
@@ -128,7 +186,7 @@ namespace com.arpoise.arpoiseapp
                     MenuEnabled = !layers.Any(x => !x.showMenuButton);
                 }
             }
-            MenuButton.SetActive(MenuEnabled.HasValue && MenuEnabled.Value);
+            MenuButtonIsActive = MenuEnabled.HasValue && MenuEnabled.Value;
         }
 
         public override void SetHeaderActive(string layerTitle)
@@ -137,24 +195,25 @@ namespace com.arpoise.arpoiseapp
             {
                 HeaderText.GetComponent<Text>().text = layerTitle;
                 _headerButtonActivated = true;
-                HeaderButton.SetActive(_headerButtonActivated);
+                HeaderButtonIsActive = _headerButtonActivated;
             }
             else
             {
                 HeaderText.GetComponent<Text>().text = string.Empty;
                 _headerButtonActivated = false;
-                HeaderButton.SetActive(_headerButtonActivated);
+                HeaderButtonIsActive = _headerButtonActivated;
             }
         }
 
         public override void HandleMenuButtonClick()
         {
+            //Debug.Log("ArBehaviourUserInterface.HandleMenuButtonClick");
             if (InputPanelEnabled)
             {
                 var second = DateTime.Now.Ticks / 10000000L;
                 if (_lastButtonSecond == second)
                 {
-                    InputPanel.SetActive(true);
+                    InputPanelIsActive = true;
                     var inputPanel = InputPanel.GetComponent<InputPanel>();
                     inputPanel.Activate(this);
                     return;
@@ -172,10 +231,10 @@ namespace com.arpoise.arpoiseapp
 
                 _layerScrollList = new ArLayerScrollList(ContentPanel, ButtonObjectPool);
                 _layerScrollList.AddButtons(layerItemList, this);
-                InputPanel.SetActive(false);
-                HeaderButton.SetActive(false);
-                MenuButton.SetActive(false);
-                LayerPanel.SetActive(true);
+                InputPanelIsActive = false;
+                HeaderButtonIsActive = false;
+                MenuButtonIsActive = false;
+                LayerPanelIsActive = true;
             }
         }
 
@@ -187,9 +246,9 @@ namespace com.arpoise.arpoiseapp
             }
             if (MenuEnabled.HasValue && MenuEnabled.Value)
             {
-                HeaderButton.SetActive(_headerButtonActivated);
-                MenuButton.SetActive(MenuEnabled.HasValue && MenuEnabled.Value);
-                LayerPanel.SetActive(false);
+                HeaderButtonIsActive = _headerButtonActivated;
+                MenuButtonIsActive = MenuEnabled.HasValue && MenuEnabled.Value;
+                LayerPanelIsActive = false;
                 if (_layerScrollList != null)
                 {
                     _layerScrollList.RemoveButtons();
@@ -200,7 +259,7 @@ namespace com.arpoise.arpoiseapp
                 var second = DateTime.Now.Ticks / 10000000L;
                 if (_lastButtonSecond == second)
                 {
-                    InputPanel.SetActive(true);
+                    InputPanelIsActive = true;
                     InputPanel inputPanel = InputPanel.GetComponent<InputPanel>();
                     inputPanel.Activate(this);
                 }
@@ -210,39 +269,51 @@ namespace com.arpoise.arpoiseapp
 
         public void HandleLayerButtonClick(ArItem item)
         {
+            //Debug.Log("HandleLayerButtonClick " + item.itemName);
             if (item != null && !string.IsNullOrWhiteSpace(item.layerName) && !string.IsNullOrWhiteSpace(item.url))
             {
-                //Debug.Log("HandleLayerButtonClick " + item.itemName);
+                var layerName = item.layerName;
+                var url = item.url;
 
-                RefreshRequest = new RefreshRequest
+                if (MenuEnabled.HasValue && MenuEnabled.Value)
                 {
-                    url = item.url,
-                    layerName = item.layerName,
+                    HeaderButtonIsActive = _headerButtonActivated;
+                    MenuButtonIsActive = MenuEnabled.HasValue && MenuEnabled.Value;
+                    LayerPanelIsActive = false;
+                    if (_layerScrollList != null)
+                    {
+                        _layerScrollList.RemoveButtons();
+                    }
+                }
+
+                var refreshRequest = new RefreshRequest
+                {
+                    url = url,
+                    layerName = layerName,
                     latitude = FixedDeviceLatitude,
                     longitude = FixedDeviceLongitude
                 };
-            }
-            if (MenuEnabled.HasValue && MenuEnabled.Value)
-            {
-                HeaderButton.SetActive(_headerButtonActivated);
-                MenuButton.SetActive(MenuEnabled.HasValue && MenuEnabled.Value);
-                LayerPanel.SetActive(false);
-                if (_layerScrollList != null)
-                {
-                    _layerScrollList.RemoveButtons();
-                }
+                RefreshRequest = refreshRequest;
             }
         }
         #endregion
 
         #region Start
-        protected virtual void Start()
+        protected override void Start()
         {
+            base.Start();
+
             var menuButton = MenuButton.GetComponent<MenuButton>();
-            menuButton?.Setup(this);
+            if (menuButton != null)
+            {
+                menuButton.Setup(this);
+            }
 
             var panelHeaderButton = PanelHeaderButton.GetComponent<PanelHeaderButton>();
-            panelHeaderButton?.Setup(this);
+            if (panelHeaderButton != null)
+            {
+                panelHeaderButton.Setup(this);
+            }
 
             var inputPanel = InputPanel.GetComponent<InputPanel>();
             inputPanel.Activate(null);
@@ -256,8 +327,10 @@ namespace com.arpoise.arpoiseapp
         private long _arObjectId = -1;
         private static System.Random _random = new System.Random();
 
-        protected virtual void Update()
+        protected override void Update()
         {
+            base.Update();
+
             var menuButtonSetActive = MenuButtonSetActive;
             if (menuButtonSetActive != null)
             {
@@ -299,13 +372,13 @@ namespace com.arpoise.arpoiseapp
                 return;
             }
 
-            if (InputPanelIsActive())
+            if (InputPanelIsActive)
             {
                 SetInfoText("Please set the values.");
                 return;
             }
 
-            if (LayerPanelIsActive())
+            if (LayerPanelIsActive)
             {
                 SetInfoText(SelectingText);
                 return;
@@ -339,6 +412,11 @@ namespace com.arpoise.arpoiseapp
                 }
                 arObjectState.SetArObjectsToPlace();
                 arObjectState.IsDirty = false;
+                foreach (var triggerObject in TriggerObjects.Values)
+                {
+                    triggerObject.isActive = triggerObject.layerWebUrl == LayerWebUrl;
+                }
+                HasTriggerImages = TriggerObjects.Values.Any(x => x.isActive);
             }
             HasHitOnObject = arObjectState.HandleAnimations(StartTicks, nowTicks);
 
@@ -508,7 +586,7 @@ namespace com.arpoise.arpoiseapp
                         message = message.Replace("{N}", "" + arObjectState.Count);
                         message = message.Replace("{A}", "" + arObjectState.NumberOfAnimations);
                         message = message.Replace("{T}", "" + TriggerObjects.Values.Count(x => x.isActive));
-                        message = message.Replace("{S}", "" + SlamObjects.Values.Count(x => x.isActive));
+                        message = message.Replace("{S}", "" + SlamObjects.Count(x => x.isActive));
 
                         message = message.Replace("{I}", "" + (int)InitialHeading);
                         message = message.Replace("{D}", "" + DeviceAngle);
@@ -583,7 +661,7 @@ namespace com.arpoise.arpoiseapp
                 {
                     infoText.SetActive(true);
                 }
-                var component = infoText?.GetComponent<Text>();
+                var component = infoText.GetComponent<Text>();
                 if (component != null && component.text != text)
                 {
                     component.text = text;

@@ -104,13 +104,18 @@ namespace com.arpoise.arpoiseapp
             // Start GetData() coroutine 
             StartCoroutine("GetData");
         }
-#endregion
+        #endregion
 
-#region Update
+        #region Update
         protected override void Update()
         {
             base.Update();
+
+            if (IsSlam && FitToScanOverlay != null && FitToScanOverlay.activeSelf)
+            {
+                FitToScanOverlay.SetActive(false);
+            }
         }
-#endregion
+        #endregion
     }
 }

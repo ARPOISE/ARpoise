@@ -179,7 +179,11 @@ namespace com.arpoise.arpoiseapp
 
             foreach (var arAnimation in _billboardAnimations)
             {
-                arAnimation.Wrapper.transform.LookAt(Camera.main.transform);
+                var wrapper = arAnimation.Wrapper;
+                if (wrapper != null && wrapper.transform != null)
+                {
+                    wrapper.transform.LookAt(Camera.main.transform);
+                }
             }
 
             var inFocusAnimationsToStop = _inFocusAnimations.Where(x => x.IsActive).ToList();
@@ -269,6 +273,10 @@ namespace com.arpoise.arpoiseapp
                             if (!string.IsNullOrWhiteSpace(animationToFollow))
                             {
                                 var animationName = animationToFollow.Trim();
+                                if (arAnimation.HandleOpenUrl(animationName))
+                                {
+                                    continue;
+                                }
                                 foreach (var arAnimationToFollow in animations.Where(x => animationName.Equals(x.Name)))
                                 {
                                     if (!arAnimationToFollow.IsActive)
