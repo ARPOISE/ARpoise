@@ -30,6 +30,7 @@ Arpoise, see www.Arpoise.com/
 
 using System;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 
 namespace com.arpoise.arpoiseapp
@@ -223,6 +224,52 @@ namespace com.arpoise.arpoiseapp
         {
             var s = JsonUtility.ToJson(this);
             return JsonUtility.FromJson<Poi>(s);
+        }
+
+        [NonSerialized]
+        private int? _maximumCount = null;
+        public int MaximumCount
+        {
+            get
+            {
+                if (!_maximumCount.HasValue)
+                {
+                    _maximumCount = 0;
+                    var action = actions?.FirstOrDefault(x => "MaximumCount".Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        int value = 0;
+                        if (int.TryParse(action.activityMessage, out value))
+                        {
+                            _maximumCount = value;
+                        }
+                    }
+                }
+                return _maximumCount.Value;
+            }
+        }
+
+        [NonSerialized]
+        private double? _trackingTimeout = null;
+        public double TrackingTimeout
+        {
+            get
+            {
+                if (!_trackingTimeout.HasValue)
+                {
+                    _trackingTimeout = 0;
+                    var action = actions?.FirstOrDefault(x => "TrackingTimeout".Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        double value = 0;
+                        if (double.TryParse(action.activityMessage, out value))
+                        {
+                            _trackingTimeout = value;
+                        }
+                    }
+                }
+                return _trackingTimeout.Value;
+            }
         }
     }
 

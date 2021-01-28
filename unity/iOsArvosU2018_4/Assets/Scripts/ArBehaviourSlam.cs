@@ -40,6 +40,7 @@ namespace com.arpoise.arpoiseapp
     {
         private readonly List<GameObject> _imageSceneObjects = new List<GameObject>();
         private readonly List<GameObject> _slamSceneObjects = new List<GameObject>();
+        public readonly List<TriggerObject> VisualizedSlamObjects = new List<TriggerObject>();
 
         #region Globals
 #if HAS_AR_KIT
@@ -80,7 +81,6 @@ namespace com.arpoise.arpoiseapp
             {
                 _slamSceneObjects.Add(PointCloudParticleExample);
                 _slamSceneObjects.Add(GeneratePlanes);
-                _slamSceneObjects.Add(HitAnchor);
             }
 #endif
 #if HAS_AR_CORE
@@ -95,27 +95,55 @@ namespace com.arpoise.arpoiseapp
         }
         #endregion
 
+        public List<TriggerObject> AvailableSlamObjects
+        {
+            get
+            {
+                var result = new List<TriggerObject>();
+
+                foreach (var slamObject in SlamObjects.Where(x => x.poi != null && x.layerWebUrl == LayerWebUrl))
+                {
+                    var maximumCount = slamObject.poi.MaximumCount;
+                    if (maximumCount > 0)
+                    {
+                        var count = VisualizedSlamObjects.Where(x => x.poi != null && x.poi.id == slamObject.poi.id).Count();
+                        if (count >= maximumCount)
+                        {
+                            continue;
+                        }
+                    }
+                    result.Add(slamObject);
+                }
+                return result;
+            }
+        }
+
         #region Update
         protected override void Update()
         {
             base.Update();
-
+            var slamObjectsAvailable = AvailableSlamObjects.Any();
             foreach (var sceneObject in _imageSceneObjects)
             {
-                if (sceneObject != null && sceneObject.activeSelf != HasTriggerImages)
+                var active = !IsSlam && HasTriggerImages;
+                if (sceneObject != null && sceneObject.activeSelf != active)
                 {
-                    sceneObject.SetActive(HasTriggerImages);
-                    //Debug.Log($"{sceneObject.name} {HasTriggerImages}");
+                    sceneObject.SetActive(active);
+                    //Debug.Log($"{sceneObject.name} {active}");
                 }
             }
             foreach (var sceneObject in _slamSceneObjects)
             {
-                if (sceneObject != null && sceneObject.activeSelf != IsSlam)
+                if (sceneObject != null && sceneObject.activeSelf != slamObjectsAvailable)
                 {
-                    sceneObject.SetActive(IsSlam);
-                    //Debug.Log($"{sceneObject.name} {IsSlam}");
-
+#if HAS_AR_CORE
+                    sceneObject.SetActive(slamObjectsAvailable);
+                    //Debug.Log($"{sceneObject.name} {slamObjectsAvailable}");
+#endif
 #if HAS_AR_KIT
+                    sceneObject.SetActive(slamObjectsAvailable);
+                    //Debug.Log($"{sceneObject.name} {slamObjectsAvailable}");
+
                     if (sceneObject == GeneratePlanes)
                     {
                         var component = GeneratePlanes.GetComponent<UnityARGeneratePlane>();
@@ -130,13 +158,19 @@ namespace com.arpoise.arpoiseapp
                 }
             }
 #if HAS_AR_KIT
-            if (_myIsSlam != IsSlam)
+            if (HitAnchor.activeSelf != IsSlam)
             {
-                _myIsSlam = IsSlam;
+                HitAnchor.SetActive(IsSlam);
+                //Debug.Log($"HitAnchor {IsSlam}"); 
+            }
 
-                if (DetectAPlaneOverLay != null && DetectAPlaneOverLay.gameObject.activeSelf != IsSlam)
+            if (_myIsSlam != slamObjectsAvailable)
+            {
+                _myIsSlam = slamObjectsAvailable;
+
+                if (DetectAPlaneOverLay != null && DetectAPlaneOverLay.gameObject.activeSelf != slamObjectsAvailable)
                 {
-                    DetectAPlaneOverLay.SetActive(IsSlam);
+                    DetectAPlaneOverLay.SetActive(slamObjectsAvailable);
                 }
             }
 #endif

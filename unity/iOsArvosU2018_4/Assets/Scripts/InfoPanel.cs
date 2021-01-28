@@ -70,8 +70,11 @@ namespace com.arpoise.arpoiseapp
 
         public void HandleClick()
         {
-            _behaviour?.HandleInfoPanelClosed();
-            //Debug.Log("InfoPanel HandleClick.");
+            if (_behaviour != null)
+            {
+                _behaviour.HandleInfoPanelClosed();
+                //Debug.Log("InfoPanel HandleClick.");
+            }
         }
     }
 }

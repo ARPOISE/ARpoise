@@ -54,9 +54,8 @@ using UnityEngine.XR.iOS;
 
 public class UnityARCameraManager : ArBehaviourSlam
 {
-    private bool _sessionStarted = false;
-
     public Camera m_camera;
+    private bool _sessionStarted = false;
     private UnityARSessionNativeInterface m_session;
     private Material savedClearMaterial;
 
@@ -74,7 +73,6 @@ public class UnityARCameraManager : ArBehaviourSlam
 
     [Header("Object Tracking")]
     public ARReferenceObjectsSetAsset detectionObjects = null;
-
 
     public ARKitWorldTrackingSessionConfiguration sessionConfiguration
     {
@@ -103,6 +101,9 @@ public class UnityARCameraManager : ArBehaviourSlam
         }
     }
 
+    private  ArKitAnchorManager _anchorManager;
+    private UnityARHitTestExample _hitTest;
+
     // Use this for initialization
     protected override void Start()
     {
@@ -117,15 +118,14 @@ public class UnityARCameraManager : ArBehaviourSlam
             m_camera = Camera.main;
         }
 
-        var hitTest = HitAnchor.GetComponent<UnityARHitTestExample>();
-        hitTest.ArBehaviour = this;
-        hitTest.SlamObjects = SlamObjects;
-        hitTest.SceneAnchor = SceneAnchor;
+        _hitTest = HitAnchor.GetComponent<UnityARHitTestExample>();
+        _hitTest.ArBehaviour = this;
+        _hitTest.SceneAnchor = SceneAnchor;
+        _hitTest.Clear();
 
-        var anchorManager = AnchorManager.GetComponent<ArKitAnchorManager>();
-        anchorManager.ArBehaviour = this;
-        anchorManager.TriggerObjects = TriggerObjects;
-        anchorManager.FitToScanOverlay = FitToScanOverlay;
+        _anchorManager = AnchorManager.GetComponent<ArKitAnchorManager>();
+        _anchorManager.ArBehaviour = this;
+        _anchorManager.FitToScanOverlay = FitToScanOverlay;
     }
 
     protected void StartArSession()
@@ -206,6 +206,7 @@ public class UnityARCameraManager : ArBehaviourSlam
 
     private void FirstFrameUpdate(UnityARCamera cam)
     {
+        _hitTest.Clear();
         _sessionStarted = true;
         UnityARSessionNativeInterface.ARFrameUpdatedEvent -= FirstFrameUpdate;
     }
@@ -249,6 +250,7 @@ public class UnityARCameraManager : ArBehaviourSlam
         if (IsNewLayer)
         {
             _sessionStarted = false;
+            _hitTest.Clear();
         }
         base.Update();
 
@@ -271,7 +273,6 @@ public class UnityARCameraManager : ArBehaviourSlam
                     if (value + 30 < second)
                     {
                         //Debug.LogFormat("FTS value {0}, second {1}", _fitToScanOverlayActivationSecond.Value, second);
-
                         var triggerObjects = TriggerObjects;
                         if (triggerObjects != null)
                         {
@@ -328,8 +329,7 @@ public class UnityARCameraManager : ArBehaviourSlam
         {
             if (HasTriggerImages)
             {
-                var anchorManager = AnchorManager.GetComponent<ArKitAnchorManager>();
-                StartArSession(anchorManager.TriggerObjects);
+                StartArSession(TriggerObjects);
             }
             else
             {
@@ -337,6 +337,13 @@ public class UnityARCameraManager : ArBehaviourSlam
             }
         }
 
+        _anchorManager.Update();
+
+        if (!IsSlam)
+        {
+            _hitTest.Clear();
+        }
+        
         if (m_camera != null && _sessionStarted)
         {
             // JUST WORKS!

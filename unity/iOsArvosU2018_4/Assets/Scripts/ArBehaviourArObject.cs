@@ -50,36 +50,36 @@ namespace com.arpoise.arpoiseapp
         public GameObject gameObject;
         public Poi poi;
         public string layerWebUrl;
+
+        /// <summary>
+        /// Record the last time this image was tracked.
+        /// </summary>
+        public DateTime LastUpdateTime = DateTime.Now;
     }
 
     public class ArBehaviourArObject : ArBehaviourPosition
     {
         #region Globals
-
-        public GameObject Wrapper = null;
-
         public string LayerWebUrl { get; protected set; }
-
+        public readonly Dictionary<int, TriggerObject> TriggerObjects = new Dictionary<int, TriggerObject>();
+        public GameObject Wrapper = null;
         #endregion
 
         #region Protecteds
-
-        protected bool HasTriggerImages = false;
-        protected Dictionary<int, TriggerObject> TriggerObjects = new Dictionary<int, TriggerObject>();
-        protected Dictionary<int, TriggerObject> SlamObjects = new Dictionary<int, TriggerObject>();
 #if HAS_AR_CORE
         protected AugmentedImageDatabase AugmentedImageDatabase;
 #endif
+        protected bool HasTriggerImages = false;
         protected string InformationMessage = null;
         protected bool ShowInfo = false;
         protected float RefreshInterval = 0;
         protected readonly Dictionary<string, List<ArLayer>> InnerLayers = new Dictionary<string, List<ArLayer>>();
         protected readonly Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
         protected readonly Dictionary<string, Texture2D> TriggerImages = new Dictionary<string, Texture2D>();
+        protected readonly List<TriggerObject> SlamObjects = new List<TriggerObject>();
         #endregion
 
         #region ArObjects
-
         private int _bleachingValue = -1;
 
         // Link ar object to ar object state or to parent object
@@ -105,7 +105,6 @@ namespace com.arpoise.arpoiseapp
             }
             else
             {
-                // Add to parent object
                 parentObject.GameObjects.Add(arGameObject);
                 parentObject.ArObjects.Add(arObject);
             }
@@ -344,7 +343,12 @@ namespace com.arpoise.arpoiseapp
 
                 arObject.WrapperObject.transform.position = arObject.TargetPosition = new Vector3(xOffset, arObject.RelativeAltitude, zOffset);
 
-                if (_bleachingValue >= 0)
+                if ((!string.IsNullOrWhiteSpace(poi?.title) && poi.title.Contains("bleached"))
+                    || (!string.IsNullOrWhiteSpace(parentObject?.Text) && parentObject.Text.Contains("bleached")))
+                {
+                    arObject.SetBleachingValue(85);
+                }
+                else if (_bleachingValue >= 0)
                 {
                     arObject.SetBleachingValue(_bleachingValue);
                 }
@@ -368,7 +372,11 @@ namespace com.arpoise.arpoiseapp
                         return result;
                     }
 
-                    if (_bleachingValue >= 0)
+                    if (!string.IsNullOrWhiteSpace(poi?.title) && poi.title.Contains("bleached"))
+                    {
+                        arObject.SetBleachingValue(85);
+                    }
+                    else if (_bleachingValue >= 0)
                     {
                         arObject.SetBleachingValue(_bleachingValue);
                     }
@@ -419,7 +427,7 @@ namespace com.arpoise.arpoiseapp
                     }
 
                     var t = isSlamUrl ? null
-                        : TriggerObjects.Values.FirstOrDefault(x => x.triggerImageURL == triggerImageURL && x.layerWebUrl == LayerWebUrl);
+                        : TriggerObjects.Values.FirstOrDefault(x => x.triggerImageURL == triggerImageURL);
                     if (t == null)
                     {
                         int newIndex = isSlamUrl ? SlamObjects.Count : TriggerObjects.Count;
@@ -443,7 +451,7 @@ namespace com.arpoise.arpoiseapp
                         };
                         if (isSlamUrl)
                         {
-                            SlamObjects[t.index] = t;
+                            SlamObjects.Add(t);
                         }
                         else
                         {
@@ -459,6 +467,10 @@ namespace com.arpoise.arpoiseapp
                     else
                     {
                         t.isActive = true;
+                        t.triggerImageURL = triggerImageURL;
+                        t.gameObject = objectToAdd;
+                        t.poi = poi;
+                        t.layerWebUrl = LayerWebUrl;
                     }
                 }
                 catch (Exception ex)
@@ -502,6 +514,10 @@ namespace com.arpoise.arpoiseapp
                 {
                     return result;
                 }
+            }
+            foreach (var triggerObject in TriggerObjects.Values)
+            {
+                triggerObject.isActive = triggerObject.layerWebUrl == LayerWebUrl;
             }
             HasTriggerImages = TriggerObjects.Values.Any(x => x.isActive);
             return null;

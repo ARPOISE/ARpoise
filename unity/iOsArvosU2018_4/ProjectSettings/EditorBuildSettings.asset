@@ -27,16 +27,16 @@ EditorBuildSettings:
     path: Assets/UnityARKitPlugin/Examples/FocusSquare/FocusSquareScene.unity
     guid: 3c9ef824a7b95400bade362484e9b6af
   - enabled: 0
-    path: Assets/UnityARKitPlugin/Examples/FaceTracking/FaceAnchorScene.unity
+    path: Assets/UnityARKitPlugin/Examples/Common/FaceTracking/FaceAnchorScene.unity
     guid: 46e299c2ec1244fbaa1b9b14e2ab198a
   - enabled: 0
-    path: Assets/UnityARKitPlugin/Examples/FaceTracking/FaceMeshScene.unity
+    path: Assets/UnityARKitPlugin/Examples/Common/FaceTracking/FaceMeshScene.unity
     guid: e95b28d2a95b34b868e407dc86a3e6d2
   - enabled: 0
-    path: Assets/UnityARKitPlugin/Examples/FaceTracking/FaceBlendshapeScene.unity
+    path: Assets/UnityARKitPlugin/Examples/Common/FaceTracking/FaceBlendshapeScene.unity
     guid: 74c2619dd419d4704bba49146f77161d
   - enabled: 0
-    path: Assets/UnityARKitPlugin/Examples/FaceTracking/FaceDirectionalLightEstimate.unity
+    path: Assets/UnityARKitPlugin/Examples/Common/FaceTracking/FaceDirectionalLightEstimate.unity
     guid: 360fd35caee4f4e069485021a27c0b06
   - enabled: 0
     path: Assets/UnityARKitPlugin/Examples/ARKit2.0/UnityARWorldMap/UnityARWorldMap.unity

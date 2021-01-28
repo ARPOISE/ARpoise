@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio for Mac
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOsArvosU2018_2", "Assembly-CSharp.csproj", "{750468D2-238B-85D7-A09F-49734F4F9D1E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iOsArvosU2018_2", "Assembly-CSharp-Editor.csproj", "{7BF8A618-FD45-6DE3-E5E1-E5042A0DCF35}"
