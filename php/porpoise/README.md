@@ -20,7 +20,7 @@ If you are setting up your own porPOIse, contact the ARpoise administrators publ
 
 **If you already have a porPOIse and example layer, you can use this tutorial to learn how to modify it.**
 
-- One you understand how to use porPOIse to set up and modify your layer, you can add new **assets** (2d images, 3D models, sounds, etc.) to it by creating your own AssetBundle in Unity.
+- Once you understand how to use porPOIse to set up and modify your layer, you can add new **assets** (2d images, 3D models, sounds, etc.) to it by creating your own AssetBundle in Unity.
 - See our tutorial on creating AssetBundles for porPOIse here: https://github.com/ARPOISE/ARpoise/blob/master/documentation/CreatingAssetBundles.md
 
 NOTES: (This should be moved to the AssetBundle tutorial):
