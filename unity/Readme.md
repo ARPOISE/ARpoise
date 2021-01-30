@@ -40,13 +40,10 @@ The examples include various image triggered and SLAM AR objects.
 - **AR-vos** allows the prefabs shown to either be triggered by an image or to be placed by SLAM or to be location based or to be relative to the user.
 
 ## Release Notes
-- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.9 (20210124)**
-- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **iOS ARpoise 1.10 (20210124)**
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.9 (20210124)** and **iOS ARpoise 1.10 (20210124)**
   - Added [Opening a WEB Page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page)
   
-- ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.7 (20210124)**
-- ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **iOS AR-vos 1.4 (20210124)**
-
+- ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.7 (20210124)** and **iOS AR-vos 1.4 (20210124)**
   - Added [Opening a WEB Page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page)
   - Added [Image - Tracking Timeout](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#explanation-2)
   - Added [SLAM - Maximum Count](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#explanation-2)
