@@ -101,9 +101,12 @@ The name of the iOS asset bundle has to be the Android name followed by 'i'.
   * **Image Trigger** - If the URL of an image file in jpg format is entered into this field, the POI will be treated as an image trigger POI. The POI will be shown once the trigger image is detected in the environment.
   * **Trigger Image** - You may use any image you like as an image trigger, the url entered has to be a valid web url like **https://arpoise.com/TI/arvos_logo_rgb-weiss1024.jpg**.
   * **Image Detection** - The AR-vos app uses apple's [ARKit](https://developer.apple.com/augmented-reality/) and Google's [ARCore](https://developers.google.com/ar/) for image detection. Please refer to their documentation for recommendations on the time of images you can use.
-  
+  * **Tracking Timeout** - Once a trigger image is detected in the environment, the POI is shown, and by default it will be kept visible forever, even if the device cannot detect the trigger image in the environment anymore. The number of milliseconds a POI will be kept visible after the device stopped tracking the trigger image can be restricted using an Action with the Parameter set to **TrackingTimeout** and it's Value set to a postive number, as shown below.
+
+![BackEndImg3TrackingTimeout](/images/BackEndImg3TrackingTimeout.png)
+
   * **SLAM** - If the URL contains only the word **SLAM**, the POI is treated as SLAM object and will be shown every time the user taps on a vertical or horizontal plane detected in the enviroment. 
-  * **MaximumCount** - For SLAM POIs the number of times an object can be placed into the environment can be restricted using an Action with the Parameter set to **MaximumCount** and it's Value set to a postive number, as shown below.
+  * **Maximum Count** - For SLAM POIs the number of times an object can be placed into the environment can be restricted using an Action with the Parameter set to **MaximumCount** and it's Value set to a postive number, as shown below.
 
 ![BackEndImg3MaximumCount](/images/BackEndImg3MaximumCount.png)
 
