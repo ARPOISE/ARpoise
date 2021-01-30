@@ -141,7 +141,11 @@ The following properties of an animation can be edited:
 * **Axis (x,y,z)**: Axis to apply the animation to. E.g.: A rotation with Axis 1,0,0 is only around the X axis.
 * **Followed by**: If one or more comma separated animation names are given in this field. The animations mentioned are started once this animation ends. Animation names are global for all POIs of a layer. So the end of an animation of one POI can start an animation of the same POI or of another POI.
 
+### Playing a Sound
 If an animation is started and the Unity-prefab of the POI contains an AudioSource component, the audio source is played.
+
+## Opening a WEB Page
+Animations allow to open a web page in a browser on the user's device. In order to do so either the **Name** or the **Followed by** value of the animation must be of the form **openUrl:https://www.apoise.com/**. If an animation with such a **Name** is started, or an animation with such a **Followed by** value ends, the app will open the URL given in a web browser. 
 ## Original Documentation
 ===PorPOISe for Layar===
 Portable Point-of-Interest Server for Layar
