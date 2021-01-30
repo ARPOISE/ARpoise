@@ -145,7 +145,7 @@ The following properties of an animation can be edited:
 If an animation is started and the Unity-prefab of the POI contains an AudioSource component, the audio source is played.
 
 ### Opening a WEB Page
-Animations allow to open a web page in a browser on the user's device. In order to do so either the **Name** or the **Followed by** value of the animation must be of the form "**openUrl:https://www.apoise.com/**". If an animation with such a **Name** is started, or an animation with such a **Followed by** value ends, the app will open the URL given after the "**openUrl**" tag in a web browser. 
+Animations allow opening a web page in a browser on the user's device. In order to do so, either the **Name** or the **Followed by** value of the animation must be of the form "**openUrl:https://www.apoise.com/**". If an animation with such a **Name** is **started**, or an animation with such a **Followed by** value **ends**, the app will open the URL given after the "**openUrl:**" tag in a web browser. 
 ## Original Documentation
 ===PorPOISe for Layar===
 Portable Point-of-Interest Server for Layar
