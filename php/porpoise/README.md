@@ -108,7 +108,7 @@ The name of the iOS asset bundle has to be the Android name followed by 'i'.
   * **SLAM** - If the URL contains only the word **SLAM**, the POI is treated as SLAM object and will be shown every time the user taps on a vertical or horizontal plane detected in the enviroment. 
   * **Maximum Count** - For SLAM POIs the number of times an object can be placed into the environment can be restricted using an Action with the Parameter set to **MaximumCount** and it's Value set to a postive number, as shown below.
 
-   ![BackEndImg3MaximumCount](/images/BackEndImg3MaximumCount.png)
+    ![BackEndImg3MaximumCount](/images/BackEndImg3MaximumCount.png)
 
 * **Width of trigger image:** Used only in AR-vos app. This is an approximate with of your trigger image in real life (e.g. a poster might be 0.3 meters = 1 foot wide, a doorway might be 1 meter = 3 feet wide, a house facade might be 10 meters = 30 feet wide.)
 * Animation-list-**Remove**: Delete the animtion from the POI.
