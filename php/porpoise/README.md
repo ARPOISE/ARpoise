@@ -9,7 +9,7 @@ Use porPOISe to place and adjust **POI**s of your own AR **layers.**
 If you do not have access to a porPOIse server, you will need to set up your own:
 - On the page [https://github.com/ARPOISE/ARpoise](https://github.com/ARPOISE/ARpoise) click on the green **Code** button and then select **Download ZIP**.
 
-    ![Arpoise-Download](/images/Arpoise-Download.png)
+    ![Arpoise-Download](/images/Arpoise-Download.PNG)
     
 - The zip file **Arpoise-master.zip** contains two sub-directories, **ARpoise-master\config** and **ARpoise-master\php\porpoise**, install them onto **your own** web server!
 - Follow the instructions in the file [INSTALL](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/INSTALL)
