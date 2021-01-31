@@ -10,20 +10,20 @@ The layer **Example-SlamBoxes** of the [AR-vos-examples](/unity/AR-vos-examples.
 
 ## Layer Definition
 The layer Example-SlamBoxes is defined as follows, it contains only a single POI, called BellCube.
-### Image - Layer Example-SlamBoxes:
+### Image - Layer "Example-SlamBoxes":
 ![SubLayers-LayerDefinition](/documentation/images/SubLayers-LayerDefinition.png)
 
 ## POI Definition
 The POI BellCube is defined as follows, it contains only a single prefab, called BellCube and with it's parameter **Layer name** it references the sub-layer **Slam-Example**.
-### Image - POI BellCube:
+### Image - POI "BellCube":
 ![SubLayers-PoiDefinition](/documentation/images/SubLayers-PoiDefinition.png)
 
 ## Sub-Layer Definition
 The sub-layer Slam-Example is defined as follows, it contains four simple cube prefabs.
-### Image - Sub-Layer Slam-Example:
+### Image - Sub-Layer "Slam-Example":
 ![SubLayers-SubLayerDefinition](/documentation/images/SubLayers-SubLayerDefinition.png)
 
 ## Sub-Layer POI Definition
 Each of the POIs in the sublayer is a simple POI, defined as in the example.
-### Image - Sub-Layer POI StripesCube:
+### Image - Sub-Layer POI "StripesCube":
 ![SubLayers-SubLayerPoiDefinition](/documentation/images/SubLayers-SubLayerPoiDefinition.png)
