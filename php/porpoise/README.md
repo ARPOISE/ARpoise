@@ -188,6 +188,5 @@ from SURFnet to Layar and took the project with him.
 
 ===More information===
   * http://www.surfnet.nl/en The home of the creator of PorPOISe
-  * http://teknograd.wordpress.com/2009/10/19/augmented-reality-create-your-own-layar-layer/ An explanation on how to build the most minimal of Layar servers. Very useful to get started
   * http://layar.com/ is, of course, the reason this project exists
   
