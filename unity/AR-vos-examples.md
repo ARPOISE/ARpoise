@@ -102,7 +102,7 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 . 
 
 - If you tap on the yellow center cube of any group of cubes, the group will start to spin.
-- In the SLAM Boxes example, every time you tap somewhere on a plane, more colorful animated cubes appear.
+- In the SLAM Boxes example, up to ten times when you tap somewhere on a plane, more colorful animated cubes appear.
 
 . 
 
