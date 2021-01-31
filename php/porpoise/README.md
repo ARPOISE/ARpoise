@@ -11,7 +11,7 @@ If you do not have access to a porPOIse server, you will need to set up your own
 
     ![Arpoise-Download](/images/Arpoise-Download.PNG)
     
-- The zip file **Arpoise-master.zip** contains two sub-directories, **ARpoise-master\config** and **ARpoise-master\php\porpoise**, install them onto **your own** web server!
+- The zip file **Arpoise-master.zip** contains two sub-directories, **ARpoise-master\config** and **ARpoise-master\php\porpoise**, you need to install them onto **your own** web server!
 - Follow the instructions in the file [INSTALL](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/INSTALL)
 - For the Google maps based click-and-drag interface as shown in the screen shots below you need to get **your own** Google-maps ID.
 
