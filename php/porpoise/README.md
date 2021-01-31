@@ -115,7 +115,7 @@ The name of the iOS asset bundle has to be the Android name followed by 'i'.
 * **Save** button: Saves the POI's attributes to the layer's xml file.
 
 The following properties of an animation can be edited:
-* **Name**: The name is optional, it is used when one animation specifies that it should be followed by other animations.
+* **Name**: The name is optional, it is used when one animation specifies that it should be followed by other animations. The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the name.
 * **Event**: 
   * **onCreate** - the animation is started when the POI is loaded.
   * **onFollow** - the animation is started when it's predecessor animation ends.
