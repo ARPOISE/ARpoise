@@ -82,6 +82,8 @@ The [Mad King Ludwig II](https://en.wikipedia.org/wiki/Ludwig_II_of_Bavaria) sho
 . 
 
 ## SLAM Example
+- The document [SubLayers](/documentation/SubLayers.md) explains how the boxes used in the example are constructed by using a sub-layer.
+
 - Tap the AR-vos logo once to go back to the layers list. (If you ever have problems getting a new layer try closing the app completely and restarting.)
 
 - From the layer list select 'Example SLAM Boxes' and let it load. Your screen should look like this:
