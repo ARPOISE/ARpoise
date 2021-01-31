@@ -53,14 +53,17 @@ The examples include various image triggered AR objects.
 
 ## Components
 ### Content creation for iOS and Android Client Application
-See [unity](unity/).
-This folder contains Unity projects for the different clients, **ARpoise** and **AR-vos**.
+See [Creating Asset Bundles.](/documentation/CreatingAssetBundles.md).
+You will have to learn how to create assets in Unity.
 ### Content publishing and management with ARpoise PorPOISe Back End
 See [/php/porpoise](php/porpoise/README.md).
 ### ARpoiseDirectory Front End (We manage this for you, unless you set up your own system.)
 See [ARpoiseDirectory](ArpoiseDirectory).
 ### ARpoiseDirectory Back End (We manage this for you, unless you set up your own system.)
 See [/php/dir](php/dir/README.md).
+### Application creation for iOS and Android Client Applications (We manage the apps for you, unless you set up your own system.)
+See [unity](unity/).
+This folder contains Unity projects for the different clients, **ARpoise** and **AR-vos**.
 
 
 ## Restrictions
