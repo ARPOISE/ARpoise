@@ -95,7 +95,7 @@ As you can only enter one asset bundle url in the ARpoise PorPOISe configuration
 ARpoise assumes that the asset bundle name given is the one of the Android asset bundle.
 The name of the iOS asset bundle has to be the Android name followed by 'i'.
 * **Prefab name**: The POI's geometry is loaded from the asset bundle with this prefab name.
-* **Layer name**: If this value is set, the entire layer mentioned will be loaded allong with the POI. The document [SubLayers](/documentation/SubLayers.md) explains how such a layer can be used to construct a complex POI from simple POISs.
+* **Layer name**: If this value is set, the entire layer mentioned will be loaded along with the POI. The document [SubLayers](/documentation/SubLayers.md) explains how such a layer can be used to construct a complex POI from simple POISs.
 * **Relative location**: The location of the POI relative to the user's device. Comma separated list of the X-east-west, Y-up-down, Z-north-south values.
 * **Scaling factor**: This values allows to scale the POI's geometry in all three dimensions.
 * **Vertical rotation**: This values allows to rotate the POI's geometry around the Y axis.
