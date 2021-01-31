@@ -7,6 +7,10 @@ Use porPOISe to place and adjust **POI**s of your own AR **layers.**
 - Each individual AR experience or project exists on a separate ARpoise **layer.** In the ARpoise app, a single location in the real world can have multiple projects at exactly the same site, but if each one is in a separate layer, they will not interfere with each other and will show up in the ARpoise app as separate entries in a list of available projects.
 
 If you do not have access to a porPOIse server, you will need to set up your own:
+- On the page [https://github.com/ARPOISE/ARpoise](https://github.com/ARPOISE/ARpoise) click on the green "Code" button and then select Download Zip.
+
+    ![ArpoiseDownload](/images/ArpoiseDownload.png)
+    
 - Download and install the [porPOIse package](https://github.com/ARPOISE/ARpoise/tree/master/php/porpoise) onto **your own** web server!
 - Follow the instructions in the file [INSTALL](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/INSTALL)
 - For the Google maps based click-and-drag interface as shown in the screen shots below you need to get **your own** Google-maps ID.
