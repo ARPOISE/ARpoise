@@ -5,7 +5,7 @@
 This is a step by step tutorial to create an asset bundle that can be used by **ARpoise** or **AR-vos**.
 In the tutorial an asset bundle for Android is created.
 This is done on Windows 10.
-The process for creating an iOS asset bundle or doing the steps on a Mac are the similar.
+The process for creating an iOS asset bundle or doing the steps on a Mac are similar.
 See the last section of this document for further information.
 
 ## Unity Install
