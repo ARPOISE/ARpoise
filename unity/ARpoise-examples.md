@@ -1,4 +1,4 @@
-#![ARpoise Logo](/images/arpoise_logo_rgb-128.png) ARpoise Augmented Reality App
+# ![ARpoise Logo](/images/arpoise_logo_rgb-128.png) ARpoise Augmented Reality App
 # ARpoise -Mobile- App - Examples
 
 ## Overview
