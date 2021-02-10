@@ -2,7 +2,7 @@
 # ARpoise -Mobile- App - Examples
 
 ## Overview
-**ARpoise**, [see arpoise.com](https://arpoise.com), is a location based AR app.
+**ARpoise**, [see arpoise.com](https://arpoise.com), is an open source location based AR app.
 It is part of the [**ARpoise** (**A**ugmented **R**eality **p**oint **o**f **i**nterest **s**ervice **e**nvironment)](https://arpoise.com/) open-source Augmented Reality platform.
 Once you download, install and start it on your device, it will use your
 device's GPS coordinates and send a request to the **ARpoise** back end to see whether there are specific art works
