@@ -14,7 +14,8 @@ The **AR-vos** app can be downloaded from the [Google Play](https://play.google.
 
 ## Getting Started
 If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content, you should start by reading this document. As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read the documentation for it in [/php/porpoise](php/porpoise/README.md).
-Also see the [documentation](/documentation/README.md) folder and read the [Creating Asset Bundles](/documentation/CreatingAssetBundles.md) document.
+Also see the [documentation](/documentation/README.md) folder and look at the documents [Creating Asset Bundles](/documentation/CreatingAssetBundles.md), [ARpoise Functionality Overview](/documentation/ARpoise-FunctionalityOverview.pdf), 
+and [User Experience](/documentation/UserExperience.md).
 
 ## ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) ARpoise Examples
 The document [ARpoise-examples](/unity/ARpoise-examples.md) explains how to see some examples for **ARpoise**.
