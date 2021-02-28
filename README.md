@@ -7,7 +7,7 @@
 Two different client applications have both been implemented for Android and iOS.
 
 - The ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **ARpoise** client is a geolocative AR app running on most available phones.
-The **ARpoise** app can be downloaded from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store and the Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843). The source code of the apps is available [here](unity/). There is also an **ARpoise** client port to Oculus Quest, if you are interested in this
+The **ARpoise** app can be downloaded from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store and the Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843). The source code of the apps is available [here](unity/). There is also an **ARpoise** client port to Virtual Reality on Oculus Quest, if you are interested in this
 look at
 [/p](https://www.mission-base.com/p/)'s work 
 [Volker's Dream](https://www.mission-base.com/p/volkersdream.html).
