@@ -9,7 +9,9 @@ Two different client applications have both been implemented for Android and iOS
 - The ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **ARpoise** client is a geolocative AR app running on most available phones.
 The **ARpoise** app can be downloaded from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store and the Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843). The source code of the apps is available [here](unity/).
 (There is also an **ARpoise** client port to Oculus Quest, if you are interested in this
-look at [Volker's Dream](https://www.mission-base.com/p/volkersdream.html).
+look at
+[/p](https://www.mission-base.com/p/)'s work 
+[Volker's Dream](https://www.mission-base.com/p/volkersdream.html).
 
 - The ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **AR-vos** client app provides geolocative, image trigger and SLAM AR functionality, using ARKit on iOS and ARCore on Android. It therefore only runs on [ARKit supporting iOS devices](https://developer.apple.com/library/archive/documentation/DeviceInformation/Reference/iOSDeviceCompatibility/DeviceCompatibilityMatrix/DeviceCompatibilityMatrix.html) and [ARCore supporting Android devices](https://developers.google.com/ar/discover/supported-devices). We hope to merge the two client apps at some point, when the majority of smartphones support ARKit and ARCore technology. 
 The **AR-vos** app can be downloaded from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARvos) Store and the Apple [App Store](https://apps.apple.com/us/app/ar-vos/id1483218444). The source code of the apps is available [here](unity/).
