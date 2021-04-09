@@ -1,30 +1,30 @@
 ﻿/*
-ArAnimation.cs - Handling porpoise level animations for Arpoise.
+ArAnimation.cs - Handling porpoise level animations for ARpoise.
 
 Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 
-ARPOISE - Augmented Reality Point Of Interest Service 
+ARpoise - Augmented Reality point of interest service environment 
 
-This file is part of Arpoise.
+This file is part of ARpoise.
 
-    Arpoise is free software: you can redistribute it and/or modify
+    ARpoise is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Arpoise is distributed in the hope that it will be useful,
+    ARpoise is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Arpoise.  If not, see <https://www.gnu.org/licenses/>.
+    along with ARpoise.  If not, see <https://www.gnu.org/licenses/>.
 
 For more information on 
 
 Tamiko Thiel, see www.TamikoThiel.com/
 Peter Graf, see www.mission-base.com/peter/
-Arpoise, see www.Arpoise.com/
+ARpoise, see www.ARpoise.com/
 
 */
 
@@ -66,7 +66,7 @@ namespace com.arpoise.arpoiseapp
         private readonly Transform _transform;
         private readonly long _lengthTicks;
         private readonly long _delayTicks;
-        private readonly ArAnimationType _type;
+        private readonly ArAnimationType _animationType;
         private readonly ArInterpolation _interpolation;
         private readonly bool _persisting;
         private readonly bool _repeating;
@@ -74,6 +74,17 @@ namespace com.arpoise.arpoiseapp
         private readonly float _to;
         private readonly Vector3 _axis;
 
+        private static readonly string _rotate = nameof(ArAnimationType.Rotate).ToLower();
+        private static readonly string _scale = nameof(ArAnimationType.Scale).ToLower();
+        private static readonly string _destroy = nameof(ArAnimationType.Destroy).ToLower();
+        private static readonly string _duplicate = nameof(ArAnimationType.Duplicate).ToLower();
+        private static readonly string _fade = nameof(ArAnimationType.Fade).ToLower();
+        private static readonly string _grow = nameof(ArAnimationType.Grow).ToLower();
+        private static readonly string _cyclic = nameof(ArInterpolation.Cyclic).ToLower();
+        private static readonly string _halfsine = nameof(ArInterpolation.Halfsine).ToLower();
+        private static readonly string _sine = nameof(ArInterpolation.Sine).ToLower();
+
+        private float? _initialA = null;
         private long _startTicks = 0;
 
         public bool IsToBeDestroyed { get; private set; }
@@ -96,20 +107,20 @@ namespace com.arpoise.arpoiseapp
                 if (poiAnimation.type != null)
                 {
                     var type = poiAnimation.type.ToLower();
-                    _type = type.Contains(nameof(ArAnimationType.Rotate).ToLower()) ? ArAnimationType.Rotate
-                        : type.Contains(nameof(ArAnimationType.Scale).ToLower()) ? ArAnimationType.Scale
-                        : type.Contains(nameof(ArAnimationType.Grow).ToLower()) ? ArAnimationType.Grow
-                        : type.Contains(nameof(ArAnimationType.Destroy).ToLower()) ? ArAnimationType.Destroy
-                        : type.Contains(nameof(ArAnimationType.Duplicate).ToLower()) ? ArAnimationType.Duplicate
-                        : type.Contains(nameof(ArAnimationType.Fade).ToLower()) ? ArAnimationType.Fade
+                    _animationType = type.Contains(_rotate) ? ArAnimationType.Rotate
+                        : type.Contains(_scale) ? ArAnimationType.Scale
+                        : type.Contains(_destroy) ? ArAnimationType.Destroy
+                        : type.Contains(_duplicate) ? ArAnimationType.Duplicate
+                        : type.Contains(_fade) ? ArAnimationType.Fade
+                        : type.Contains(_grow) ? ArAnimationType.Grow
                         : ArAnimationType.Transform;
                 }
                 if (poiAnimation.interpolation != null)
                 {
                     var interpolation = poiAnimation.interpolation.ToLower();
-                    _interpolation = interpolation.Contains(nameof(ArInterpolation.Cyclic).ToLower()) ? ArInterpolation.Cyclic
-                        : interpolation.Contains(nameof(ArInterpolation.Halfsine).ToLower()) ? ArInterpolation.Halfsine
-                        : interpolation.Contains(nameof(ArInterpolation.Sine).ToLower()) ? ArInterpolation.Sine
+                    _interpolation = interpolation.Contains(_cyclic) ? ArInterpolation.Cyclic
+                        : interpolation.Contains(_halfsine) ? ArInterpolation.Halfsine
+                        : interpolation.Contains(_sine) ? ArInterpolation.Sine
                         : ArInterpolation.Linear;
                 }
                 _persisting = poiAnimation.persist;
@@ -118,7 +129,7 @@ namespace com.arpoise.arpoiseapp
                 _to = poiAnimation.to;
                 _axis = poiAnimation.axis == null ? Vector3.zero
                     : new Vector3(poiAnimation.axis.x, poiAnimation.axis.y, poiAnimation.axis.z);
-                if (_type == ArAnimationType.Grow && GameObject != null)
+                if (_animationType == ArAnimationType.Grow && GameObject != null)
                 {
                     _creature = GameObject.GetComponent(typeof(ArCreature)) as ArCreature;
                 }
@@ -130,17 +141,12 @@ namespace com.arpoise.arpoiseapp
         public bool JustActivated { get; private set; }
         public bool JustStopped { get; private set; }
 
-        public void Activate(long worldStartTicks, long nowTicks)
+        public void Activate(long startTicks, long nowTicks)
         {
             IsActive = true;
             _startTicks = 0;
-            Animate(worldStartTicks, nowTicks);
+            Animate(startTicks, nowTicks);
         }
-
-        private float? _initialA = null;
-        // private float? _initialR = null;
-        // private float? _initialG = null;
-        // private float? _initialB = null;
 
         private static readonly string _openUrl = "openUrl:";
         public bool HandleOpenUrl(string s)
@@ -160,17 +166,17 @@ namespace com.arpoise.arpoiseapp
             return false;
         }
 
-        public void Animate(long worldStartTicks, long nowTicks)
+        public void Animate(long startTicks, long nowTicks)
         {
             JustActivated = false;
             JustStopped = false;
 
-            if (worldStartTicks <= 0 || !IsActive || _lengthTicks < 1 || _delayTicks < 0)
+            if (startTicks <= 0 || !IsActive || _lengthTicks < 1 || _delayTicks < 0)
             {
                 return;
             }
 
-            if (_delayTicks > 0 && worldStartTicks + _delayTicks > nowTicks)
+            if (_delayTicks > 0 && startTicks + _delayTicks > nowTicks)
             {
                 return;
             }
@@ -190,11 +196,10 @@ namespace com.arpoise.arpoiseapp
                 {
                     if (!_repeating)
                     {
-                        Stop(worldStartTicks, nowTicks, false);
+                        Stop(startTicks, nowTicks, false);
                         return;
                     }
-
-                    _startTicks = endTicks + lengthTicks < nowTicks ? nowTicks : _startTicks + lengthTicks;
+                    _startTicks = endTicks + lengthTicks >= nowTicks ? endTicks : nowTicks;
                     JustActivated = true;
                 }
                 animationValue = (nowTicks - _startTicks) / ((float)lengthTicks);
@@ -231,58 +236,26 @@ namespace com.arpoise.arpoiseapp
             }
             var animationFactor = from + (to - from) * animationValue;
 
-            Transform transform;
-            switch (_type)
+            switch (_animationType)
             {
                 case ArAnimationType.Rotate:
-                    transform = _transform;
-                    if (transform != null)
-                    {
-                        var axis = _axis;
-                        transform.localEulerAngles = new Vector3(
-                            axis.x * animationFactor,
-                            axis.y * animationFactor,
-                            axis.z * animationFactor
-                            );
-                    }
+                    Rotate(animationFactor);
                     break;
 
                 case ArAnimationType.Scale:
-                    transform = _transform;
-                    if (transform != null)
-                    {
-                        var axis = _axis;
-                        transform.localScale = new Vector3(
-                            axis.x == 0 ? 1 : axis.x * animationFactor,
-                            axis.y == 0 ? 1 : axis.y * animationFactor,
-                            axis.z == 0 ? 1 : axis.z * animationFactor
-                            );
-                    }
+                    Scale(animationFactor);
                     break;
 
                 case ArAnimationType.Transform:
-                    transform = _transform;
-                    if (transform != null)
-                    {
-                        var axis = _axis;
-                        transform.localPosition = new Vector3(
-                            axis.x * animationFactor,
-                            axis.y * animationFactor,
-                            axis.z * animationFactor
-                            );
-                    }
+                    Transform(animationFactor);
                     break;
 
                 case ArAnimationType.Grow:
-                    var creature = _creature;
-                    if (creature != null)
-                    {
-                        creature.Grow(animationFactor);
-                    }
+                    Grow(animationFactor);
                     break;
 
                 case ArAnimationType.Fade:
-                    SetFadeValue(animationFactor);
+                    Fade(animationFactor);
                     break;
 
                 case ArAnimationType.Destroy:
@@ -290,12 +263,10 @@ namespace com.arpoise.arpoiseapp
                     break;
 
                 case ArAnimationType.Duplicate:
-                    if (JustActivated)
-                    {
-                        IsToBeDuplicated = true;
-                    }
+                    IsToBeDuplicated = JustActivated;
                     break;
             }
+
             if (JustActivated)
             {
                 HandleOpenUrl(Name);
@@ -311,54 +282,86 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
-        public void Stop(long worldStartTicks, long nowTicks, bool animate = true)
+        public void Stop(long startTicks, long nowTicks, bool animate = true)
         {
             if (animate)
             {
-                Animate(worldStartTicks, nowTicks);
+                Animate(startTicks, nowTicks);
             }
             JustStopped = true;
             IsActive = false;
             if (!_persisting)
             {
-                Transform transform;
-                switch (_type)
+                switch (_animationType)
                 {
                     case ArAnimationType.Rotate:
-                        transform = _transform;
-                        if (transform != null)
+                        if (_transform != null)
                         {
-                            transform.localEulerAngles = Vector3.zero;
+                            _transform.localEulerAngles = Vector3.zero;
                         }
                         break;
 
                     case ArAnimationType.Scale:
-                        transform = _transform;
-                        if (transform != null)
+                        if (_transform != null)
                         {
-                            transform.localScale = Vector3.one;
+                            _transform.localScale = Vector3.one;
                         }
                         break;
 
                     case ArAnimationType.Transform:
-                        transform = _transform;
-                        if (transform != null)
+                        if (_transform != null)
                         {
-                            transform.localPosition = Vector3.zero;
+                            _transform.localPosition = Vector3.zero;
                         }
                         break;
 
                     case ArAnimationType.Fade:
                         if (_initialA.HasValue)
                         {
-                            SetFadeValue(_initialA.Value);
+                            Fade(_initialA.Value);
                         }
                         break;
                 }
             }
         }
 
-        private void SetFadeValue(float value)
+        private void Rotate(float value)
+        {
+            if (_transform != null)
+            {
+                var axis = _axis;
+                _transform.localEulerAngles = new Vector3(axis.x * value, axis.y * value, axis.z * value);
+            }
+        }
+
+        private void Scale(float value)
+        {
+            if (_transform != null)
+            {
+                var axis = _axis;
+                _transform.localScale = new Vector3(
+                    axis.x == 0 ? 1 : axis.x * value, axis.y == 0 ? 1 : axis.y * value, axis.z == 0 ? 1 : axis.z * value);
+            }
+        }
+
+        private void Transform(float value)
+        {
+            if (_transform != null)
+            {
+                var axis = _axis;
+                _transform.localPosition = new Vector3(axis.x * value, axis.y * value, axis.z * value);
+            }
+        }
+
+        private void Grow(float value)
+        {
+            if (_creature != null)
+            {
+                _creature.Grow(value);
+            }
+        }
+
+        private void Fade(float value)
         {
             var gameObject = GameObject;
             if (gameObject == null)

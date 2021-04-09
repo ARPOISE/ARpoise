@@ -21,7 +21,7 @@
 /*
 AugmentedImageExampleController.cs - MonoBehaviour for setting image triggers of the Android version of image trigger ARpoise, aka AR-vos.
 
-This file is part of Arpoise.
+This file is part of ARpoise.
 
 This file is derived from image trigger example of the Google ARCore SDK for Unity
 
@@ -33,7 +33,7 @@ For more information on
 
 Tamiko Thiel, see www.TamikoThiel.com/
 Peter Graf, see www.mission-base.com/peter/
-Arpoise, see www.Arpoise.com/
+ARpoise, see www.ARpoise.com/
 
 */
 

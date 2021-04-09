@@ -1,9 +1,9 @@
 ﻿/*
 ArKitAnchorManager.cs - Anchor manager of the ARKit based version of image trigger ARpoise, aka AR-vos.
 
-ARPOISE - Augmented Reality Point Of Interest Service 
+ARpoise - Augmented Reality point of interest service environment 
 
-This file is part of Arpoise. 
+This file is part of ARpoise. 
 
 This file is derived from image trigger example of the Unity-ARKit-Plugin
 
@@ -41,7 +41,7 @@ For more information on
 
 Tamiko Thiel, see www.TamikoThiel.com/
 Peter Graf, see www.mission-base.com/peter/
-Arpoise, see www.Arpoise.com/
+ARpoise, see www.ARpoise.com/
 
 */
 

@@ -1,12 +1,12 @@
 ﻿/*
-ArCreature.cs - MonoBehaviour for a Lindenmayer System creature in Arpoise.
+ArCreature.cs - MonoBehaviour for a Lindenmayer System creature in ARpoise.
 
 This code is derived from the project "L-Systems in Unity" by Pedro Boechat,
 see https://github.com/pboechat/LSystemsInUnity
 
-ARPOISE - Augmented Reality Point Of Interest Service 
+ARpoise - Augmented Reality point of interest service environment 
 
-This file is part of Arpoise. Arpoise is free software.
+This file is part of ARpoise. ARpoise is free software.
 
 MIT License
 
@@ -34,7 +34,7 @@ For more information on
 
 Tamiko Thiel, see www.TamikoThiel.com/
 Peter Graf, see www.mission-base.com/peter/
-Arpoise, see www.ARpoise.com/
+ARpoise, see www.ARpoise.com/
 
 */
 

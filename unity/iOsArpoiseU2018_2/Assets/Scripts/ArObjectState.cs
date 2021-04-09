@@ -1,30 +1,30 @@
 ﻿/*
-ArObjectState.cs - ArObject state for Arpoise.
+ArObjectState.cs - ArObject state for ARpoise.
 
 Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 
-ARPOISE - Augmented Reality Point Of Interest Service 
+ARpoise - Augmented Reality point of interest service environment 
 
-This file is part of Arpoise.
+This file is part of ARpoise.
 
-    Arpoise is free software: you can redistribute it and/or modify
+    ARpoise is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Arpoise is distributed in the hope that it will be useful,
+    ARpoise is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Arpoise.  If not, see <https://www.gnu.org/licenses/>.
+    along with ARpoise.  If not, see <https://www.gnu.org/licenses/>.
 
 For more information on 
 
 Tamiko Thiel, see www.TamikoThiel.com/
 Peter Graf, see www.mission-base.com/peter/
-Arpoise, see www.Arpoise.com/
+ARpoise, see www.ARpoise.com/
 
 */
 
@@ -174,7 +174,7 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
-        public bool HandleAnimations(ArBehaviourData arBehaviourData, long startTicks, long now)
+        public bool HandleAnimations(ArBehaviourData arBehaviourData, long startTicks, long nowTicks)
         {
             if (_billboardAnimations.Count > 0)
             {
@@ -190,10 +190,10 @@ namespace com.arpoise.arpoiseapp
                 }
             }
 
-            List<ArAnimation> inFocusAnimationsToStop = null;
+            HashSet<ArAnimation> inFocusAnimationsToStop = null;
             if (_onFocusAnimations.Count > 0 || _inFocusAnimations.Count > 0)
             {
-                inFocusAnimationsToStop = _inFocusAnimations.Where(x => x.IsActive).ToList();
+                inFocusAnimationsToStop = new HashSet<ArAnimation>(_inFocusAnimations.Where(x => x.IsActive));
                 var cameraMain = Camera.main;
                 var ray = cameraMain.ScreenPointToRay(new Vector3(cameraMain.pixelWidth / 2, cameraMain.pixelHeight / 2, 0f));
 
@@ -207,7 +207,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             if (!arAnimation.IsActive)
                             {
-                                arAnimation.Activate(startTicks, now);
+                                arAnimation.Activate(startTicks, nowTicks);
                             }
                         }
 
@@ -215,7 +215,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             if (!arAnimation.IsActive)
                             {
-                                arAnimation.Activate(startTicks, now);
+                                arAnimation.Activate(startTicks, nowTicks);
                             }
                             inFocusAnimationsToStop.Remove(arAnimation);
                         }
@@ -240,7 +240,7 @@ namespace com.arpoise.arpoiseapp
                             hit = true;
                             if (!arAnimation.IsActive)
                             {
-                                arAnimation.Activate(startTicks, now);
+                                arAnimation.Activate(startTicks, nowTicks);
                             }
                         }
                     }
@@ -254,12 +254,12 @@ namespace com.arpoise.arpoiseapp
                 var animation = animations[i];
                 if (inFocusAnimationsToStop != null && inFocusAnimationsToStop.Contains(animation))
                 {
-                    animation.Stop(startTicks, now);
+                    animation.Stop(startTicks, nowTicks);
                     inFocusAnimationsToStop.Remove(animation);
                 }
                 else
                 {
-                    animation.Animate(startTicks, now);
+                    animation.Animate(startTicks, nowTicks);
                 }
 
                 if (animation.JustStopped && !string.IsNullOrWhiteSpace(animation.FollowedBy))
@@ -286,7 +286,7 @@ namespace com.arpoise.arpoiseapp
                                 {
                                     if (!arAnimationToFollow.IsActive)
                                     {
-                                        arAnimationToFollow.Activate(startTicks, now);
+                                        arAnimationToFollow.Activate(startTicks, nowTicks);
                                     }
                                 }
                             }
