@@ -35,32 +35,39 @@ using UnityEngine;
 
 namespace com.arpoise.arpoiseapp
 {
+    public enum ArInterpolation
+    {
+        Linear = 0,
+        Cyclic = 1,
+        Sine = 2,
+        Halfsine = 3
+    }
+
+    public enum ArAnimationType
+    {
+        Transform = 0,
+        Rotate = 1,
+        Scale = 2,
+        Destroy = 3,
+        Duplicate = 4,
+        Fade = 5,
+        Grow = 6
+    }
+
     public class ArAnimation
     {
-        public const string Rotate = "rotate";
-        public const string Scale = "scale";
-        public const string Transform = "transform";
-        public const string Destroy = "destroy";
-        public const string Duplicate = "duplicate";
-        public const string Fade = "fade";
-        //public const string Bleach = "bleach";
-
-        public const string Linear = "linear";
-        public const string Cyclic = "cyclic";
-        public const string Sine = "sine";
-        public const string Halfsine = "halfsine";
-
         public readonly long PoiId;
         public readonly GameObject Wrapper;
         public readonly GameObject GameObject;
         public readonly string Name;
         public readonly string FollowedBy;
 
+        private readonly ArCreature _creature;
+        private readonly Transform _transform;
         private readonly long _lengthTicks;
         private readonly long _delayTicks;
-        private readonly string _type = Transform;
-        private readonly string _interpolation = Linear;
-        private readonly string _interpolationType = string.Empty;
+        private readonly ArAnimationType _type;
+        private readonly ArInterpolation _interpolation;
         private readonly bool _persisting;
         private readonly bool _repeating;
         private readonly float _from;
@@ -75,9 +82,12 @@ namespace com.arpoise.arpoiseapp
         public ArAnimation(long poiId, GameObject wrapper, GameObject gameObject, PoiAnimation poiAnimation, bool isActive)
         {
             PoiId = poiId;
-            Wrapper = wrapper;
             GameObject = gameObject;
             IsActive = isActive;
+            if ((Wrapper = wrapper) != null)
+            {
+                _transform = wrapper.transform;
+            }
             if (poiAnimation != null)
             {
                 Name = poiAnimation.name;
@@ -86,21 +96,21 @@ namespace com.arpoise.arpoiseapp
                 if (poiAnimation.type != null)
                 {
                     var type = poiAnimation.type.ToLower();
-                    _type = type.Contains(Rotate) ? Rotate
-                        : type.Contains(Scale) ? Scale
-                        : type.Contains(Destroy) ? Destroy
-                        : type.Contains(Duplicate) ? Duplicate
-                        : type.Contains(Fade) ? Fade
-                        //: type.Contains(Bleach) ? Bleach
-                        : Transform;
+                    _type = type.Contains(nameof(ArAnimationType.Rotate).ToLower()) ? ArAnimationType.Rotate
+                        : type.Contains(nameof(ArAnimationType.Scale).ToLower()) ? ArAnimationType.Scale
+                        : type.Contains(nameof(ArAnimationType.Grow).ToLower()) ? ArAnimationType.Grow
+                        : type.Contains(nameof(ArAnimationType.Destroy).ToLower()) ? ArAnimationType.Destroy
+                        : type.Contains(nameof(ArAnimationType.Duplicate).ToLower()) ? ArAnimationType.Duplicate
+                        : type.Contains(nameof(ArAnimationType.Fade).ToLower()) ? ArAnimationType.Fade
+                        : ArAnimationType.Transform;
                 }
                 if (poiAnimation.interpolation != null)
                 {
                     var interpolation = poiAnimation.interpolation.ToLower();
-                    _interpolation = interpolation.Contains(Cyclic) ? Cyclic : Linear;
-                    _interpolationType = interpolation.Contains(Halfsine) ? Halfsine
-                        : interpolation.Contains(Sine) ? Sine
-                        : string.Empty;
+                    _interpolation = interpolation.Contains(nameof(ArInterpolation.Cyclic).ToLower()) ? ArInterpolation.Cyclic
+                        : interpolation.Contains(nameof(ArInterpolation.Halfsine).ToLower()) ? ArInterpolation.Halfsine
+                        : interpolation.Contains(nameof(ArInterpolation.Sine).ToLower()) ? ArInterpolation.Sine
+                        : ArInterpolation.Linear;
                 }
                 _persisting = poiAnimation.persist;
                 _repeating = poiAnimation.repeat;
@@ -108,6 +118,10 @@ namespace com.arpoise.arpoiseapp
                 _to = poiAnimation.to;
                 _axis = poiAnimation.axis == null ? Vector3.zero
                     : new Vector3(poiAnimation.axis.x, poiAnimation.axis.y, poiAnimation.axis.z);
+                if (_type == ArAnimationType.Grow && GameObject != null)
+                {
+                    _creature = GameObject.GetComponent(typeof(ArCreature)) as ArCreature;
+                }
                 FollowedBy = poiAnimation.followedBy;
             }
         }
@@ -124,18 +138,18 @@ namespace com.arpoise.arpoiseapp
         }
 
         private float? _initialA = null;
-        private float? _initialR = null;
-        private float? _initialG = null;
-        private float? _initialB = null;
+        // private float? _initialR = null;
+        // private float? _initialG = null;
+        // private float? _initialB = null;
 
+        private static readonly string _openUrl = "openUrl:";
         public bool HandleOpenUrl(string s)
         {
-            if (!string.IsNullOrWhiteSpace(s))
+            if (!string.IsNullOrWhiteSpace(s) && s.Length > _openUrl.Length)
             {
-                var openUrl = "openUrl:";
-                if (openUrl.Equals(s.Substring(0, openUrl.Length), StringComparison.InvariantCultureIgnoreCase))
+                if (_openUrl.Equals(s.Substring(0, _openUrl.Length), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var url = s.Substring(openUrl.Length);
+                    var url = s.Substring(_openUrl.Length);
                     if (!string.IsNullOrWhiteSpace(url))
                     {
                         Application.OpenURL(url);
@@ -170,7 +184,8 @@ namespace com.arpoise.arpoiseapp
             }
             else
             {
-                var endTicks = _startTicks + _lengthTicks;
+                var lengthTicks = _lengthTicks;
+                var endTicks = _startTicks + lengthTicks;
                 if (endTicks < nowTicks)
                 {
                     if (!_repeating)
@@ -179,41 +194,35 @@ namespace com.arpoise.arpoiseapp
                         return;
                     }
 
-                    if (endTicks + _lengthTicks < nowTicks)
-                    {
-                        _startTicks = nowTicks;
-                    }
-                    else
-                    {
-                        _startTicks += _lengthTicks;
-                    }
+                    _startTicks = endTicks + lengthTicks < nowTicks ? nowTicks : _startTicks + lengthTicks;
                     JustActivated = true;
                 }
-                animationValue = (nowTicks - _startTicks) / ((float)_lengthTicks);
+                animationValue = (nowTicks - _startTicks) / ((float)lengthTicks);
             }
 
             var from = _from;
             var to = _to;
 
-            if (Cyclic.Equals(_interpolation))
+            switch (_interpolation)
             {
-                if (animationValue >= .5)
-                {
-                    animationValue -= .5f;
-                    var temp = from;
-                    from = to;
-                    to = temp;
-                }
-                animationValue *= 2;
-            }
+                case ArInterpolation.Cyclic:
+                    if (animationValue >= .5f)
+                    {
+                        animationValue -= .5f;
+                        var temp = from;
+                        from = to;
+                        to = temp;
+                    }
+                    animationValue *= 2;
+                    break;
 
-            if (Halfsine.Equals(_interpolationType))
-            {
-                animationValue = (float)Math.Sin(Math.PI * animationValue);
-            }
-            else if (Sine.Equals(_interpolationType))
-            {
-                animationValue = (-1f + (float)Math.Cos(2 * Math.PI * animationValue)) / 2;
+                case ArInterpolation.Halfsine:
+                    animationValue = (float)Math.Sin(Math.PI * animationValue);
+                    break;
+
+                case ArInterpolation.Sine:
+                    animationValue = (-1f + (float)Math.Cos(2 * Math.PI * animationValue)) / 2;
+                    break;
             }
 
             if (animationValue < 0)
@@ -222,49 +231,83 @@ namespace com.arpoise.arpoiseapp
             }
             var animationFactor = from + (to - from) * animationValue;
 
-            if (Rotate.Equals(_type) && Wrapper != null && Wrapper.transform != null)
+            Transform transform;
+            switch (_type)
             {
-                Wrapper.transform.localEulerAngles = new Vector3(
-                    _axis.x * animationFactor,
-                    _axis.y * animationFactor,
-                    _axis.z * animationFactor
-                    );
-            }
-            else if (Scale.Equals(_type) && Wrapper != null && Wrapper.transform != null)
-            {
-                Wrapper.transform.localScale = new Vector3(
-                    _axis.x == 0 ? 1 : _axis.x * animationFactor,
-                    _axis.y == 0 ? 1 : _axis.y * animationFactor,
-                    _axis.z == 0 ? 1 : _axis.z * animationFactor
-                    );
-            }
-            else if (Transform.Equals(_type) && Wrapper != null && Wrapper.transform != null)
-            {
-                Wrapper.transform.localPosition = new Vector3(
-                    _axis.x * animationFactor,
-                    _axis.y * animationFactor,
-                    _axis.z * animationFactor
-                    );
-            }
-            else if (Fade.Equals(_type))
-            {
-                SetFadeValue(animationFactor);
-            }
-            //else if (Bleach.Equals(_type))
-            //{
-            //    SetBleachingValue(animationFactor);
-            //}
-            else if (Destroy.Equals(_type))
-            {
-                IsToBeDestroyed = true;
-            }
-            else if (JustActivated && Duplicate.Equals(_type))
-            {
-                IsToBeDuplicated = true;
+                case ArAnimationType.Rotate:
+                    transform = _transform;
+                    if (transform != null)
+                    {
+                        var axis = _axis;
+                        transform.localEulerAngles = new Vector3(
+                            axis.x * animationFactor,
+                            axis.y * animationFactor,
+                            axis.z * animationFactor
+                            );
+                    }
+                    break;
+
+                case ArAnimationType.Scale:
+                    transform = _transform;
+                    if (transform != null)
+                    {
+                        var axis = _axis;
+                        transform.localScale = new Vector3(
+                            axis.x == 0 ? 1 : axis.x * animationFactor,
+                            axis.y == 0 ? 1 : axis.y * animationFactor,
+                            axis.z == 0 ? 1 : axis.z * animationFactor
+                            );
+                    }
+                    break;
+
+                case ArAnimationType.Transform:
+                    transform = _transform;
+                    if (transform != null)
+                    {
+                        var axis = _axis;
+                        transform.localPosition = new Vector3(
+                            axis.x * animationFactor,
+                            axis.y * animationFactor,
+                            axis.z * animationFactor
+                            );
+                    }
+                    break;
+
+                case ArAnimationType.Grow:
+                    var creature = _creature;
+                    if (creature != null)
+                    {
+                        creature.Grow(animationFactor);
+                    }
+                    break;
+
+                case ArAnimationType.Fade:
+                    SetFadeValue(animationFactor);
+                    break;
+
+                case ArAnimationType.Destroy:
+                    IsToBeDestroyed = true;
+                    break;
+
+                case ArAnimationType.Duplicate:
+                    if (JustActivated)
+                    {
+                        IsToBeDuplicated = true;
+                    }
+                    break;
             }
             if (JustActivated)
             {
                 HandleOpenUrl(Name);
+
+                if (GameObject != null)
+                {
+                    var audioSource = GameObject.GetComponent<AudioSource>();
+                    if (audioSource != null)
+                    {
+                        audioSource.Play();
+                    }
+                }
             }
         }
 
@@ -276,35 +319,42 @@ namespace com.arpoise.arpoiseapp
             }
             JustStopped = true;
             IsActive = false;
-
-            if (!_persisting && Wrapper != null && Wrapper.transform != null)
+            if (!_persisting)
             {
-                if (Rotate.Equals(_type))
+                Transform transform;
+                switch (_type)
                 {
-                    Wrapper.transform.localEulerAngles = Vector3.zero;
+                    case ArAnimationType.Rotate:
+                        transform = _transform;
+                        if (transform != null)
+                        {
+                            transform.localEulerAngles = Vector3.zero;
+                        }
+                        break;
+
+                    case ArAnimationType.Scale:
+                        transform = _transform;
+                        if (transform != null)
+                        {
+                            transform.localScale = Vector3.one;
+                        }
+                        break;
+
+                    case ArAnimationType.Transform:
+                        transform = _transform;
+                        if (transform != null)
+                        {
+                            transform.localPosition = Vector3.zero;
+                        }
+                        break;
+
+                    case ArAnimationType.Fade:
+                        if (_initialA.HasValue)
+                        {
+                            SetFadeValue(_initialA.Value);
+                        }
+                        break;
                 }
-                else if (Scale.Equals(_type))
-                {
-                    Wrapper.transform.localScale = Vector3.one;
-                }
-                else if (Transform.Equals(_type))
-                {
-                    Wrapper.transform.localPosition = Vector3.zero;
-                }
-                else if (Fade.Equals(_type))
-                {
-                    if (_initialA.HasValue)
-                    {
-                        SetFadeValue(_initialA.Value);
-                    }
-                }
-                //else if (Bleach.Equals(_type))
-                //{
-                //    if (_initialR.HasValue)
-                //    {
-                //        SetBleachingValue(0);
-                //    }
-                //}
             }
         }
 
@@ -324,7 +374,7 @@ namespace com.arpoise.arpoiseapp
 
             var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
             Renderer objectRenderer = gameObject.GetComponent<MeshRenderer>();
-            if (objectRenderer != null && objectRenderer.material != null && objectRenderer.material.color != null)
+            if (objectRenderer != null && objectRenderer.material != null)
             {
                 rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
             }
@@ -335,7 +385,7 @@ namespace com.arpoise.arpoiseapp
                     if (child != null)
                     {
                         objectRenderer = child.GetComponent<MeshRenderer>();
-                        if (objectRenderer != null && objectRenderer.material != null && objectRenderer.material.color != null)
+                        if (objectRenderer != null && objectRenderer.material != null)
                         {
                             rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
                         }
@@ -369,7 +419,7 @@ namespace com.arpoise.arpoiseapp
         //    Renderer objectRenderer;
         //    var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
         //    objectRenderer = gameObject.GetComponent<MeshRenderer>();
-        //    if (objectRenderer != null && objectRenderer.material != null && objectRenderer.material.color != null)
+        //    if (objectRenderer != null && objectRenderer.material != null)
         //    {
         //        rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
         //    }
@@ -380,7 +430,7 @@ namespace com.arpoise.arpoiseapp
         //            if (child != null)
         //            {
         //                objectRenderer = child.GetComponent<MeshRenderer>();
-        //                if (objectRenderer != null && objectRenderer.material != null && objectRenderer.material.color != null)
+        //                if (objectRenderer != null && objectRenderer.material != null)
         //                {
         //                    rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
         //                }

@@ -1,5 +1,5 @@
 ﻿/*
-ArBehaviourImage.cs - MonoBehaviour for Arpoise, image handling.
+ArBehaviourImage.cs - MonoBehaviour for Arpoise image handling.
 
 Copyright (C) 2019, Tamiko Thiel and Peter Graf - All Rights Reserved
 
@@ -100,9 +100,9 @@ namespace com.arpoise.arpoiseapp
             }
 #endif
             // Start GetPosition() coroutine 
-            StartCoroutine("GetPosition");
+            StartCoroutine(nameof(GetPosition));
             // Start GetData() coroutine 
-            StartCoroutine("GetData");
+            StartCoroutine(nameof(GetData));
         }
         #endregion
 

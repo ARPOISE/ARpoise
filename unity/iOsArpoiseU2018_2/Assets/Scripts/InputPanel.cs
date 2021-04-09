@@ -1,5 +1,5 @@
 ﻿/*
-InputPanel.cs - MonoBehaviour for Arpoise, input handling.
+InputPanel.cs - MonoBehaviour for Arpoise input handling.
 
 Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 

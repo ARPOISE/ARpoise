@@ -1,5 +1,5 @@
 ﻿/*
-MenuButton.cs - Script handling clicks on the info panel.
+InfoPanel.cs - Script handling clicks on the info panel.
 
 Copyright (C) 2019, Tamiko Thiel and Peter Graf - All Rights Reserved
 

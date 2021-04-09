@@ -28,6 +28,7 @@ Arpoise, see www.Arpoise.com/
 
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -45,8 +46,8 @@ namespace com.arpoise.arpoiseapp
         private readonly List<ArAnimation> _onClickAnimations = new List<ArAnimation>();
         private readonly List<ArAnimation> _billboardAnimations = new List<ArAnimation>();
 
-        private List<ArAnimation> _allAnimations = null;
-        private List<ArAnimation> AllAnimations
+        private ArAnimation[] _allAnimations = null;
+        private ArAnimation[] AllAnimations
         {
             get
             {
@@ -57,7 +58,7 @@ namespace com.arpoise.arpoiseapp
                         .Concat(_onFocusAnimations)
                         .Concat(_inFocusAnimations)
                         .Concat(_onClickAnimations)
-                        .ToList();
+                        .ToArray();
                 }
                 return _allAnimations;
             }
@@ -144,7 +145,7 @@ namespace com.arpoise.arpoiseapp
                 RemoveFromAnimations(child);
             }
             _arObjects.Remove(arObject);
-            Object.Destroy(arObject.WrapperObject);
+            UnityEngine.Object.Destroy(arObject.WrapperObject);
             SetArObjectsToPlace();
         }
 
@@ -169,28 +170,32 @@ namespace com.arpoise.arpoiseapp
         {
             get
             {
-                return AllAnimations.Count;
+                return AllAnimations.Length;
             }
         }
 
-        public bool HandleAnimations(long startTicks, long now)
+        public bool HandleAnimations(ArBehaviourData arBehaviourData, long startTicks, long now)
         {
-            var hit = false;
-
-            foreach (var arAnimation in _billboardAnimations)
+            if (_billboardAnimations.Count > 0)
             {
-                var wrapper = arAnimation.Wrapper;
-                if (wrapper != null && wrapper.transform != null)
+                Transform transform;
+                var cameraMain = Camera.main;
+                foreach (var arAnimation in _billboardAnimations)
                 {
-                    wrapper.transform.LookAt(Camera.main.transform);
+                    var wrapper = arAnimation.Wrapper;
+                    if (wrapper != null && (transform = wrapper.transform) != null)
+                    {
+                        transform.LookAt(cameraMain.transform);
+                    }
                 }
             }
 
-            var inFocusAnimationsToStop = _inFocusAnimations.Where(x => x.IsActive).ToList();
-
+            List<ArAnimation> inFocusAnimationsToStop = null;
             if (_onFocusAnimations.Count > 0 || _inFocusAnimations.Count > 0)
             {
-                var ray = Camera.main.ScreenPointToRay(new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2, 0f));
+                inFocusAnimationsToStop = _inFocusAnimations.Where(x => x.IsActive).ToList();
+                var cameraMain = Camera.main;
+                var ray = cameraMain.ScreenPointToRay(new Vector3(cameraMain.pixelWidth / 2, cameraMain.pixelHeight / 2, 0f));
 
                 RaycastHit hitInfo;
                 if (Physics.Raycast(ray, out hitInfo, 1500f))
@@ -218,9 +223,11 @@ namespace com.arpoise.arpoiseapp
                 }
             }
 
+            var hit = false;
             if (_onClickAnimations.Count > 0 && Input.GetMouseButtonDown(0))
             {
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                var cameraMain = Camera.main;
+                var ray = cameraMain.ScreenPointToRay(Input.mousePosition);
 
                 RaycastHit hitInfo;
                 if (Physics.Raycast(ray, out hitInfo, 1500f))
@@ -240,32 +247,24 @@ namespace com.arpoise.arpoiseapp
                 }
             }
 
+            var isToBeDestroyed = false;
             var animations = AllAnimations;
-
-            foreach (var arAnimation in animations)
+            for (int i = 0; i < animations.Length; i++)
             {
-                if (arAnimation.JustActivated && arAnimation.GameObject != null)
+                var animation = animations[i];
+                if (inFocusAnimationsToStop != null && inFocusAnimationsToStop.Contains(animation))
                 {
-                    var audioSource = arAnimation.GameObject.GetComponent<AudioSource>();
-                    if (audioSource != null)
-                    {
-                        audioSource.Play();
-                    }
-                }
-
-                if (inFocusAnimationsToStop.Contains(arAnimation))
-                {
-                    arAnimation.Stop(startTicks, now);
-                    inFocusAnimationsToStop.Remove(arAnimation);
+                    animation.Stop(startTicks, now);
+                    inFocusAnimationsToStop.Remove(animation);
                 }
                 else
                 {
-                    arAnimation.Animate(startTicks, now);
+                    animation.Animate(startTicks, now);
                 }
 
-                if (arAnimation.JustStopped && !string.IsNullOrWhiteSpace(arAnimation.FollowedBy))
+                if (animation.JustStopped && !string.IsNullOrWhiteSpace(animation.FollowedBy))
                 {
-                    var animationsToFollow = arAnimation.FollowedBy.Split(',');
+                    var animationsToFollow = animation.FollowedBy.Split(',');
                     if (animationsToFollow != null)
                     {
                         foreach (var animationToFollow in animationsToFollow)
@@ -273,7 +272,13 @@ namespace com.arpoise.arpoiseapp
                             if (!string.IsNullOrWhiteSpace(animationToFollow))
                             {
                                 var animationName = animationToFollow.Trim();
-                                if (arAnimation.HandleOpenUrl(animationName))
+                                if (nameof(RefreshRequest.ReloadLayerData).Equals(animationName, StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    var refreshRequest = new RefreshRequest() { layerName = nameof(RefreshRequest.ReloadLayerData) };
+                                    arBehaviourData.RequestRefresh(refreshRequest);
+                                    continue;
+                                }
+                                if (animation.HandleOpenUrl(animationName))
                                 {
                                     continue;
                                 }
@@ -282,28 +287,28 @@ namespace com.arpoise.arpoiseapp
                                     if (!arAnimationToFollow.IsActive)
                                     {
                                         arAnimationToFollow.Activate(startTicks, now);
-                                        if (arAnimationToFollow.JustActivated && arAnimationToFollow.GameObject != null)
-                                        {
-                                            var audioSource = arAnimationToFollow.GameObject.GetComponent<AudioSource>();
-                                            if (audioSource != null)
-                                            {
-                                                audioSource.Play();
-                                            }
-                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-            var toBeDestroyed = animations.Where(x => x.IsToBeDestroyed).ToList();
-            foreach (var arAnimation in toBeDestroyed)
-            {
-                var arObject = ArObjects.FirstOrDefault(x => x.Id == arAnimation.PoiId);
-                if (arObject != null)
+                if (!isToBeDestroyed && animation.IsToBeDestroyed)
                 {
-                    DestroyArObject(arObject);
+                    isToBeDestroyed = true;
+                }
+            }
+
+            if (isToBeDestroyed)
+            {
+                var toBeDestroyed = animations.Where(x => x.IsToBeDestroyed).ToArray();
+                foreach (var arAnimation in toBeDestroyed)
+                {
+                    var arObject = ArObjects.FirstOrDefault(x => x.Id == arAnimation.PoiId);
+                    if (arObject != null)
+                    {
+                        DestroyArObject(arObject);
+                    }
                 }
             }
             return hit;
@@ -311,16 +316,20 @@ namespace com.arpoise.arpoiseapp
 
         public List<ArObject> ArObjectsToBeDuplicated()
         {
-            var result = new List<ArObject>();
+            List<ArObject> result = null;
             foreach (var arAnimation in AllAnimations.Where(x => x.IsToBeDuplicated))
             {
                 arAnimation.IsToBeDuplicated = false;
                 foreach (var arObject in ArObjects.Where(x => x.Id == arAnimation.PoiId))
                 {
+                    if (result == null)
+                    {
+                        result = new List<ArObject>();
+                    }
                     result.Add(arObject);
                 }
             }
-            return result.Distinct().ToList();
+            return result?.Distinct().ToList();
         }
     }
 }

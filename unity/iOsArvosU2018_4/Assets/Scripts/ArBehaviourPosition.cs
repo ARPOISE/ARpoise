@@ -1,5 +1,5 @@
 ﻿/*
-ArBehaviourPosition.cs - MonoBehaviour for Arpoise, position handling.
+ArBehaviourPosition.cs - MonoBehaviour for Arpoise position handling.
 
 Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 
@@ -229,22 +229,80 @@ namespace com.arpoise.arpoiseapp
         //
         protected IEnumerator GetPosition()
         {
+#if QUEST_ARPOISE
+            // If in quest mode, set a fixed initial location and forget about the location service
+            //
+            {
+                // EOF
+                //FilteredLatitude = OriginalLatitude = 49.020586f;
+                //FilteredLongitude = OriginalLongitude = 12.09294f;
+                // Ay Corona!
+                //FilteredLatitude = OriginalLatitude = 48.158601475435f;
+                //FilteredLongitude = OriginalLongitude = 11.580199727856f;
+
+                // Quest Default
+                FilteredLatitude = OriginalLatitude = 48.158f;
+                FilteredLongitude = OriginalLongitude = -11.58f;
+
+                Debug.Log("QUEST_ARPOISE fixed location, lat " + OriginalLatitude + ", lon " + OriginalLongitude);
+
+                var second = DateTime.Now.Ticks / 10000000L;
+                var random = new System.Random((int)second);
+                var nextMove = second + 5 + random.Next(0, 5);
+
+                while (second > 0)
+                {
+                    second = DateTime.Now.Ticks / 10000000L;
+                    if (second >= nextMove)
+                    {
+                        nextMove = second + 5 + random.Next(0, 5);
+
+                        FilteredLatitude = OriginalLatitude + 0.000001f * random.Next(-15, 15);
+                        FilteredLongitude = OriginalLongitude + 0.000001f * random.Next(-12, 12);
+                        Debug.Log("QUEST_ARPOISE new location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
+                    }
+                    var arObjectState = ArObjectState;
+                    if (arObjectState != null)
+                    {
+                        PlaceArObjects(arObjectState);
+                    }
+                    yield return new WaitForSeconds(.1f);
+                }
+            }
+            // End of quest mode
+#endif
 #if UNITY_EDITOR
             // If in editor mode, set a fixed initial location and forget about the location service
             //
-            FilteredLatitude = OriginalLatitude = 48.158404f;
-            FilteredLongitude = OriginalLongitude = 11.578708f;
-
-            Debug.Log("UNITY_EDITOR fixed location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
-
-            while (FilteredLatitude <= 90)
             {
-                var arObjectState = ArObjectState;
-                if (arObjectState != null)
+                // Quest-UG-EOF
+                FilteredLatitude = OriginalLatitude = 48.158f;
+                FilteredLongitude = OriginalLongitude = 11.58f;
+
+                Debug.Log("UNITY_EDITOR fixed location, lat " + OriginalLatitude + ", lon " + OriginalLongitude);
+
+                var second = DateTime.Now.Ticks / 10000000L;
+                var random = new System.Random((int)second);
+                var nextMove = second + 3 + random.Next(0, 6);
+
+                while (second > 0 || second <= 0)
                 {
-                    PlaceArObjects(arObjectState);
+                    second = DateTime.Now.Ticks / 10000000L;
+                    if (second >= nextMove)
+                    {
+                        nextMove = second + 6 + random.Next(0, 6);
+
+                        FilteredLatitude = OriginalLatitude + 0.00001f * random.Next(-5, 5);
+                        FilteredLongitude = OriginalLongitude + 0.00001f * random.Next(-4, 4);
+                        Debug.Log("UNITY_EDITOR new location, lat " + FilteredLatitude + ", lon " + FilteredLongitude);
+                    }
+                    var arObjectState = ArObjectState;
+                    if (arObjectState != null)
+                    {
+                        PlaceArObjects(arObjectState);
+                    }
+                    yield return new WaitForSeconds(.1f);
                 }
-                yield return new WaitForSeconds(.1f);
             }
             // End of editor mode
 #endif

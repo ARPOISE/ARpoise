@@ -214,51 +214,51 @@ public class AbEvolutionOfFish : ArFlock
 
     public override void SetParameter(bool setValue, string label, string value)
     {
-        if (label.Equals("NumberOfFish"))
+        if (label.Equals(nameof(NumberOfFish)))
         {
             _numberOfFish = SetParameter(setValue, value, (int?)null);
         }
-        else if (label.Equals("ToForward"))
+        else if (label.Equals(nameof(ToForward)))
         {
             _toForward = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("FromForward"))
+        else if (label.Equals(nameof(FromForward)))
         {
             _fromForward = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("ToRight"))
+        else if (label.Equals(nameof(ToRight)))
         {
             _toRight = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("CycleDurationForward"))
+        else if (label.Equals(nameof(CycleDurationForward)))
         {
             _cycleDurationForward = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("CycleDurationRight"))
+        else if (label.Equals(nameof(CycleDurationRight)))
         {
             _cycleDurationRight = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("GoalPositionX"))
+        else if (label.Equals(nameof(GoalPositionX)))
         {
             _goalPositionX = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("MovementThreshold"))
+        else if (label.Equals(nameof(MovementThreshold)))
         {
             _movementThreshold = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("MovementFactor"))
+        else if (label.Equals(nameof(MovementFactor)))
         {
             _movementFactor = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("SwimLimitX"))
+        else if (label.Equals(nameof(SwimLimitX)))
         {
             _swimLimitX = SetParameter(setValue, value, (int?)null);
         }
-        else if (label.Equals("SwimLimitY"))
+        else if (label.Equals(nameof(SwimLimitY)))
         {
             _swimLimitY = SetParameter(setValue, value, (int?)null);
         }
-        else if (label.Equals("SwimLimitZ"))
+        else if (label.Equals(nameof(SwimLimitZ)))
         {
             _swimLimitZ = SetParameter(setValue, value, (int?)null);
         }
@@ -354,7 +354,7 @@ public class AbEvolutionOfFish : ArFlock
         {
             if (_fish == null)
             {
-                _fish = Transforms.Select(x => x.gameObject).Where(x => "Fish".Equals(x.gameObject.name)).ToArray();
+                _fish = Transforms.Select(x => x.gameObject).Where(x => nameof(Fish).Equals(x.gameObject.name)).ToArray();
             }
             return _fish;
         }
@@ -367,7 +367,7 @@ public class AbEvolutionOfFish : ArFlock
         {
             if (_garbage == null)
             {
-                _garbage = Transforms.Select(x => x.gameObject).Where(x => "Garbage".Equals(x.gameObject.name)).ToArray();
+                _garbage = Transforms.Select(x => x.gameObject).Where(x => nameof(Garbage).Equals(x.gameObject.name)).ToArray();
             }
             return _garbage;
         }
@@ -388,13 +388,15 @@ public class AbEvolutionOfFish : ArFlock
         for (int i = 0; i < Fish.Length; i++)
         {
             var showFish = i >= percentageValue;
-            if (Fish[i].activeSelf != showFish)
+            var fish = Fish[i];
+            if (fish.activeSelf != showFish)
             {
-                Fish[i].SetActive(showFish);
+                fish.SetActive(showFish);
             }
-            if (Garbage[i].activeSelf == showFish)
+            var garbage = Garbage[i];
+            if (garbage.activeSelf == showFish)
             {
-                Garbage[i].SetActive(!showFish);
+                garbage.SetActive(!showFish);
             }
         }
     }
@@ -470,7 +472,6 @@ public class AbEvolutionOfFish : ArFlock
                 {
                     _startTicksForward += _lengthTicksForward;
                 }
-
             }
             animationValueForward = (nowTicks - _startTicksForward) / ((float)_lengthTicksForward);
         }

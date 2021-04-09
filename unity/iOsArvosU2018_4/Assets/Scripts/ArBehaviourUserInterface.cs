@@ -37,7 +37,10 @@ using UnityEngine.UI;
 #else
 #if HAS_AR_KIT
 #else
+#if QUEST_ARPOISE
+#else
 using Vuforia;
+#endif
 #endif
 #endif
 
@@ -191,17 +194,20 @@ namespace com.arpoise.arpoiseapp
 
         public override void SetHeaderActive(string layerTitle)
         {
-            if (!string.IsNullOrWhiteSpace(layerTitle))
+            if (HeaderText != null)
             {
-                HeaderText.GetComponent<Text>().text = layerTitle;
-                _headerButtonActivated = true;
-                HeaderButtonIsActive = _headerButtonActivated;
-            }
-            else
-            {
-                HeaderText.GetComponent<Text>().text = string.Empty;
-                _headerButtonActivated = false;
-                HeaderButtonIsActive = _headerButtonActivated;
+                if (!string.IsNullOrWhiteSpace(layerTitle))
+                {
+                    HeaderText.GetComponent<Text>().text = layerTitle;
+                    _headerButtonActivated = true;
+                    HeaderButtonIsActive = _headerButtonActivated;
+                }
+                else
+                {
+                    HeaderText.GetComponent<Text>().text = string.Empty;
+                    _headerButtonActivated = false;
+                    HeaderButtonIsActive = _headerButtonActivated;
+                }
             }
         }
 
@@ -303,29 +309,38 @@ namespace com.arpoise.arpoiseapp
         {
             base.Start();
 
-            var menuButton = MenuButton.GetComponent<MenuButton>();
-            if (menuButton != null)
+            if (MenuButton != null)
             {
-                menuButton.Setup(this);
+                var menuButton = MenuButton.GetComponent<MenuButton>();
+                if (menuButton != null)
+                {
+                    menuButton.Setup(this);
+                }
             }
 
-            var panelHeaderButton = PanelHeaderButton.GetComponent<PanelHeaderButton>();
-            if (panelHeaderButton != null)
+            if (PanelHeaderButton != null)
             {
-                panelHeaderButton.Setup(this);
+                var panelHeaderButton = PanelHeaderButton.GetComponent<PanelHeaderButton>();
+                if (panelHeaderButton != null)
+                {
+                    panelHeaderButton.Setup(this);
+                }
             }
 
-            var inputPanel = InputPanel.GetComponent<InputPanel>();
-            inputPanel.Activate(null);
-            FixedDeviceLatitude = inputPanel.GetLatitude();
-            FixedDeviceLongitude = inputPanel.GetLongitude();
+            if (InputPanel != null)
+            {
+                var inputPanel = InputPanel.GetComponent<InputPanel>();
+                inputPanel.Activate(null);
+                FixedDeviceLatitude = inputPanel.GetLatitude();
+                FixedDeviceLongitude = inputPanel.GetLongitude();
+            }
         }
         #endregion
 
         #region Update
 
         private long _arObjectId = -1;
-        private static System.Random _random = new System.Random();
+        private static readonly System.Random _random = new System.Random();
 
         protected override void Update()
         {
@@ -418,45 +433,48 @@ namespace com.arpoise.arpoiseapp
                 }
                 HasTriggerImages = TriggerObjects.Values.Any(x => x.isActive);
             }
-            HasHitOnObject = arObjectState.HandleAnimations(StartTicks, nowTicks);
+            HasHitOnObject = arObjectState.HandleAnimations(this, StartTicks, nowTicks);
 
             var toBeDuplicated = arObjectState.ArObjectsToBeDuplicated();
-            foreach (var arObject in toBeDuplicated)
+            if (toBeDuplicated != null)
             {
-                var poi = arObject.Poi.Clone();
-                if (IsSlamUrl(poi.TriggerImageURL))
+                foreach (var arObject in toBeDuplicated)
                 {
-                    poi.poiObject.triggerImageURL = string.Empty;
+                    var poi = arObject.Poi.Clone();
+                    if (IsSlamUrl(poi.TriggerImageURL))
+                    {
+                        poi.poiObject.triggerImageURL = string.Empty;
 
-                    var relativeLocation = poi.poiObject.RelativeLocation;
-                    relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
-                    relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
-                    poi.poiObject.RelativeLocation = relativeLocation;
-                    CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
-                }
-                else if (!string.IsNullOrWhiteSpace(poi.TriggerImageURL))
-                {
-                    poi.poiObject.triggerImageURL = string.Empty;
+                        var relativeLocation = poi.poiObject.RelativeLocation;
+                        relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                        relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                        poi.poiObject.RelativeLocation = relativeLocation;
+                        CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(poi.TriggerImageURL))
+                    {
+                        poi.poiObject.triggerImageURL = string.Empty;
 
-                    var relativeLocation = poi.poiObject.RelativeLocation;
-                    relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
-                    relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
-                    poi.poiObject.RelativeLocation = relativeLocation;
-                    CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
-                }
-                else if (!string.IsNullOrWhiteSpace(poi?.poiObject?.relativeLocation))
-                {
-                    var relativeLocation = poi.poiObject.RelativeLocation;
-                    relativeLocation[0] += (_random.Next(2001) - 1000) / 100f;
-                    relativeLocation[2] += (_random.Next(2001) - 1000) / 100f;
-                    poi.poiObject.RelativeLocation = relativeLocation;
-                    CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
-                }
-                else
-                {
-                    poi.lat += _random.Next(201) - 100;
-                    poi.lon += _random.Next(201) - 100;
-                    CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
+                        var relativeLocation = poi.poiObject.RelativeLocation;
+                        relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                        relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                        poi.poiObject.RelativeLocation = relativeLocation;
+                        CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(poi?.poiObject?.relativeLocation))
+                    {
+                        var relativeLocation = poi.poiObject.RelativeLocation;
+                        relativeLocation[0] += (_random.Next(2001) - 1000) / 100f;
+                        relativeLocation[2] += (_random.Next(2001) - 1000) / 100f;
+                        poi.poiObject.RelativeLocation = relativeLocation;
+                        CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
+                    }
+                    else
+                    {
+                        poi.lat += _random.Next(201) - 100;
+                        poi.lon += _random.Next(201) - 100;
+                        CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
+                    }
                 }
             }
 
@@ -582,17 +600,19 @@ namespace com.arpoise.arpoiseapp
                     var message = InformationMessage;
                     if (message.Contains("{"))
                     {
-                        message = message.Replace("{F}", "" + FramesPerSecond);
-                        message = message.Replace("{N}", "" + arObjectState.Count);
-                        message = message.Replace("{A}", "" + arObjectState.NumberOfAnimations);
-                        message = message.Replace("{T}", "" + TriggerObjects.Values.Count(x => x.isActive));
-                        message = message.Replace("{S}", "" + SlamObjects.Count(x => x.isActive));
+                        message = message.Replace("{t}", string.Empty + (_currentSecond - _initialSecond));
 
-                        message = message.Replace("{I}", "" + (int)InitialHeading);
-                        message = message.Replace("{D}", "" + DeviceAngle);
-                        message = message.Replace("{Y}", "" + (int)SceneAnchor.transform.eulerAngles.y);
-                        message = message.Replace("{H}", "" + (int)HeadingShown);
-                        message = message.Replace("{C}", "" + (int)currentHeading);
+                        message = message.Replace("{F}", string.Empty + FramesPerSecond);
+                        message = message.Replace("{N}", string.Empty + arObjectState.Count);
+                        message = message.Replace("{A}", string.Empty + arObjectState.NumberOfAnimations);
+                        message = message.Replace("{T}", string.Empty + TriggerObjects.Values.Count(x => x.isActive));
+                        message = message.Replace("{S}", string.Empty + SlamObjects.Count(x => x.isActive));
+
+                        message = message.Replace("{I}", string.Empty + (int)InitialHeading);
+                        message = message.Replace("{D}", string.Empty + DeviceAngle);
+                        message = message.Replace("{Y}", string.Empty + (int)SceneAnchor.transform.eulerAngles.y);
+                        message = message.Replace("{H}", string.Empty + (int)HeadingShown);
+                        message = message.Replace("{C}", string.Empty + (int)currentHeading);
 
                         message = message.Replace("{LAT}", UsedLatitude.ToString("F6"));
                         message = message.Replace("{LON}", UsedLongitude.ToString("F6"));
@@ -608,11 +628,11 @@ namespace com.arpoise.arpoiseapp
                 }
 
                 var text =
-                    ""
+                    string.Empty
                     //+ "B " + _bleachingValue
                     //+ " CA " + (_locationLatitude).ToString("F6")
                     //+ " A " + (_locationHorizontalAccuracy).ToString("F6")
-                    //+ "" + (UsedLatitude).ToString("F6")
+                    //+ string.Empty + (UsedLatitude).ToString("F6")
                     //+ " CO " + (_locationLongitude).ToString("F6")
                     //+ " " + (UsedLongitude).ToString("F6")
                     //+ " AS " + _areaSize

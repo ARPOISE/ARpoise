@@ -215,7 +215,7 @@ public class EvolutionOfFish : ArFlock
         if (InfoText != null)
         {
             InfoText.GetComponent<Text>().text =
-                    ""
+                    string.Empty
                     + " D " + distance.ToString("F3")
                     + " G " + _garbageDistance.ToString("F3")
                     ;

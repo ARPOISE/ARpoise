@@ -1,5 +1,5 @@
 ﻿/*
-MenuButton.cs - Script handling clicks on the layer panel header button.
+PanelHeaderButton.cs - Script handling clicks on the layer panel header button.
 
 Copyright (C) 2019, Tamiko Thiel and Peter Graf - All Rights Reserved
 

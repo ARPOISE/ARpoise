@@ -1,5 +1,5 @@
 ﻿/*
-ArBehaviourSlam.cs - MonoBehaviour for Arpoise, slam handling.
+ArBehaviourSlam.cs - MonoBehaviour for Arpoise slam handling.
 
 Copyright (C) 2019, Tamiko Thiel and Peter Graf - All Rights Reserved
 

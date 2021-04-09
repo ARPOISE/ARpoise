@@ -31,6 +31,7 @@ Arpoise, see www.Arpoise.com/
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace com.arpoise.arpoiseapp
@@ -235,7 +236,7 @@ namespace com.arpoise.arpoiseapp
                 if (!_maximumCount.HasValue)
                 {
                     _maximumCount = 0;
-                    var action = actions?.FirstOrDefault(x => "MaximumCount".Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(MaximumCount).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         int value = 0;
@@ -258,7 +259,7 @@ namespace com.arpoise.arpoiseapp
                 if (!_trackingTimeout.HasValue)
                 {
                     _trackingTimeout = 0;
-                    var action = actions?.FirstOrDefault(x => "TrackingTimeout".Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(TrackingTimeout).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         double value = 0;
@@ -271,9 +272,124 @@ namespace com.arpoise.arpoiseapp
                 return _trackingTimeout.Value;
             }
         }
+
+        [NonSerialized]
+        private string _lindenmayerString = null;
+        public string LindenmayerString
+        {
+            get
+            {
+                if (_lindenmayerString == null)
+                {
+                    _lindenmayerString = string.Empty;
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerString).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        _lindenmayerString = action.activityMessage;
+                        if (_lindenmayerString != null)
+                        {
+                            _lindenmayerString = Regex.Replace(_lindenmayerString, @"\s+", string.Empty);
+                        }
+                    }
+                }
+                return _lindenmayerString;
+            }
+        }
+
+        [NonSerialized]
+        private string _leafPrefab = null;
+        public string LeafPrefab
+        {
+            get
+            {
+                if (_leafPrefab == null)
+                {
+                    _leafPrefab = string.Empty;
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LeafPrefab).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        _leafPrefab = action.activityMessage;
+                        if (_leafPrefab != null)
+                        {
+                            _leafPrefab = Regex.Replace(_leafPrefab, @"\s+", string.Empty);
+                        }
+                    }
+                }
+                return _leafPrefab;
+            }
+        }
+
+        [NonSerialized]
+        private float? _lindenmayerAngle = null;
+        public float LindenmayerAngle
+        {
+            get
+            {
+                if (!_lindenmayerAngle.HasValue)
+                {
+                    _lindenmayerAngle = 22.5f;
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerAngle).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        float value = 0;
+                        if (float.TryParse(action.activityMessage, out value))
+                        {
+                            _lindenmayerAngle = value;
+                        }
+                    }
+                }
+                return _lindenmayerAngle.Value;
+            }
+        }
+
+        [NonSerialized]
+        private float? _lindenmayerFactor = null;
+        public float LindenmayerFactor
+        {
+            get
+            {
+                if (!_lindenmayerFactor.HasValue)
+                {
+                    _lindenmayerFactor = 0.8f;
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerFactor).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        float value = 0;
+                        if (float.TryParse(action.activityMessage, out value))
+                        {
+                            _lindenmayerFactor = value;
+                        }
+                    }
+                }
+                return _lindenmayerFactor.Value;
+            }
+        }
+
+        [NonSerialized]
+        private int? _derivations = null;
+        public int LindenmayerDerivations
+        {
+            get
+            {
+                if (!_derivations.HasValue)
+                {
+                    _derivations = 1;
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerDerivations).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        int value = 0;
+                        if (int.TryParse(action.activityMessage, out value))
+                        {
+                            _derivations = value;
+                        }
+                    }
+                }
+                return _derivations.Value;
+            }
+        }
     }
 
-    // This class defines the Json message returned by ugpoise on the client side, allowing to parse the message
+    // This class defines the Json message returned by porpoise to the client side, allowing to parse the message
     [Serializable]
     public class ArLayer
     {

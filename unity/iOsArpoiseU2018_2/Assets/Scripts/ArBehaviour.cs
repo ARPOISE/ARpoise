@@ -28,13 +28,17 @@ Arpoise, see www.Arpoise.com/
 
 */
 
+using System;
 using UnityEngine;
 
 #if HAS_AR_CORE
 #else
 #if HAS_AR_KIT
 #else
+#if QUEST_ARPOISE
+#else
 using Vuforia;
+#endif
 #endif
 #endif
 
@@ -42,11 +46,16 @@ namespace com.arpoise.arpoiseapp
 {
     public class ArBehaviour : ArBehaviourUserInterface
     {
+        public GameObject Cube = null;
+
         #region Start
         protected override void Start()
         {
             base.Start();
 
+#if QUEST_ARPOISE
+            Debug.Log("QUEST_ARPOISE Start");
+#endif
 #if UNITY_EDITOR
             Debug.Log("UNITY_EDITOR Start");
 #endif
@@ -55,8 +64,11 @@ namespace com.arpoise.arpoiseapp
 #else
 #if HAS_AR_KIT
 #else
+#if QUEST_ARPOISE
+#else
             ArCamera.GetComponent<VuforiaBehaviour>().enabled = true;
             VuforiaRuntime.Instance.InitVuforia();
+#endif
 #endif
 #endif
 
@@ -67,9 +79,9 @@ namespace com.arpoise.arpoiseapp
             DeepLinkReceiverIsAlive(); // Let the App Controller know it's ok to call URLOpened now.
 #endif
             // Start GetPosition() coroutine 
-            StartCoroutine("GetPosition");
+            StartCoroutine(nameof(GetPosition));
             // Start GetData() coroutine 
-            StartCoroutine("GetData");
+            StartCoroutine(nameof(GetData));
         }
         #endregion
 

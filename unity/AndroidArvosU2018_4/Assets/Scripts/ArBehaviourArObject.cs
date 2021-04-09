@@ -1,5 +1,5 @@
 ﻿/*
-ArBehaviourArObject.cs - MonoBehaviour for Arpoise, AR object handling.
+ArBehaviourArObject.cs - MonoBehaviour for Arpoise AR-object handling.
 
 Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 
@@ -79,6 +79,11 @@ namespace com.arpoise.arpoiseapp
         protected readonly List<TriggerObject> SlamObjects = new List<TriggerObject>();
         #endregion
 
+        public GameObject CreateObject(GameObject objectToAdd)
+        {
+            return Instantiate(objectToAdd);
+        }
+
         #region ArObjects
         private int _bleachingValue = -1;
 
@@ -128,12 +133,40 @@ namespace com.arpoise.arpoiseapp
             var objectName = objectToAdd.name;
 
             // Create a copy of the object
-            objectToAdd = Instantiate(objectToAdd);
+            if (string.IsNullOrWhiteSpace(poi.LindenmayerString))
+            {
+                objectToAdd = CreateObject(objectToAdd);
+            }
+            else
+            {
+                GameObject leafToAdd = null;
+                var leafPrefab = poi.LeafPrefab;
+                if (!string.IsNullOrWhiteSpace(leafPrefab) && !string.IsNullOrWhiteSpace(poi.BaseUrl))
+                {
+                    AssetBundle assetBundle;
+                    if (AssetBundles.TryGetValue(poi.BaseUrl, out assetBundle))
+                    {
+                        leafToAdd = assetBundle.LoadAsset<GameObject>(leafPrefab);
+                    }
+                }
+
+                objectToAdd = ArCreature.Create(
+                    poi.LindenmayerDerivations,
+                    poi.LindenmayerString,
+                    Wrapper,
+                    objectToAdd,
+                    leafToAdd,
+                    poi.LindenmayerAngle,
+                    poi.LindenmayerFactor,
+                    parentObjectTransform
+                    );
+            }
+
             if (objectToAdd == null)
             {
                 return "Instantiate(" + objectName + ") failed";
             }
-
+            
             if ("EvolutionOfFish".Equals(objectName))
             {
                 var evolutionOfFish = objectToAdd.GetComponent<EvolutionOfFish>();
@@ -164,7 +197,7 @@ namespace com.arpoise.arpoiseapp
             var wrapper = Instantiate(Wrapper);
             if (wrapper == null)
             {
-                return "Instantiate(Wrapper) failed";
+                return "Instantiate(TransformWrapper) failed";
             }
             wrapper.name = "TransformWrapper";
             createdObject = wrapper;
@@ -175,7 +208,7 @@ namespace com.arpoise.arpoiseapp
             var scaleWrapper = Instantiate(Wrapper);
             if (scaleWrapper == null)
             {
-                return "Instantiate(Wrapper) failed";
+                return "Instantiate(ScaleWrapper) failed";
             }
             scaleWrapper.name = "ScaleWrapper";
             scaleWrapper.transform.parent = parentTransform;
@@ -187,7 +220,7 @@ namespace com.arpoise.arpoiseapp
                 var billboardWrapper = Instantiate(Wrapper);
                 if (billboardWrapper == null)
                 {
-                    return "Instantiate(Wrapper) failed";
+                    return "Instantiate(BillboardWrapper) failed";
                 }
                 billboardWrapper.name = "BillboardWrapper";
                 billboardWrapper.transform.parent = parentTransform;
@@ -202,7 +235,7 @@ namespace com.arpoise.arpoiseapp
                 rotationWrapper = Instantiate(Wrapper);
                 if (rotationWrapper == null)
                 {
-                    return "Instantiate(Wrapper) failed";
+                    return "Instantiate(RotationWrapper) failed";
                 }
                 rotationWrapper.name = "RotationWrapper";
                 rotationWrapper.transform.parent = parentTransform;
@@ -220,7 +253,7 @@ namespace com.arpoise.arpoiseapp
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(Wrapper) failed";
+                            return "Instantiate(OnCreateWrapper) failed";
                         }
                         animationWrapper.name = "OnCreateWrapper";
                         arObjectState.AddOnCreateAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, true));
@@ -233,11 +266,10 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var poiAnimation in poi.animations.onFocus)
                     {
-                        // Put the animation into a wrapper
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(Wrapper) failed";
+                            return "Instantiate(OnFocusWrapper) failed";
                         }
                         animationWrapper.name = "OnFocusWrapper";
                         arObjectState.AddOnFocusAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
@@ -250,11 +282,10 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var poiAnimation in poi.animations.inFocus)
                     {
-                        // Put the animation into a wrapper
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(Wrapper) failed";
+                            return "Instantiate(InFocusWrapper) failed";
                         }
                         animationWrapper.name = "InFocusWrapper";
                         arObjectState.AddInFocusAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
@@ -267,11 +298,10 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var poiAnimation in poi.animations.onClick)
                     {
-                        // Put the animation into a wrapper
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(Wrapper) failed";
+                            return "Instantiate(OnClickWrapper) failed";
                         }
                         animationWrapper.name = "OnClickWrapper";
                         arObjectState.AddOnClickAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
@@ -284,11 +314,10 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var poiAnimation in poi.animations.onFollow)
                     {
-                        // Put the animation into a wrapper
                         var animationWrapper = Instantiate(Wrapper);
                         if (animationWrapper == null)
                         {
-                            return "Instantiate(Wrapper) failed";
+                            return "Instantiate(OnFollowWrapper) failed";
                         }
                         animationWrapper.name = "OnFollowWrapper";
                         arObjectState.AddOnFollowAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
@@ -311,7 +340,7 @@ namespace com.arpoise.arpoiseapp
             }
             else
             {
-                return "Could not set scale " + ((poi.transform == null) ? "null" : "" + poi.transform.scale);
+                return "Could not set scale " + ((poi.transform == null) ? "null" : string.Empty + poi.transform.scale);
             }
 
             // Rotate the rotationWrapper
@@ -330,7 +359,6 @@ namespace com.arpoise.arpoiseapp
                 var xOffset = relativeLocation[0];
                 var yOffset = relativeLocation[1];
                 var zOffset = relativeLocation[2];
-
                 var arObject = new ArObject(
                     poi, arObjectId, poi.title, objectToAdd.name, poi.BaseUrl, wrapper, objectToAdd,
                     poi.Latitude, poi.Longitude, poi.relativeAlt + yOffset, true);
@@ -390,7 +418,7 @@ namespace com.arpoise.arpoiseapp
             string assetBundleUrl = poi.BaseUrl;
             if (string.IsNullOrWhiteSpace(assetBundleUrl))
             {
-                return "Poi with id " + poi.id + ", empty asset bundle url'";
+                return "Poi with id " + poi.id + ", empty asset bundle url";
             }
 
             AssetBundle assetBundle = null;

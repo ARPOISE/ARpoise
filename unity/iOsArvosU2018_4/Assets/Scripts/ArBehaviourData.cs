@@ -1,5 +1,5 @@
 ﻿/*
-ArBehaviourData.cs - MonoBehaviour for Arpoise, data handling.
+ArBehaviourData.cs - MonoBehaviour for Arpoise data handling.
 
 Copyright (C) 2018, Tamiko Thiel and Peter Graf - All Rights Reserved
 
@@ -52,6 +52,7 @@ namespace com.arpoise.arpoiseapp
 
     public class RefreshRequest
     {
+        public static object ReloadLayerData = null;
         public string url;
         public string layerName;
         public float? latitude;
@@ -92,6 +93,30 @@ namespace com.arpoise.arpoiseapp
 
     public class ArBehaviourData : ArBehaviourArObject
     {
+        #region Constants
+        public const string ArpoiseDirectoryLayer = "Arpoise-Directory";
+        public const string ArpoiseDirectoryUrl = "www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
+        public const string ArvosApplicationName = "Arvos";
+        public const string ArpoiseApplicationName = "Arpoise";
+        #endregion
+        
+        #region Globals
+        public GameObject SceneAnchor = null;
+        public void RequestRefresh(RefreshRequest refreshRequest) { RefreshRequest = refreshRequest; }
+        #endregion
+
+        #region Protecteds
+        public bool IsSlam { get; private set; }
+        protected readonly List<ArItem> LayerItemList = new List<ArItem>();
+        protected bool IsNewLayer = false;
+        protected bool? MenuEnabled = null;
+        protected volatile RefreshRequest RefreshRequest = null;
+        protected MenuButtonSetActiveActivity MenuButtonSetActive;
+        protected HeaderSetActiveActivity HeaderSetActive;
+        protected MenuButtonClickActivity MenuButtonClick;
+        #endregion
+
+        #region Privates
 #if HAS_AR_CORE
         private readonly string _clientApplicationName = ArvosApplicationName;
 #else
@@ -101,31 +126,6 @@ namespace com.arpoise.arpoiseapp
         private readonly string _clientApplicationName = ArpoiseApplicationName;
 #endif
 #endif
-        public const string ArvosApplicationName = "Arvos";
-        public const string ArpoiseApplicationName = "Arpoise";
-
-        #region Globals
-
-        public GameObject SceneAnchor = null;
-        public bool IsSlam { get; private set; }
-
-        #endregion
-
-        #region Protecteds
-
-        protected readonly List<ArItem> LayerItemList = new List<ArItem>();
-        protected bool IsNewLayer = false;
-
-        protected bool? MenuEnabled = null;
-        protected volatile RefreshRequest RefreshRequest = null;
-
-        protected MenuButtonSetActiveActivity MenuButtonSetActive;
-        protected HeaderSetActiveActivity HeaderSetActive;
-        protected MenuButtonClickActivity MenuButtonClick;
-
-        protected static readonly string ArpoiseDirectoryLayer = "Arpoise-Directory";
-        protected static readonly string ArpoiseDirectoryUrl = "http://www.arpoise.com/cgi-bin/ArpoiseDirectory.cgi";
-
         #endregion
 
         #region GetData
@@ -136,7 +136,7 @@ namespace com.arpoise.arpoiseapp
 #if UNITY_IOS
             os = "iOS";
 #endif
-            var bundle = "20210128";
+            var bundle = "20210408";
             long count = 0;
             string layerName = ArpoiseDirectoryLayer;
             string uri = ArpoiseDirectoryUrl;
@@ -207,7 +207,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Layer contents didn't download in 30 seconds.";
+                            ErrorMessage = "Layer '" + layerName + "' download timeout.";
                             yield break;
                         }
                         break;
@@ -217,7 +217,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Layer contents download error: " + request.error;
+                            ErrorMessage = "Layer '" + layerName + "': " + request.error;
                             yield break;
                         }
                         break;
@@ -228,7 +228,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Layer contents download received empty text.";
+                            ErrorMessage = "Layer '" + layerName + "', empty text.";
                             yield break;
                         }
                         break;
@@ -264,7 +264,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Layer parse exception: " + e.Message;
+                            ErrorMessage = "Layer '" + layerName + "' parse error: " + e.Message;
                             yield break;
                         }
                         break;
@@ -303,7 +303,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Bundle '" + assetBundleUri + "' download timeout.";
+                            ErrorMessage = "Icons '" + assetBundleUri + "' download timeout.";
                             yield break;
                         }
                         continue;
@@ -313,7 +313,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Bundle '" + assetBundleUri + "' error: " + request.error;
+                            ErrorMessage = "Icons '" + assetBundleUri + "': " + request.error;
                             yield break;
                         }
                         continue;
@@ -324,7 +324,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Bundle '" + assetBundleUri + "' download is null.";
+                            ErrorMessage = "Icons '" + assetBundleUri + "', is null.";
                             yield break;
                         }
                         continue;
@@ -457,7 +457,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             if (setError)
                             {
-                                ErrorMessage = "Layer " + innerLayer + " contents didn't download in 30 seconds.";
+                                ErrorMessage = "Layer '" + innerLayer + "' download timeout.";
                                 yield break;
                             }
                             break;
@@ -467,7 +467,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             if (setError)
                             {
-                                ErrorMessage = "Layer " + innerLayer + " contents download error: " + request.error;
+                                ErrorMessage = "Layer '" + innerLayer + "': " + request.error;
                                 yield break;
                             }
                             break;
@@ -478,7 +478,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             if (setError)
                             {
-                                ErrorMessage = "Layer " + innerLayer + " contents download received empty text.";
+                                ErrorMessage = "Layer '" + innerLayer + "', empty text.";
                                 yield break;
                             }
                             break;
@@ -508,7 +508,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             if (setError)
                             {
-                                ErrorMessage = "Layer " + innerLayer + " parse exception: " + e.Message;
+                                ErrorMessage = "Layer " + innerLayer + " parse error: " + e.Message;
                                 yield break;
                             }
                             break;
@@ -574,7 +574,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Bundle '" + assetBundleUri + "' error: " + request.error;
+                            ErrorMessage = "Bundle '" + assetBundleUri + "': " + request.error;
                             yield break;
                         }
                         continue;
@@ -585,7 +585,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Bundle '" + assetBundleUri + "' download is null.";
+                            ErrorMessage = "Bundle '" + assetBundleUri + "',is null.";
                             yield break;
                         }
                         continue;
@@ -652,7 +652,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Image " + triggerImageUri + " contents didn't download in 30 seconds.";
+                            ErrorMessage = "Image '" + triggerImageUri + "' download timeout.";
                             yield break;
                         }
                         continue;
@@ -662,7 +662,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Image " + triggerImageUri + " contents download error: " + request.error;
+                            ErrorMessage = "Image '" + triggerImageUri + "': " + request.error;
                             yield break;
                         }
                         continue;
@@ -673,7 +673,7 @@ namespace com.arpoise.arpoiseapp
                     {
                         if (setError)
                         {
-                            ErrorMessage = "Image " + triggerImageUri + " contents download received empty texture.";
+                            ErrorMessage = "Image '" + triggerImageUri + "', empty texture.";
                             yield break;
                         }
                         continue;
@@ -682,11 +682,12 @@ namespace com.arpoise.arpoiseapp
                 }
                 #endregion
 
-                #region Activate the Header
+                #region Activate the header
                 var layerTitle = layers.Select(x => x.layerTitle).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
                 HeaderSetActive = new HeaderSetActiveActivity { LayerTitle = layerTitle, ArBehaviour = this };
                 #endregion
 
+                #region Create or handle the object state
                 List<ArObject> existingArObjects = null;
                 var arObjectState = ArObjectState;
                 if (arObjectState != null)
@@ -733,7 +734,9 @@ namespace com.arpoise.arpoiseapp
                     ArObjectState.IsDirty = true;
                 }
                 IsNewLayer = true;
+                #endregion
 
+                #region Wait for refresh
                 var refreshInterval = RefreshInterval;
                 var doNotRefresh = refreshInterval < 1;
 
@@ -750,10 +753,37 @@ namespace com.arpoise.arpoiseapp
                     {
                         //Debug.Log("RefreshRequest " + refreshRequest.layerName + ", " + refreshRequest.url);
                         count = 0;
-                        layerName = refreshRequest.layerName;
-                        uri = refreshRequest.url;
-                        FixedDeviceLatitude = refreshRequest.latitude;
-                        FixedDeviceLongitude = refreshRequest.longitude;
+                        if (nameof(RefreshRequest.ReloadLayerData).Equals(refreshRequest.layerName))
+                        {
+                            var objectState = ArObjectState;
+                            if (objectState != null)
+                            {
+                                objectState = CreateArObjectState(objectState.ArObjects.ToList(), new List<ArLayer>());
+                                if (objectState.ArObjectsToDelete.Any())
+                                {
+                                    ArObjectState.ArObjectsToDelete.AddRange(objectState.ArObjectsToDelete);
+                                }
+                                ArObjectState.IsDirty = true;
+                            }
+                            InnerLayers.Clear();
+                        }
+                        else if (!string.IsNullOrWhiteSpace(refreshRequest.layerName))
+                        {
+                            layerName = refreshRequest.layerName;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(refreshRequest.url))
+                        {
+                            uri = refreshRequest.url;
+                        }
+                        if (refreshRequest.latitude.HasValue)
+                        {
+                            FixedDeviceLatitude = refreshRequest.latitude;
+                        }
+                        if (refreshRequest.longitude.HasValue)
+                        {
+                            FixedDeviceLongitude = refreshRequest.longitude;
+                        }
                         ErrorMessage = string.Empty;
                         foreach (var triggerObject in TriggerObjects.Values)
                         {
@@ -765,6 +795,7 @@ namespace com.arpoise.arpoiseapp
                     }
                     yield return new WaitForSeconds(.1f);
                 }
+                #endregion
             }
             yield break;
         }
