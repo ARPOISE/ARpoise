@@ -26,86 +26,11 @@
    please see: http://www.mission-base.com/.
 
     $Log: pbl.h,v $
-    Revision 1.1  2019/01/19 00:03:55  peter
-    PBL for arpoise directory service
+    Revision 1.2  2021/06/12 11:27:38  peter
+    Synchronizing with github version
 
-    Revision 1.1  2018/07/20 15:25:27  peter
-    *** empty log message ***
-
-    Revision 1.74  2018/03/10 19:08:59  peter
-    Removed warnings found by Visual Studio 2017 Version 15.6.0.
-
-    Revision 1.73  2018/03/10 18:00:45  peter
-    Cleanup of unneeded parentheses
-
-    Revision 1.72  2016/10/13 01:52:05  peter
-    Cleanup of the map ...Str() methods
-
-    Revision 1.71  2016/10/12 20:59:30  peter
-    Added map unmap and append methods
-
-    Revision 1.69  2016/06/03 21:13:30  peter
-    Syncing with GIT version.
-
-    Revision 1.67  2015/03/23 15:53:10  peter
-    Added the string builder.
-
-    Revision 1.66  2015/02/22 07:06:06  peter
-    Port to Visual Studio 2012.
-
-    Revision 1.65  2011/09/23 21:56:57  peter
-    Added the pblIsamInsertArgcArgv function.
-
-    Revision 1.64  2011/05/23 21:21:39  peter
-    Fixed a problem found by GCC 4.2.2/FreeBSD 8, reported by Matthias Andree from FreeBSD.org
-
-    Revision 1.63  2011/02/08 22:51:35  peter
-    Enabled spell checking on comments.
-
-    Revision 1.62  2010/10/19 20:20:57  peter
-    Some cleanup after release of Heap.
-
-    Revision 1.61  2010/08/29 15:29:31  peter
-    Added the heap functions.
-
-
-    Revision 1.59  2010/08/20 20:10:25  peter
-    Implemented the priority queue functions.
-
-    Revision 1.51  2010/05/20 21:42:53  peter
-    Added pblSetReplace.
-
-    Revision 1.50  2010/05/19 22:38:45  peter
-    Testing the map.
-
-    Revision 1.49  2010/05/16 20:57:24  peter
-    Working on maps
-
-    Revision 1.48  2010/05/15 16:26:10  peter
-    Exposing the map interface.
-
-    Revision 1.47  2009/10/20 21:08:00  peter
-    Added the pblHtCurrentKey function.
-
-    Revision 1.46  2009/03/08 20:56:50  peter
-    port to gcc (Ubuntu 4.3.2-1ubuntu12) 4.3.2.
-    Exposing the hash set and tree set interfaces.
-
-
-    Revision 1.28  2009/02/03 16:40:14  peter
-    PBL version 1.04, optimizations,
-    MAC OS X port, port to Microsoft Visual C++ 2008 Express Edition,
-    exposing the array list and the linked list interface
-
-
-    Revision 1.3  2004/04/04 13:12:53  peter
-    Added an ifdef for Cygwin, proposed by Jari Aalto
-
-    Revision 1.2  2002/09/12 20:47:18  peter
-    added the isam file handling to the library
-
-    Revision 1.1  2002/09/05 13:44:12  peter
-    Initial revision
+    Revision 1.75  2021/06/12 11:18:26  peter
+    Synchronizing with github version
 
 */
 
@@ -313,34 +238,11 @@ extern "C" {
 /* macros                                                                    */
 /*****************************************************************************/
 
-/*
- * The PBL_MEMTRACE define can be used for debugging the library,
- * if defined the library will log a line for all memory chunks
- * that are allocated for more than 3 minutes into the file ./pblmemtrace.log
- *
- * This can be used to detect heap memory lost by the code.
- * See also function pbl_memtrace_out in pbl.c
- */
-
-/* #define PBL_MEMTRACE   */
-#ifdef  PBL_MEMTRACE
-
-extern void pbl_memtrace_init( void );
-extern void pbl_memtrace_delete( void * data );
-extern void pbl_memtrace_out( int checktime );
-
-#define PBL_FREE( ptr ) if( ptr ){ pbl_memtrace_init(); pbl_memtrace_delete( ptr );\
-                                   free( ptr ); ptr = 0; }
-
-#else
-
 /**
  * Make free save against NULL pointers,
  * @doc also the parameter ptr is set to NULL
  */
 #define PBL_FREE( ptr ) if( ptr ){ free( ptr ); ptr = 0; }
-
-#endif
 
 /**
  * Macros for linear list handling,

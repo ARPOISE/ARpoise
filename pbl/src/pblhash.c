@@ -24,59 +24,21 @@
    please see: http://www.mission-base.com/.
 
     $Log: pblhash.c,v $
-    Revision 1.1  2019/01/19 00:03:55  peter
-    PBL for arpoise directory service
+    Revision 1.2  2021/06/12 11:27:38  peter
+    Synchronizing with github version
 
-    Revision 1.1  2018/07/20 15:25:28  peter
-    *** empty log message ***
+    Revision 1.22  2021/06/12 11:18:27  peter
+    Synchronizing with github version
+
 
     Revision 1.21  2018/03/10 18:00:45  peter
     Cleanup of unneeded parentheses
-
-    Revision 1.20  2015/02/22 07:06:06  peter
-    Port to Visual Studio 2012.
-
-    Revision 1.19  2011/02/08 22:51:35  peter
-    Enabled spell checking on comments.
-
-    Revision 1.18  2010/05/30 20:06:45  peter
-    Removed warnings found by 'Microsoft Visual C++ 2010'.
-
-    Revision 1.17  2009/10/20 21:08:00  peter
-    Added the pblHtCurrentKey function.
-
-    Revision 1.16  2009/03/15 21:29:29  peter
-    *** empty log message ***
-
-    Revision 1.15  2009/03/11 23:48:44  peter
-    More tests and clean up.
-
-    Revision 1.14  2009/03/08 20:56:50  peter
-    port to gcc (Ubuntu 4.3.2-1ubuntu12) 4.3.2.
-    Exposing the hash set and tree set interfaces.
-
-
-    Revision 1.9  2009/02/03 16:40:14  peter
-    PBL version 1.04, optimizations,
-    MAC OS X port, port to Microsoft Visual C++ 2008 Express Edition,
-    exposing the array list and the linked list interface
-
-
-    Revision 1.3  2003/10/24 23:33:13  peter
-    using a faster hash function
-    using LRU on the hash bucket lists
-
-    Revision 1.2  2002/09/12 20:46:30  peter
-    added the isam file handling to the library
-
-    Revision 1.1  2002/09/05 13:45:01  peter
-    Initial revision
 */
 
 /*
  * make sure "strings <exe> | grep Id | sort -u" shows the source file versions
  */
-char* pblhash_c_id = "$Id: pblhash.c,v 1.1 2019/01/19 00:03:55 peter Exp $";
+char* pblhash_c_id = "$Id: pblhash.c,v 1.2 2021/06/12 11:27:38 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>

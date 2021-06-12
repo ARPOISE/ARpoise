@@ -26,11 +26,11 @@
  please see: http://www.mission-base.com/.
 
 $Log: pblCgi.h,v $
-Revision 1.2  2020/11/10 21:55:52  peter
-Working on the online version of Lend Me Your Face.
+Revision 1.3  2021/06/12 11:27:38  peter
+Synchronizing with github version
 
-Revision 1.1  2020/11/10 16:14:43  peter
-*** empty log message ***
+Revision 1.34  2021/06/12 11:18:27  peter
+Synchronizing with github version
 
  */
 
@@ -44,14 +44,31 @@ extern "C"
 #include <errno.h>
 #include <ctype.h>
 #include <time.h>
+#include <memory.h>
+#include <malloc.h>
+#include <assert.h>
+#include <stdlib.h>
 
 #ifdef _WIN32
 
 #include <winsock2.h>
+#include <direct.h>
+#include <windows.h> 
+#include <process.h>
 
 #else
+
 #include <sys/time.h>
 #include <unistd.h>
+#include <signal.h>
+#include <math.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #endif
 
 #include "pbl.h"
@@ -72,80 +89,83 @@ extern "C"
 
 #define PBL_CGI_TRACE_FILE                     "TraceFilePath"
 
+#define pblCgiRand() (abs((rand()<<24) ^ (rand()<<16) ^ (rand()<<8) ^ rand()))
+
 	/*****************************************************************************/
 	/* Variable declarations                                                     */
 	/*****************************************************************************/
 
-	extern PblMap * pblCgiConfigMap;
+	extern PblMap* pblCgiConfigMap;
 
 	extern struct timeval pblCgiStartTime;
-	extern FILE * pblCgiTraceFile;
-	extern char * pblCgiValueIncrement;
+	extern FILE* pblCgiTraceFile;
 
-	extern char * pblCgiQueryString;
-	extern char * pblCgiCookieKey;
-	extern char * pblCgiCookieTag;
-	extern char * pblCgiPostData;
+	extern char* pblCgiQueryString;
+	extern char* pblCgiCookieKey;
+	extern char* pblCgiCookieTag;
+	extern char* pblCgiPostData;
 	extern int pblCgiContentLength;
 
 	/*****************************************************************************/
 	/* Function declarations                                                     */
 	/*****************************************************************************/
 
-	extern char * pblCgiConfigValue(char * key, char * defaultValue);
-	extern void pblCgiInitTrace(struct timeval * startTime, char * traceFilePath);
-	extern void pblCgiTrace(const char * format, ...);
+	extern void pblCgiSetSelfDestruction(int seconds);
+	extern char* pblCgiMalloc(char* tag, size_t size);
+	extern char* pblCgiConfigValue(char* key, char* defaultValue);
+	extern void pblCgiInitTrace(struct timeval* startTime, char* traceFilePath);
+	extern void pblCgiTrace(const char* format, ...);
 
-	extern FILE * pblCgiTryFopen(char * filePath, char * openType);
-	extern FILE * pblCgiFopen(char * traceFilePath, char * openType);
-	extern char * pblCgiGetEnv(char * name);
+	extern FILE* pblCgiTryFopen(char* filePath, char* openType);
+	extern FILE* pblCgiFopen(char* traceFilePath, char* openType);
+	extern char* pblCgiGetEnv(char* name);
 
-	extern void pblCgiExitOnError(const char * format, ...);
-	extern char * pblCgiSprintf(const char * format, ...);
+	extern void pblCgiExitOnError(const char* format, ...);
+	extern char* pblCgiSprintf(const char* format, ...);
 
-	extern int pblCgiStrArrayContains(char ** array, char * string);
-	extern char * pblCgiStrNCpy(char *dest, char *string, size_t n);
-	extern char * pblCgiStrTrim(char * string);
-	extern int pblCgiStrIsNullOrWhiteSpace(char * string);
-	extern char * pblCgiStrRangeDup(char * start, char * end);
-	extern char * pblCgiStrDup(char * string);
-	extern int pblCgiStrEquals(char * s1, char * s2);
-	extern int pblCgiStrCmp(char * s1, char * s2);
-	extern char * pblCgiStrCat(char * s1, char * s2);
-	extern char * pblCgiStrReplace(char * string, char * oldValue, char * newValue);
-	extern char * pblCgiStrFromTimeAndFormat(time_t t, char * format);
-	extern char * pblCgiStrFromTime(time_t t);
-	extern int pblCgiStrSplit(char * string, char * splitString, size_t size, char * result[]);
-	extern PblList * pblCgiStrSplitToList(char * string, char * splitString);
-	extern char * pblCgiStrToHexFromBuffer(unsigned char * buffer, size_t length);
+	extern int pblCgiStrArrayContains(char** array, char* string);
+	extern char* pblCgiStrNCpy(char* dest, char* string, size_t n);
+	extern char* pblCgiStrTrim(char* string);
+	extern int pblCgiStrIsNullOrWhiteSpace(char* string);
+	extern char* pblCgiStrRangeDup(char* start, char* end);
+	extern char* pblCgiStrDup(char* string);
+	extern int pblCgiStrEquals(char* s1, char* s2);
+	extern int pblCgiStrCmp(char* s1, char* s2);
+	extern char* pblCgiStrCat(char* s1, char* s2);
+	extern char* pblCgiStrReplace(char* string, char* oldValue, char* newValue);
+	extern char* pblCgiStrFromTimeAndFormat(time_t t, char* format);
+	extern char* pblCgiStrFromTime(time_t t);
+	extern int pblCgiStrSplit(char* string, char* splitString, size_t size, char* result[]);
+	extern PblList* pblCgiStrSplitToList(char* string, char* splitString);
+	extern char* pblCgiStrToHexFromBuffer(unsigned char* buffer, size_t length);
 
-	extern PblMap * pblCgiNewMap(void);
-	extern int pblCgiMapIsEmpty(PblMap * map);
-	extern void pblCgiMapFree(PblMap * map);
-	extern PblMap * pblCgiFileToMap(PblMap * map, char * traceFilePath);
+	extern PblMap* pblCgiNewMap(void);
+	extern int pblCgiMapIsEmpty(PblMap* map);
+	extern void pblCgiMapFree(PblMap* map);
+	extern PblMap* pblCgiFileToMap(PblMap* map, char* traceFilePath);
 
-	extern void pblCgiParseQuery(int argc, char * argv[]);
-	extern char * pblCgiQueryValue(char * key);
-	extern char * pblCgiQueryValueForIteration(char * key, int iteration);
+	extern void pblCgiParseQuery(int argc, char* argv[]);
+	extern char* pblCgiQueryValue(char* key);
+	extern char* pblCgiQueryValueForIteration(char* key, int iteration);
 
-	extern PblMap * pblCgiValueMap(void);
-	extern void pblCgiSetValue(char * key, char * value);
-	extern void pblCgiSetValueForIteration(char * key, char * value, int iteration);
-	extern void pblCgiSetValueToMap(char * key, char * value, int iteration, PblMap * map);
-	extern void pblCgiUnSetValue(char * key);
-	extern void pblCgiUnSetValueForIteration(char * key, int iteration);
-	extern void pblCgiUnSetValueFromMap(char * key, int iteration, PblMap * map);
+	extern PblMap* pblCgiValueMap(void);
+	extern void pblCgiSetValue(char* key, char* value);
+	extern void pblCgiSetValueForIteration(char* key, char* value, int iteration);
+	extern void pblCgiSetValueToMap(char* key, char* value, int iteration, PblMap* map);
+	extern void pblCgiUnSetValue(char* key);
+	extern void pblCgiUnSetValueForIteration(char* key, int iteration);
+	extern void pblCgiUnSetValueFromMap(char* key, int iteration, PblMap* map);
 	extern void pblCgiClearValues(void);
-	extern char * pblCgiValue(char * key);
-	extern char * pblCgiValueForIteration(char * key, int iteration);
-	extern char * pblCgiValueFromMap(char * key, int iteration, PblMap * map);
+	extern char* pblCgiValue(char* key);
+	extern char* pblCgiValueForIteration(char* key, int iteration);
+	extern char* pblCgiValueFromMap(char* key, int iteration, PblMap* map);
 
-	extern char * pblCgiGetCoockie(char * cookieKey, char * cookieTag);
-	extern void pblCgiPrint(char * directory, char * fileName, char * contentType);
+	extern char* pblCgiGetCoockie(char* cookieKey, char* cookieTag);
+	extern void pblCgiPrint(char* directory, char* fileName, char* contentType);
 
 #ifdef WIN32
 
-	extern int gettimeofday(struct timeval * tp, struct timezone * tzp);
+	extern int gettimeofday(struct timeval* tp, struct timezone* tzp);
 
 #endif
 

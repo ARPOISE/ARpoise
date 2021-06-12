@@ -25,64 +25,22 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblSet.c,v $
- Revision 1.1  2019/01/19 00:03:55  peter
- PBL for arpoise directory service
+ Revision 1.2  2021/06/12 11:27:39  peter
+ Synchronizing with github version
 
- Revision 1.1  2018/07/20 15:25:27  peter
- *** empty log message ***
+ Revision 1.39  2021/06/12 11:18:27  peter
+ Synchronizing with github version
+
 
  Revision 1.38  2017/01/05 21:51:45  peter
  Simplified hash set trim
-
- Revision 1.37  2017/01/04 22:07:50  peter
- Code formatting
-
- Revision 1.36  2016/10/12 20:58:26  peter
- Removed warnings found by gcc 5.4.0
-
- Revision 1.35  2016/06/03 21:13:30  peter
- Syncing with GIT version.
-
- Revision 1.33  2015/03/23 15:53:10  peter
- Added the string builder.
-
- Revision 1.32  2011/09/08 18:01:03  peter
- Fixed some typos.
-
- Revision 1.31  2011/07/02 22:57:00  peter
- Fixed a typo.
-
- Revision 1.30  2010/08/20 20:10:25  peter
- Implemented the priority queue functions.
-
- Revision 1.28  2010/05/30 20:06:45  peter
- Removed warnings found by 'Microsoft Visual C++ 2010'.
-
- Revision 1.27  2010/05/20 21:42:53  peter
- Added pblSetReplace.
-
- Revision 1.26  2010/05/15 16:26:10  peter
- Exposing the map interface.
-
- Revision 1.25  2009/11/26 14:42:23  peter
- Some cleanup during C# port of Avl tree.
-
- Revision 1.24  2009/09/03 20:48:59  peter
- Just some cleanup on sets.
-
- Revision 1.23  2009/03/11 23:48:44  peter
- More tests and clean up.
-
- Revision 1.22  2009/03/08 20:56:50  peter
- port to gcc (Ubuntu 4.3.2-1ubuntu12) 4.3.2.
- Exposing the hash set and tree set interfaces.
 
  */
 
 /*
  * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
  */
-char* pblSet_c_id = "$Id: pblSet.c,v 1.1 2019/01/19 00:03:55 peter Exp $";
+char* pblSet_c_id = "$Id: pblSet.c,v 1.2 2021/06/12 11:27:39 peter Exp $";
 
 char * PblHashSetMagic = "PblHashSetMagic";
 char * PblTreeSetMagic = "PblTreeSetMagic";

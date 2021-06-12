@@ -25,36 +25,12 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblList.c,v $
- Revision 1.1  2019/01/19 00:03:55  peter
- PBL for arpoise directory service
+ Revision 1.2  2021/06/12 11:27:38  peter
+ Synchronizing with github version
 
- Revision 1.1  2018/07/20 15:25:27  peter
- *** empty log message ***
+ Revision 1.47  2021/06/12 11:18:26  peter
+ Synchronizing with github version
 
- Revision 1.46  2018/03/10 18:00:45  peter
- Cleanup of unneeded parentheses
-
- Revision 1.45  2017/01/04 20:11:23  peter
- Code formatting
-
- Revision 1.44  2016/06/03 21:13:30  peter
- Syncing with GIT version.
-
- Revision 1.42  2015/11/18 18:10:27  peter
- Fixed a bug in error handling in linked list.
-
- Revision 1.41  2015/04/02 15:35:25  peter
- Better naming of the base collection of a list.
-
- Revision 1.40  2010/05/30 20:06:45  peter
- Removed warnings found by 'Microsoft Visual C++ 2010'.
-
- Revision 1.39  2009/03/11 23:48:44  peter
- More tests and clean up.
-
- Revision 1.38  2009/03/08 20:56:50  peter
- port to gcc (Ubuntu 4.3.2-1ubuntu12) 4.3.2.
- Exposing the hash set and tree set interfaces.
 
  Revision 1.21  2009/02/03 16:40:14  peter
  PBL vesion 1.04, optimizations,
@@ -66,7 +42,7 @@
 /*
  * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
  */
-char* pblList_c_id = "$Id: pblList.c,v 1.1 2019/01/19 00:03:55 peter Exp $";
+char* pblList_c_id = "$Id: pblList.c,v 1.2 2021/06/12 11:27:38 peter Exp $";
 
 char * PblArrayListMagic = "PblArrayListMagic";
 char * PblLinkedListMagic = "PblLinkedListMagic";

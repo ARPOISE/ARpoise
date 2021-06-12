@@ -24,57 +24,22 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblMap.c,v $
+ Revision 1.2  2021/06/12 11:27:38  peter
+ Synchronizing with github version
+
+ Revision 1.17  2021/06/12 11:18:26  peter
+ Synchronizing with github version
+
+
  Revision 1.1  2019/01/19 00:03:55  peter
  PBL for arpoise directory service
-
- Revision 1.1  2018/07/20 15:25:27  peter
- *** empty log message ***
-
- Revision 1.16  2016/10/13 01:52:05  peter
- Cleanup of the map ...Str() methods
-
- Revision 1.15  2016/10/12 20:59:30  peter
- Added map unmap and append methods
-
- Revision 1.14  2016/10/04 23:29:45  peter
- Fixed problems found on the mac
-
- Revision 1.11  2016/06/03 21:13:30  peter
- Syncing with GIT version.
-
- Revision 1.9  2015/02/25 16:37:02  peter
- Formatting
-
- Revision 1.8  2010/11/07 01:21:28  peter
- Cleanup.
-
- Revision 1.7  2010/05/30 20:06:45  peter
- Removed warnings found by 'Microsoft Visual C++ 2010'.
-
- Revision 1.6  2010/05/20 21:42:53  peter
- Added pblSetReplace.
-
- Revision 1.5  2010/05/19 22:38:45  peter
- Testing the map.
-
- Revision 1.4  2010/05/16 20:57:24  peter
- Working on maps
-
- Revision 1.3  2010/05/16 01:06:45  peter
- More work on maps.
-
- Revision 1.2  2010/05/15 16:33:43  peter
- Some fixes.
-
- Revision 1.1  2010/05/15 16:26:10  peter
- Exposing the map interface.
 
  */
 
 /*
  * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
  */
-char* pblMap_c_id = "$Id: pblMap.c,v 1.1 2019/01/19 00:03:55 peter Exp $";
+char* pblMap_c_id = "$Id: pblMap.c,v 1.2 2021/06/12 11:27:38 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>

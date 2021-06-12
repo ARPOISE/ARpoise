@@ -24,21 +24,17 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblCgi.c,v $
- Revision 1.3  2020/11/11 23:40:31  peter
- Working on nextVideo
+ Revision 1.6  2021/06/12 11:27:38  peter
+ Synchronizing with github version
 
- Revision 1.2  2020/11/10 21:55:52  peter
- Working on the online version of Lend Me Your Face.
-
- Revision 1.1  2020/11/10 16:14:44  peter
- *** empty log message ***
+ Revision 1.52  2021/06/12 11:18:27  peter
+ Synchronizing with github version
 
  */
-
  /*
   * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
   */
-char* pblCgi_c_id = "$Id: pblCgi.c,v 1.3 2020/11/11 23:40:31 peter Exp $";
+char* pblCgi_c_id = "$Id: pblCgi.c,v 1.6 2021/06/12 11:27:38 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -57,7 +53,7 @@ char* pblCgi_c_id = "$Id: pblCgi.c,v 1.3 2020/11/11 23:40:31 peter Exp $";
 /*****************************************************************************/
 #define PBL_CGI_MAX_SIZE_OF_BUFFER_ON_STACK		(15 * 1024)
 #define PBL_CGI_MAX_QUERY_PARAMETERS_COUNT		128
-#define PBL_CGI_MAX_POST_INPUT_LEN				(16 * 1024 * 1024)
+#define PBL_CGI_MAX_POST_INPUT_LEN				(32 * 1024 * 1024)
 
 /*****************************************************************************/
 /* Variables                                                                 */
@@ -75,7 +71,7 @@ int pblCgiContentLength = -1;
 char* pblCgiCookieKey = PBL_CGI_COOKIE;
 char* pblCgiCookieTag = PBL_CGI_COOKIE "=";
 
-static char* pblCgiMalloc(char* tag, size_t size)
+char* pblCgiMalloc(char* tag, size_t size)
 {
 	char* result = pbl_malloc(tag, size);
 	if (!result)
@@ -404,6 +400,10 @@ void pblCgiTrace(const char* format, ...)
  */
 void pblCgiExitOnError(const char* format, ...)
 {
+#ifdef _WIN32
+#else
+	sleep(1);
+#endif
 	pblCgiSetContentType("text/html");
 
 	printf(
@@ -990,16 +990,27 @@ FILE* pblCgiFopen(char* filePath, char* openType)
 char* pblCgiGetEnv(char* name)
 {
 #ifdef WIN32
-
 	char* value;
 	size_t len;
 	_dupenv_s(&value, &len, name);
 	return value;
-
 #else
-
 	return getenv(name);
+#endif
+}
 
+static void pblCgiSelfDestruct(int sig)
+{
+	pblCgiExitOnError("Timeout: The maximum life time has been reached.\n");
+	exit(-1);
+}
+
+void pblCgiSetSelfDestruction(int seconds)
+{
+#ifdef WIN32
+#else
+	signal(SIGALRM, pblCgiSelfDestruct);
+	alarm(seconds);
 #endif
 }
 
@@ -1012,7 +1023,6 @@ char* pblCgiGetEnv(char* name)
  *  the query string like
  *
  *      script 'key1=value1&key2=value2'
- *
  */
 void pblCgiParseQuery(int argc, char* argv[])
 {
@@ -1063,12 +1073,13 @@ void pblCgiParseQuery(int argc, char* argv[])
 				}
 
 				int bytesToAllocate = lengthOfQueryString + contentLength + 1;
-				pblCgiQueryString = realloc(pblCgiQueryString, bytesToAllocate);
-				if (!pblCgiQueryString)
+				char* newQueryString = realloc(pblCgiQueryString, bytesToAllocate);
+				if (!newQueryString)
 				{
 					pblCgiExitOnError("%s: Out of memory\n", tag);
+					return;
 				}
-
+				pblCgiQueryString = newQueryString;
 				char* endOfAllocatedBytes = pblCgiQueryString + bytesToAllocate;
 
 				int c;
