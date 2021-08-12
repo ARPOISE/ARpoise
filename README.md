@@ -2,7 +2,7 @@
 # *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
 
 ## Overview
-**ARpoise**, see [arpoise.com](https://arpoise.com/), is an open-source Augmented Reality service environment that allows AR content designers to create and distribute AR experiences, and users to view location-based, image trigger, or SLAM AR content that is created in [Unity](http://unity3d.com). The goal of **ARpoise** is to provide an open-source, community-supported AR app for artists and other people who might not be able to develop their own apps, and as an alternative to commercial AR platforms that may go out of business at any time without warning.
+**ARpoise**, see [arpoise.com](https://arpoise.com/), is an open-source Augmented Reality service environment allowing AR content designers to create and distribute AR experiences, and users to view location-based, image trigger, or SLAM AR content that is created in [Unity](http://unity3d.com). The goal of **ARpoise** is to provide an open-source, community-supported AR app for artists and other people who might not be able to develop their own apps, and as an alternative to commercial AR platforms that may go out of business at any time without warning.
 
 Two different client applications have both been implemented for Android and iOS.
 
