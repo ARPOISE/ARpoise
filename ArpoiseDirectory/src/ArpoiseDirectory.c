@@ -27,30 +27,15 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
-Revision 1.46  2020/04/19 11:29:29  peter
-Improved handling of default directory
-
-Revision 1.45  2020/04/18 20:14:41  peter
-Restructuring of code
-
-Revision 1.44  2020/04/18 12:43:00  peter
-Added handling of Default-Arpoise-Directory
-
-Revision 1.43  2020/03/18 22:37:22  peter
-handle inner layer request for a default layer
-
-Revision 1.41  2020/03/18 00:23:26  peter
-Cleanup of getAreaConfigValue()
-
-Revision 1.40  2020/03/17 22:11:00  peter
-No caching
+Revision 1.52  2021/08/12 21:28:40  peter
+Cleanup of Arpoise directory
 
 */
 
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.46 2020/04/19 11:29:29 peter Exp $";
+char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.52 2021/08/12 21:28:40 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -114,6 +99,8 @@ static char* getVersion()
 	return adbGetStringBetween(ArpoiseDirectory_c_id, "ArpoiseDirectory.c,v ", " ");
 }
 
+char* exponentiARGrowth(int exponent);
+
 static int arpoiseDirectory(int argc, char* argv[])
 {
 	char* tag = "ArpoiseDirectory";
@@ -155,17 +142,21 @@ static int arpoiseDirectory(int argc, char* argv[])
 	// read query values
 	//
 	char* client = pblCgiQueryValue("client");
-	char* userId = pblCgiQueryValue("userId");
-	if (!userId || !*userId)
+	char* deviceId = pblCgiQueryValue("deviceId");
+	if (!deviceId || !*deviceId)
 	{
-		userId = "UnknownUserId";
+		deviceId = pblCgiQueryValue("userId");
+		if (!deviceId || !*deviceId)
+		{
+			deviceId = "UnknownDeviceId";
+		}
 	}
 
 	// handle fixed device positions
 	//
 	int latDifference = 0;
 	int lonDifference = 0;
-	char* deviceQueryString = adbHandleDevicePosition(userId, client, queryString, &latDifference, &lonDifference);
+	char* deviceQueryString = adbHandleDevicePosition(deviceId, client, queryString, &latDifference, &lonDifference);
 	if (deviceQueryString != NULL)
 	{
 		queryString = deviceQueryString;
@@ -299,7 +290,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 		uri = pblCgiSprintf("%s?p=%d&%s", directoryUri, getpid(), queryString);
 		char* cookie = NULL;
 
-		char* httpResponse = adbGetHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", userId));
+		char* httpResponse = adbGetHttpResponse(hostName, port, uri, 16, pblCgiSprintf("ArpoiseClient %s", deviceId));
 		char* response = adbGetHttpResponseBody(httpResponse, &cookie);
 
 		char* start = "{\"hotspots\":";
@@ -308,40 +299,76 @@ static int arpoiseDirectory(int argc, char* argv[])
 		if (strncmp(start, response, length))
 		{
 			// There is nothing at the location the client is at
+			char* defaultDirectory = adbGetAreaConfigValue(area, "DefaultDirectory", "");
+			char* arvosDefaultDirectory = adbGetAreaConfigValue(area, "ArvosDefaultDirectory", "");
 
 			if (pblCgiStrEquals("Arvos", client))
 			{
-				// Request the default layer from porpoise and return it to the client
+				if (!pblCgiStrIsNullOrWhiteSpace(arvosDefaultDirectory) &&
+					((pblCgiStrEquals("Android", os) && bundleInteger >= 190208)
+						|| (pblCgiStrEquals("iOS", os) && bundleInteger >= 20190208)))
+				{
+					char* ptr = adbChangeLayerName(queryString, arvosDefaultDirectory);
 
-				layerUrl = adbGetAreaConfigValue(area, "ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
-				layerName = adbGetAreaConfigValue(area, "ArvosDefaultLayerName", "Default-ImageTrigger");
+					int myLatDifference = 0;
+					int myLonDifference = 0;
+					ptr = adbChangeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
+					latDifference += myLatDifference;
+					lonDifference += myLonDifference;
 
-				layerServed = 1;
-				PBL_CGI_TRACE("-------> Arvos Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
+					uri = pblCgiSprintf("%s?p=%d&%s", directoryUri, getpid(), ptr);
+					char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
+					cookie = NULL;
 
-				char* ptr = adbChangeLayerName(queryString, layerName);
+					httpResponse = adbGetHttpResponse(hostName, port, uri, 16, agent);
+					response = adbGetHttpResponseBody(httpResponse, &cookie);
 
-				int myLatDifference = 0;
-				int myLonDifference = 0;
-				ptr = adbChangeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
-				latDifference += myLatDifference;
-				lonDifference += myLonDifference;
+					start = "{\"hotspots\":";
+					length = strlen(start);
 
-				uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
-				char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-				response = adbGetHttpResponse(hostName, port, uri, 16, agent);
-				adbHandleResponse(response, latDifference, lonDifference);
+					if (strncmp(start, response, length))
+					{
+						latDifference -= myLatDifference;
+						lonDifference -= myLonDifference;
+					}
+					else
+					{
+						httpResponse = adbChangeLayer(httpResponse, "Arpoise-Directory");
+						response = adbGetHttpResponseBody(httpResponse, &cookie);
+					}
+				}
+				else
+				{
+					// Request the default layer from porpoise and return it to the client
 
-				adbCreateStatisticsHits(layer, layerName, layerServed);
-				return 0;
+					layerUrl = adbGetAreaConfigValue(area, "ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
+					layerName = adbGetAreaConfigValue(area, "ArvosDefaultLayerName", "Default-ImageTrigger");
+
+					layerServed = 1;
+					PBL_CGI_TRACE("-------> Arvos Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
+
+					char* ptr = adbChangeLayerName(queryString, layerName);
+
+					int myLatDifference = 0;
+					int myLonDifference = 0;
+					ptr = adbChangeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
+					latDifference += myLatDifference;
+					lonDifference += myLonDifference;
+
+					uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
+					char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
+					response = adbGetHttpResponse(hostName, port, uri, 16, agent);
+					adbHandleResponse(response, latDifference, lonDifference);
+
+					adbCreateStatisticsHits(layer, layerName, layerServed);
+					return 0;
+				}
 			}
-
-			char* defaultArpoiseDirectory = adbGetAreaConfigValue(area, "DefaultArpoiseDirectory", "");
-			if (!pblCgiStrIsNullOrWhiteSpace(defaultArpoiseDirectory) &&
+			else if (!pblCgiStrIsNullOrWhiteSpace(defaultDirectory) &&
 				((pblCgiStrEquals("Android", os) && bundleInteger >= 190208)
 					|| (pblCgiStrEquals("iOS", os) && bundleInteger >= 20190208)))
 			{
-				char* ptr = adbChangeLayerName(queryString, defaultArpoiseDirectory);
+				char* ptr = adbChangeLayerName(queryString, defaultDirectory);
 
 				int myLatDifference = 0;
 				int myLonDifference = 0;
@@ -489,29 +516,50 @@ static int arpoiseDirectory(int argc, char* argv[])
 		{
 			pblCgiExitOnError("%s: PorpoiseUri must be given.\n", tag);
 		}
-
 		layerServed = 1;
-		if (!pblCgiStrIsNullOrWhiteSpace(layerName)
-			&& !strncmp(layerName, "Default-", strlen("Default-"))
-			&& !pblCgiStrEquals("0.000000", pblCgiQueryValue("lat"))
-			&& !pblCgiStrEquals("0.000000", pblCgiQueryValue("lon")))
-		{
-			PBL_CGI_TRACE("-------> Default Layer Request: '%s' '%s'\n", porpoiseUri, layerName);
 
-			int myLatDifference = 0;
-			int myLonDifference = 0;
-			queryString = adbChangeLatAndLon(queryString, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
-			latDifference += myLatDifference;
-			lonDifference += myLonDifference;
+		char* defaultStr = "Default-";
+		char* exponentialStr = "ExponentiARGrowth-";
+
+		if (!pblCgiStrIsNullOrWhiteSpace(layerName)
+			&& !strncmp(layerName, exponentialStr, strlen(exponentialStr)))
+		{
+			PBL_CGI_TRACE("-------> ExponentiARGrowth Layer Request: '%s'\n", layerName);
+
+			int exponent = atoi(layerName + strlen(exponentialStr));
+			if (exponent > 0)
+			{
+				if (exponent > 10)
+				{
+					exponent = 10;
+				}
+				adbHandleResponse(exponentiARGrowth(exponent), latDifference, lonDifference);
+			}
 		}
 		else
 		{
-			PBL_CGI_TRACE("-------> Layer Request: '%s' '%s'\n", porpoiseUri, layerName);
-		}
+			if (!pblCgiStrIsNullOrWhiteSpace(layerName)
+				&& !strncmp(layerName, defaultStr, strlen(defaultStr))
+				&& !pblCgiStrEquals("0.000000", pblCgiQueryValue("lat"))
+				&& !pblCgiStrEquals("0.000000", pblCgiQueryValue("lon")))
+			{
+				PBL_CGI_TRACE("-------> Default Layer Request: '%s' '%s'\n", porpoiseUri, layerName);
 
-		uri = pblCgiSprintf("%s?p=%d&%s", porpoiseUri, getpid(), queryString);
-		char* agent = pblCgiSprintf("ArpoiseFilter/%s", getVersion());
-		adbHandleResponse(adbGetHttpResponse(hostName, port, uri, 16, agent), latDifference, lonDifference);
+				int myLatDifference = 0;
+				int myLonDifference = 0;
+				queryString = adbChangeLatAndLon(queryString, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
+				latDifference += myLatDifference;
+				lonDifference += myLonDifference;
+			}
+			else
+			{
+				PBL_CGI_TRACE("-------> Layer Request: '%s' '%s'\n", porpoiseUri, layerName);
+			}
+
+			uri = pblCgiSprintf("%s?p=%d&%s", porpoiseUri, getpid(), queryString);
+			char* agent = pblCgiSprintf("ArpoiseFilter/%s", getVersion());
+			adbHandleResponse(adbGetHttpResponse(hostName, port, uri, 16, agent), latDifference, lonDifference);
+		}
 	}
 
 	adbCreateStatisticsHits(layer, layerName, layerServed);
@@ -523,4 +571,123 @@ int main(int argc, char* argv[])
 	int rc = arpoiseDirectory(argc, argv);
 	adbTraceDuration();
 	return rc;
+}
+
+char* exponentiARGrowth(int exponent)
+{
+	static char* tag = "exponentiARGrowth";
+	char* expResponseStart = "HTTP/1.1 200 OK\r\n\r\n{\"hotspots\":[";
+	char* expResponseEnd = "],\"radius\":0,\"numberOfHotspots\":1,\"refreshInterval\":0,\"showMenuButton\":true,\"noPoisMessage\":\"Sorry, there is nothing to show!\",\"actions\":[{\"uri\":\"\",\"label\":\"Arpoise\",\"contentType\":\"\",\"method\":\"GET\",\"activityType\":0,\"params\":[],\"closeBiw\":false,\"showActivity\":true,\"activityMessage\":\"\"}],\"morePages\":false,\"nextPageKey\":\"\",\"layer\":\"ExponentiARGrowth-2\",\"errorCode\":0,\"errorString\":\"ok\"}";
+
+	char* hotSpot = "{\
+		\"dimension\": 3,\
+		\"transform\" : {\
+			\"rel\": false,\
+			\"angle\" : 0,\
+			\"scale\" : 0.3\
+	    },\
+		\"object\" : {\
+			\"baseURL\": \"www.arpoise.com/AB/nothingofhim.ace\",\
+			\"full\" : \"NoH_BottleWaterlily\",\
+			\"poiLayerName\" : null,\
+			\"relativeLocation\" : \"{locationX},0,{locationZ}\",\
+			\"icon\" : null,\
+			\"size\" : 0,\
+			\"triggerImageURL\" : null,\
+			\"triggerImageWidth\" : 0\
+		},\
+	    \"actions\": [] ,\
+		\"animations\" : {\
+			\"onCreate\": [\
+			{\
+				\"type\": \"rotate\",\
+				\"length\" : {length},\
+				\"interpolation\" : \"sine\",\
+				\"repeat\" : true,\
+				\"to\" : {to},\
+				\"axis\" : {\
+					\"x\": 0,\
+					\"y\" : 1,\
+					\"z\" : 0\
+				}\
+			}\
+			]\
+		},\
+		\"distance\": 0,\
+		\"id\" : \"{id}\",\
+		\"lat\" : 0,\
+		\"lon\" : 0,\
+		\"type\" : 0\
+    }";
+
+	PblStringBuilder* stringBuilder = pblStringBuilderNew();
+	if (!stringBuilder)
+	{
+		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+	}
+
+	pblStringBuilderAppendStr(stringBuilder, expResponseStart);
+
+	int n = 1;
+	for (int i = 0; i < exponent; i++)
+	{
+		n *= 2;
+	}
+	n -= 1;
+
+	for (int i = 0; i < n; i++)
+	{
+		int length = 15 + rand() % 15;
+		int to = 20 + rand() % 20;
+		float locationX = (-2000 + rand() % 4000) / (float)1000;
+		float locationZ = (-2000 + rand() % 4000) / (float)1000;
+
+		char* replacementPtr = pblCgiSprintf("%f", locationX);
+		char* hotSpotPtr = pblCgiStrReplace(hotSpot, "{locationX}", replacementPtr);
+		free(replacementPtr);
+
+		replacementPtr = pblCgiSprintf("%f", locationZ);
+		char* tempPtr = hotSpotPtr;
+		hotSpotPtr = pblCgiStrReplace(tempPtr, "{locationZ}", replacementPtr);
+		free(replacementPtr);
+		free(tempPtr);
+
+		replacementPtr = pblCgiSprintf("%d", length);
+		tempPtr = hotSpotPtr;
+		hotSpotPtr = pblCgiStrReplace(tempPtr, "{length}", replacementPtr);
+		free(replacementPtr);
+		free(tempPtr);
+
+		replacementPtr = pblCgiSprintf("%d", to);
+		tempPtr = hotSpotPtr;
+		hotSpotPtr = pblCgiStrReplace(tempPtr, "{to}", replacementPtr);
+		free(replacementPtr);
+		free(tempPtr);
+
+		replacementPtr = pblCgiSprintf("%d", i);
+		tempPtr = hotSpotPtr;
+		hotSpotPtr = pblCgiStrReplace(tempPtr, "{id}", replacementPtr);
+		free(replacementPtr);
+		free(tempPtr);
+
+		if (i > 0)
+		{
+			pblStringBuilderAppendStr(stringBuilder, ",");
+		}
+		pblStringBuilderAppendStr(stringBuilder, hotSpotPtr);
+		free(hotSpotPtr);
+	}
+	pblStringBuilderAppendStr(stringBuilder, expResponseEnd);
+
+	char* result = pblStringBuilderToString(stringBuilder);
+	if (!result)
+	{
+		pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+	}
+
+	if (stringBuilder)
+	{
+		pblStringBuilderFree(stringBuilder);
+	}
+	return result;
 }

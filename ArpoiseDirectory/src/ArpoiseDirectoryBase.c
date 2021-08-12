@@ -27,16 +27,15 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectoryBase.c,v $
-Revision 1.1  2020/04/18 20:14:41  peter
-Restructuring of code
-
+Revision 1.6  2021/08/12 21:28:40  peter
+Cleanup of Arpoise directory
 
 */
 
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.1 2020/04/18 20:14:41 peter Exp $";
+char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.6 2021/08/12 21:28:40 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -94,18 +93,23 @@ static int receiveBytesFromTcp(int socket, char* buffer, int bufferSize, struct 
 		pblCgiExitOnError("%s: getsockopt(%d) error, errno %d\n", tag, socket, errno);
 	}
 
+	struct timeval myTimeout;
+	fd_set readFds;
 	int nBytesRead = 0;
+
 	while (nBytesRead < bufferSize)
 	{
-		fd_set readFds;
 		FD_ZERO(&readFds);
 		FD_SET(socket, &readFds);
 
+		myTimeout = *timeout;
 		errno = 0;
-		rc = select(socket + 1, &readFds, (fd_set*)NULL, (fd_set*)NULL, timeout);
+
+		rc = select(socket + 1, &readFds, (fd_set*)NULL, (fd_set*)NULL, &myTimeout);
 		switch (rc)
 		{
 		case 0:
+			// The return value may be zero if the timeout expired before any file descriptors became ready.
 			return (-1);
 
 		case -1:
@@ -170,6 +174,7 @@ static char* receiveStringFromTcp(int socket, int timeoutSeconds)
 		int rc = receiveBytesFromTcp(socket, adbReceiveBuffer, sizeof(adbReceiveBuffer) - 1, &timeoutValue);
 		if (rc < 0)
 		{
+			// Select had a timeout
 			return NULL;
 		}
 		if (rc < 0 || rc > sizeof(adbReceiveBuffer) - 1)
@@ -284,7 +289,7 @@ static int connectToTcp(char* hostname, int port)
 	}
 
 	errno = 0;
-	if (connect(socketFd, (struct sockaddr*) & serverAddress, sizeof(struct sockaddr_in)) < 0)
+	if (connect(socketFd, (struct sockaddr*)&serverAddress, sizeof(struct sockaddr_in)) < 0)
 	{
 		pblCgiExitOnError("%s: connect(%d) error, host '%s' on port %d, errno %d\n", tag, socketFd, hostname, shortPort, errno);
 		socket_close(socketFd);
@@ -299,7 +304,7 @@ static int connectToTcp(char* hostname, int port)
 char* adbGetHttpResponse(char* hostname, int port, char* uri, int timeoutSeconds, char* agent)
 {
 	char* response = NULL;
-	for (int n = 0; n < 2; n++)
+	for (int n = 0; n < 3; n++)
 	{
 		int socketFd = connectToTcp(hostname, port);
 
@@ -356,7 +361,7 @@ static char* getMatchingString(char* string, char start, char end, char** nextPt
 			}
 		}
 	}
-	pblCgiExitOnError("%s: unexpected end of string in '%s'\n", tag, string);
+	pblCgiExitOnError("%s: unexpected end of string in '%s', expected end character '%c'\n", tag, string, end);
 	return NULL;
 }
 
@@ -925,7 +930,13 @@ void adbCreateStatisticsHits(int layer, char* layerName, int layerServed)
 				bundle = "UnknownBundle";
 			}
 
-			char* fileName = pblCgiSprintf("%s_%s.htm", os, bundle);
+			char* client = pblCgiQueryValue("client");
+			if (!client || !*client || strstr(client, ".."))
+			{
+				client = "UnknownClient";
+			}
+
+			char* fileName = pblCgiSprintf("%s_%s_%s.htm", os, client, bundle);
 			createStatisticsFile(versionsDirectory, fileName);
 			char* uri = pblCgiSprintf("/ArpoiseDirectory/AppVersions/%s", fileName);
 			adbGetHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/AppVersions");
@@ -1033,6 +1044,7 @@ char* adbGetArea(char* queryString)
 		}
 		double latDouble = strtod(latPtr + 4, NULL);
 		lat = (int)(1000000.0 * latDouble);
+		PBL_FREE(latPtr);
 	}
 	char* lonPtr = strstr(queryString, "lon=");
 	if (lonPtr)
@@ -1048,6 +1060,7 @@ char* adbGetArea(char* queryString)
 		}
 		double lonDouble = strtod(lonPtr + 4, NULL);
 		lon = (int)(1000000.0 * lonDouble);
+		PBL_FREE(lonPtr);
 	}
 	for (int i = 1; i <= 1000; i++)
 	{

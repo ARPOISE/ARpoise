@@ -26,11 +26,8 @@
  please see: http://www.mission-base.com/.
 
 $Log: pblCgi.h,v $
-Revision 1.3  2021/06/12 11:27:38  peter
-Synchronizing with github version
-
-Revision 1.34  2021/06/12 11:18:27  peter
-Synchronizing with github version
+Revision 1.4  2021/08/12 21:28:40  peter
+Cleanup of Arpoise directory
 
  */
 
@@ -44,31 +41,14 @@ extern "C"
 #include <errno.h>
 #include <ctype.h>
 #include <time.h>
-#include <memory.h>
-#include <malloc.h>
-#include <assert.h>
-#include <stdlib.h>
 
 #ifdef _WIN32
 
 #include <winsock2.h>
-#include <direct.h>
-#include <windows.h> 
-#include <process.h>
 
 #else
-
 #include <sys/time.h>
 #include <unistd.h>
-#include <signal.h>
-#include <math.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #endif
 
 #include "pbl.h"
@@ -89,8 +69,6 @@ extern "C"
 
 #define PBL_CGI_TRACE_FILE                     "TraceFilePath"
 
-#define pblCgiRand() (abs((rand()<<24) ^ (rand()<<16) ^ (rand()<<8) ^ rand()))
-
 	/*****************************************************************************/
 	/* Variable declarations                                                     */
 	/*****************************************************************************/
@@ -99,6 +77,7 @@ extern "C"
 
 	extern struct timeval pblCgiStartTime;
 	extern FILE* pblCgiTraceFile;
+	extern char* pblCgiValueIncrement;
 
 	extern char* pblCgiQueryString;
 	extern char* pblCgiCookieKey;
@@ -110,8 +89,6 @@ extern "C"
 	/* Function declarations                                                     */
 	/*****************************************************************************/
 
-	extern void pblCgiSetSelfDestruction(int seconds);
-	extern char* pblCgiMalloc(char* tag, size_t size);
 	extern char* pblCgiConfigValue(char* key, char* defaultValue);
 	extern void pblCgiInitTrace(struct timeval* startTime, char* traceFilePath);
 	extern void pblCgiTrace(const char* format, ...);

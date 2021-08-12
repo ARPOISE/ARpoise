@@ -24,20 +24,14 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblStringBuilder.c,v $
- Revision 1.2  2021/06/12 11:27:38  peter
- Synchronizing with github version
-
- Revision 1.8  2021/06/12 11:18:27  peter
- Synchronizing with github version
-
- Revision 1.1  2020/11/10 16:14:44  peter
- *** empty log message ***
+ Revision 1.3  2021/08/12 21:28:39  peter
+ Cleanup of Arpoise directory
 
  */
  /*
   * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
   */
-char* pblStringBuilder_c_id = "$Id: pblStringBuilder.c,v 1.2 2021/06/12 11:27:38 peter Exp $";
+char* pblStringBuilder_c_id = "$Id: pblStringBuilder.c,v 1.3 2021/08/12 21:28:39 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -51,6 +45,10 @@ char* pblStringBuilder_c_id = "$Id: pblStringBuilder.c,v 1.2 2021/06/12 11:27:38
 #include <stdlib.h>
 
 #include "pbl.h"
+
+/*****************************************************************************/
+/* Functions                                                                 */
+/*****************************************************************************/
 
 /**
  * Creates a new string builder.
@@ -89,7 +87,7 @@ PblStringBuilder* pblStringBuilderNew(void)
  *
  * @return void
  */
-void pblStringBuilderClear(    /*                                   */
+void pblStringBuilderClear( /*                                   */
 	PblStringBuilder* stringBuilder /** The string builder to clear */
 )
 {
@@ -112,7 +110,7 @@ void pblStringBuilderClear(    /*                                   */
  *
  * @return void
  */
-void pblStringBuilderFree(    /*                                   */
+void pblStringBuilderFree( /*                                   */
 	PblStringBuilder* stringBuilder /** The string builder to free */
 )
 {
@@ -128,7 +126,7 @@ void pblStringBuilderFree(    /*                                   */
  *
  * @return int rc: The number of elements in the string builder.
  */
-int pblStringBuilderSize(    /*                                   */
+int pblStringBuilderSize( /*                                   */
 	PblStringBuilder* stringBuilder /** The string builder to use */
 )
 {
@@ -142,7 +140,7 @@ int pblStringBuilderSize(    /*                                   */
  *
  * @return size_t rc: The number of characters in the string builder.
  */
-size_t pblStringBuilderLength(    /*                              */
+size_t pblStringBuilderLength( /*                              */
 	PblStringBuilder* stringBuilder /** The string builder to use */
 )
 {
@@ -161,7 +159,7 @@ size_t pblStringBuilderLength(    /*                              */
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-size_t pblStringBuilderAppendStr(    /*                             */
+size_t pblStringBuilderAppendStr( /*                             */
 	PblStringBuilder* stringBuilder, /** The string builder to use  */
 	const char* data /** The data to be added to the string builder */
 )
@@ -200,9 +198,9 @@ size_t pblStringBuilderAppendStr(    /*                             */
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-size_t pblStringBuilderAppendStrN(    /*                            */
+size_t pblStringBuilderAppendStrN( /*                            */
 	PblStringBuilder* stringBuilder, /** The string builder to use  */
-	size_t n,        /** The maximum number of bytes to append      */
+	size_t n, /** The maximum number of bytes to append              */
 	const char* data /** The data to be added to the string builder */
 )
 {
@@ -256,8 +254,8 @@ size_t pblStringBuilderAppendStrN(    /*                            */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  * <BR>PBL_ERROR_PARAM_FORMAT  - The parameter format is not valid.
  */
-size_t pblStringBuilderAppend( /*                                   */
-	PblStringBuilder* stringBuilder, /** The string builder to use  */
+size_t pblStringBuilderAppend( /*                               */
+	PblStringBuilder* stringBuilder, /** The string builder to use */
 	const char* format, /** The format of the arguments to append   */
 	... /** The variable arguments to append                        */
 )
@@ -309,8 +307,8 @@ size_t pblStringBuilderAppend( /*                                   */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  * <BR>PBL_ERROR_PARAM_FORMAT  - The parameter format is not valid.
  */
-size_t pblStringBuilderAppendN( /*                                  */
-	PblStringBuilder* stringBuilder, /** The string builder to use  */
+size_t pblStringBuilderAppendN( /*                              */
+	PblStringBuilder* stringBuilder, /** The string builder to use */
 	size_t n, /** The maximum number of bytes to append             */
 	const char* format, /** The format of the arguments to append   */
 	... /** The variable arguments to append                        */
@@ -377,7 +375,7 @@ size_t pblStringBuilderAppendN( /*                                  */
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-char* pblStringBuilderToString( /*                                */
+char* pblStringBuilderToString( /*                            */
 	PblStringBuilder* stringBuilder /** The string builder to use */
 )
 {

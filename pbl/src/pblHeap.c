@@ -24,22 +24,15 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblHeap.c,v $
- Revision 1.2  2021/06/12 11:27:37  peter
- Synchronizing with github version
-
- Revision 1.12  2021/06/12 11:18:26  peter
- Synchronizing with github version
-
-
- Revision 1.5  2010/08/31 21:06:20  peter
- Added the heap functions.
+ Revision 1.3  2021/08/12 21:28:39  peter
+ Cleanup of Arpoise directory
 
  */
 
-/*
- * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
- */
-char* pblHeap_c_id = "$Id: pblHeap.c,v 1.2 2021/06/12 11:27:37 peter Exp $";
+ /*
+  * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
+  */
+char* pblHeap_c_id = "$Id: pblHeap.c,v 1.3 2021/08/12 21:28:39 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -72,9 +65,9 @@ char* pblHeap_c_id = "$Id: pblHeap.c,v 1.2 2021/06/12 11:27:37 peter Exp $";
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-PblHeap * pblHeapNew(void)
+PblHeap* pblHeapNew(void)
 {
-	return (PblHeap *) pblListNewArrayList();
+	return (PblHeap*)pblListNewArrayList();
 }
 
 /**
@@ -100,16 +93,16 @@ PblHeap * pblHeapNew(void)
  *
  * @return * retptr: The compare function used before, may be NULL.
  */
-void * pblHeapSetCompareFunction( /*                     */
-PblHeap * heap, /** The heap to set compare function for */
-int (*compare) /** The compare function to set           */
-( /*                                                     */
-const void* prev, /** The "left" element for compare     */
-const void* next /** The "right" element for compare     */
-) /*                                                     */
+void* pblHeapSetCompareFunction( /*                     */
+	PblHeap* heap, /** The heap to set compare function for */
+	int (*compare) /** The compare function to set           */
+	( /*                                                     */
+		const void* prev, /** The "left" element for compare     */
+		const void* next /** The "right" element for compare     */
+		) /*                                                     */
 )
 {
-	return pblListSetCompareFunction((PblList *) heap, compare);
+	return pblListSetCompareFunction((PblList*)heap, compare);
 }
 
 /**
@@ -123,10 +116,10 @@ const void* next /** The "right" element for compare     */
  * @return void
  */
 void pblHeapClear( /*                */
-PblHeap * heap /** The heap to clear */
+	PblHeap* heap /** The heap to clear */
 )
 {
-	pblListClear((PblList *) heap);
+	pblListClear((PblList*)heap);
 }
 
 /**
@@ -140,11 +133,11 @@ PblHeap * heap /** The heap to clear */
  * @return void
  */
 void pblHeapFree( /*                */
-PblHeap * heap /** The heap to free */
+	PblHeap* heap /** The heap to free */
 )
 {
-	pblListClear((PblList *) heap);
-	pblListFree((PblList *) heap);
+	pblListClear((PblList*)heap);
+	pblListFree((PblList*)heap);
 }
 
 /**
@@ -164,11 +157,11 @@ PblHeap * heap /** The heap to free */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
 int pblHeapEnsureCapacity( /*                    */
-PblHeap * heap, /** The heap to use              */
-int minCapacity /** The desired minimum capacity */
+	PblHeap* heap, /** The heap to use              */
+	int minCapacity /** The desired minimum capacity */
 )
 {
-	return pblListEnsureCapacity((PblList *) heap, minCapacity);
+	return pblListEnsureCapacity((PblList*)heap, minCapacity);
 }
 
 /**
@@ -179,10 +172,10 @@ int minCapacity /** The desired minimum capacity */
  * @return int rc: The capacity of the heap.
  */
 int pblHeapGetCapacity( /*         */
-PblHeap * heap /** The heap to use */
+	PblHeap* heap /** The heap to use */
 )
 {
-	return pblListGetCapacity((PblList *) heap);
+	return pblListGetCapacity((PblList*)heap);
 }
 
 /**
@@ -193,10 +186,10 @@ PblHeap * heap /** The heap to use */
  * @return int rc: The number of elements in the heap.
  */
 int pblHeapSize( /*                */
-PblHeap * heap /** The heap to use */
+	PblHeap* heap /** The heap to use */
 )
 {
-	return pblListSize((PblList *) heap);
+	return pblListSize((PblList*)heap);
 }
 
 /**
@@ -208,10 +201,10 @@ PblHeap * heap /** The heap to use */
  * @return int rc == 0: The heap has elements.
  */
 int pblHeapIsEmpty( /*             */
-PblHeap * heap /** The heap to use */
+	PblHeap* heap /** The heap to use */
 )
 {
-	return pblListIsEmpty((PblList *) heap);
+	return pblListIsEmpty((PblList*)heap);
 }
 
 /**
@@ -227,10 +220,10 @@ PblHeap * heap /** The heap to use */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
 int pblHeapTrimToSize( /*          */
-PblHeap * heap /** The heap to use */
+	PblHeap* heap /** The heap to use */
 )
 {
-	return pblListTrimToSize((PblList *) heap);
+	return pblListTrimToSize((PblList*)heap);
 }
 
 /*
@@ -240,7 +233,7 @@ PblHeap * heap /** The heap to use */
  *
  * @return int rc: The new index of the element.
  */
-static int pblEnsureHeapConditionDownward(PblHeap * heap, int size, int index)
+static int pblEnsureHeapConditionDownward(PblHeap* heap, int size, int index)
 {
 	// For zero based arrays all elements with an index bigger
 	// than 'size / 2 - 1' do not have any children
@@ -249,7 +242,7 @@ static int pblEnsureHeapConditionDownward(PblHeap * heap, int size, int index)
 
 	if (index <= lastParentIndex)
 	{
-		void *entry = pblListGet((PblList *) heap, index);
+		void* entry = pblListGet((PblList*)heap, index);
 
 		// As long as the entry has at least one child
 		//
@@ -259,7 +252,7 @@ static int pblEnsureHeapConditionDownward(PblHeap * heap, int size, int index)
 			//
 			int childIndex = 2 * index + 1;
 
-			void *child = pblListGet((PblList *) heap, childIndex);
+			void* child = pblListGet((PblList*)heap, childIndex);
 
 			// If the entry also has a right child, the bigger child
 			// needs to be considered for the swap
@@ -269,9 +262,9 @@ static int pblEnsureHeapConditionDownward(PblHeap * heap, int size, int index)
 				// The right child is next to the left child in the array
 				//
 				int rightChildIndex = childIndex + 1;
-				void *rightChild = pblListGet((PblList *) heap, rightChildIndex);
+				void* rightChild = pblListGet((PblList*)heap, rightChildIndex);
 
-				if (pblCollectionElementCompare((PblCollection*) heap, rightChild, child) > 0)
+				if (pblCollectionElementCompare((PblCollection*)heap, rightChild, child) > 0)
 				{
 					// Use the right child for the swap
 					//
@@ -280,7 +273,7 @@ static int pblEnsureHeapConditionDownward(PblHeap * heap, int size, int index)
 				}
 			}
 
-			if (pblCollectionElementCompare((PblCollection*) heap, entry, child) >= 0)
+			if (pblCollectionElementCompare((PblCollection*)heap, entry, child) >= 0)
 			{
 				// The heap condition is fulfilled for the entry
 				//
@@ -289,8 +282,8 @@ static int pblEnsureHeapConditionDownward(PblHeap * heap, int size, int index)
 
 			// Do the swap with the child
 			//
-			pblListSet((PblList *) heap, childIndex, entry);
-			pblListSet((PblList *) heap, index, child);
+			pblListSet((PblList*)heap, childIndex, entry);
+			pblListSet((PblList*)heap, index, child);
 
 			index = childIndex;
 		}
@@ -309,11 +302,11 @@ static int pblEnsureHeapConditionDownward(PblHeap * heap, int size, int index)
  *
  * @return int rc: The new index of the element.
  */
-static int pblEnsureHeapConditionUpward(PblHeap * heap, int index)
+static int pblEnsureHeapConditionUpward(PblHeap* heap, int index)
 {
 	if (index > 0)
 	{
-		void *entry = pblListGet((PblList *) heap, index);
+		void* entry = pblListGet((PblList*)heap, index);
 
 		// As long as the entry is not the top of the heap
 		//
@@ -322,9 +315,9 @@ static int pblEnsureHeapConditionUpward(PblHeap * heap, int index)
 			// For zero based arrays the parent index is '( index - 1 ) / 2'
 			//
 			int parentIndex = (index - 1) / 2;
-			void *parent = pblListGet((PblList *) heap, parentIndex);
+			void* parent = pblListGet((PblList*)heap, parentIndex);
 
-			if (pblCollectionElementCompare((PblCollection*) heap, entry, parent) <= 0)
+			if (pblCollectionElementCompare((PblCollection*)heap, entry, parent) <= 0)
 			{
 				// The heap condition is fulfilled for the entry
 				//
@@ -333,8 +326,8 @@ static int pblEnsureHeapConditionUpward(PblHeap * heap, int index)
 
 			// Do the swap with the parent
 			//
-			pblListSet((PblList *) heap, parentIndex, entry);
-			pblListSet((PblList *) heap, index, parent);
+			pblListSet((PblList*)heap, parentIndex, entry);
+			pblListSet((PblList*)heap, index, parent);
 
 			index = parentIndex;
 		}
@@ -353,8 +346,8 @@ static int pblEnsureHeapConditionUpward(PblHeap * heap, int index)
  * @return int rc: The new index of the element.
  */
 int pblHeapEnsureCondition( /*                         */
-PblHeap * heap, /** The heap to use                    */
-int index /** Index of element to ensure condition for */
+	PblHeap* heap, /** The heap to use                    */
+	int index /** Index of element to ensure condition for */
 )
 {
 	int rc = pblEnsureHeapConditionUpward(heap, index);
@@ -373,7 +366,7 @@ int index /** Index of element to ensure condition for */
  * @return int rc: The new index of the element.
  */
 int pblHeapEnsureConditionFirst( /**/
-PblHeap * heap /** The heap to use */
+	PblHeap* heap /** The heap to use */
 )
 {
 	return pblHeapEnsureCondition(heap, 0);
@@ -402,11 +395,11 @@ PblHeap * heap /** The heap to use */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
 int pblHeapAddLast( /*                             */
-PblHeap * heap, /** The heap to use                */
-void * element /** Element to be added to the heap */
+	PblHeap* heap, /** The heap to use                */
+	void* element /** Element to be added to the heap */
 )
 {
-	return pblListAdd((PblList *) heap, element);
+	return pblListAdd((PblList*)heap, element);
 }
 
 /**
@@ -422,13 +415,13 @@ void * element /** Element to be added to the heap */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
 int pblHeapInsert( /*                                 */
-PblHeap * heap, /** The heap to use                   */
-void * element /** Element to be inserted to the heap */
+	PblHeap* heap, /** The heap to use                   */
+	void* element /** Element to be inserted to the heap */
 )
 {
 	// Add to the end of the heap
 	//
-	int rc = pblListAdd((PblList *) heap, element);
+	int rc = pblListAdd((PblList*)heap, element);
 	if (rc > 1)
 	{
 		// Ensure the heap condition for the last entry
@@ -452,11 +445,11 @@ void * element /** Element to be inserted to the heap */
  *
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - The heap is empty.
  */
-void * pblHeapRemoveLast( /*       */
-PblHeap * heap /** The heap to use */
+void* pblHeapRemoveLast( /*       */
+	PblHeap* heap /** The heap to use */
 )
 {
-	return pblListRemoveLast((PblList *) heap);
+	return pblListRemoveLast((PblList*)heap);
 }
 
 /**
@@ -471,33 +464,33 @@ PblHeap * heap /** The heap to use */
  *
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - Index is out of range (index < 0 || index >= size()).
  */
-void * pblHeapRemoveAt( /*                                    */
-PblHeap * heap, /** The heap to use                           */
-int index /** The index at which the element is to be removed */
+void* pblHeapRemoveAt( /*                                    */
+	PblHeap* heap, /** The heap to use                           */
+	int index /** The index at which the element is to be removed */
 )
 {
-	void *retptr;
-	void *lastEntry;
-	void *entry;
-	int size = pblListSize((PblList *) heap);
+	void* retptr;
+	void* lastEntry;
+	void* entry;
+	int size = pblListSize((PblList*)heap);
 
 	if (index == size - 1)
 	{
-		return pblListRemoveLast((PblList *) heap);
+		return pblListRemoveLast((PblList*)heap);
 	}
 
-	entry = pblListGet((PblList *) heap, index);
-	if (entry == (void *) -1)
+	entry = pblListGet((PblList*)heap, index);
+	if (entry == (void*)-1)
 	{
-		return (void*) -1;
+		return (void*)-1;
 	}
 
 	// Remove the last entry in the array list
 	//
-	lastEntry = pblListRemoveLast((PblList *) heap);
-	if (lastEntry == (void *) -1)
+	lastEntry = pblListRemoveLast((PblList*)heap);
+	if (lastEntry == (void*)-1)
 	{
-		return (void*) -1;
+		return (void*)-1;
 	}
 
 	// One entry was removed, therefore the size must be decreased as well
@@ -510,10 +503,10 @@ int index /** The index at which the element is to be removed */
 		return lastEntry;
 	}
 
-	retptr = pblListSet((PblList *) heap, index, lastEntry);
-	if (retptr == (void *) -1)
+	retptr = pblListSet((PblList*)heap, index, lastEntry);
+	if (retptr == (void*)-1)
 	{
-		return (void*) -1;
+		return (void*)-1;
 	}
 
 	if (size > 1)
@@ -539,8 +532,8 @@ int index /** The index at which the element is to be removed */
  *
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - The heap is empty.
  */
-void * pblHeapRemoveFirst( /*      */
-PblHeap * heap /** The heap to use */
+void* pblHeapRemoveFirst( /*      */
+	PblHeap* heap /** The heap to use */
 )
 {
 	return pblHeapRemoveAt(heap, 0);
@@ -556,12 +549,12 @@ PblHeap * heap /** The heap to use */
  *
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - Index is out of range (index < 0 || index >= size()).
  */
-void * pblHeapGet( /*                        */
-PblHeap * heap, /** The heap to use          */
-int index /** Index of the element to return */
+void* pblHeapGet( /*                        */
+	PblHeap* heap, /** The heap to use          */
+	int index /** Index of the element to return */
 )
 {
-	return pblListGet((PblList *) heap, index);
+	return pblListGet((PblList*)heap, index);
 }
 
 /**
@@ -575,11 +568,11 @@ int index /** Index of the element to return */
  *
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - The heap is empty.
  */
-void * pblHeapGetFirst( /*         */
-PblHeap * heap /** The heap to use */
+void* pblHeapGetFirst( /*         */
+	PblHeap* heap /** The heap to use */
 )
 {
-	return pblListGet((PblList *) heap, 0);
+	return pblListGet((PblList*)heap, 0);
 }
 
 /**
@@ -600,10 +593,10 @@ PblHeap * heap /** The heap to use */
  * to this function.
  */
 void pblHeapConstruct( /*          */
-PblHeap * heap /** The heap to use */
+	PblHeap* heap /** The heap to use */
 )
 {
-	int size = pblListSize((PblList *) heap);
+	int size = pblListSize((PblList*)heap);
 	int index;
 
 	// For zero based arrays all entries with an index bigger
@@ -650,11 +643,11 @@ PblHeap * heap /** The heap to use */
  * <BR>PBL_ERROR_OUT_OF_MEMORY    - Out of memory.
  * <BR>PBL_ERROR_PARAM_COLLECTION - The parameter heap is not of type (PblHeap *).
  */
-PblIterator * pblHeapIterator( /*  */
-PblHeap * heap /** The heap to use */
+PblIterator* pblHeapIterator( /*  */
+	PblHeap* heap /** The heap to use */
 )
 {
-	return pblIteratorNew((PblList *) heap);
+	return pblIteratorNew((PblList*)heap);
 }
 
 /**
@@ -670,12 +663,12 @@ PblHeap * heap /** The heap to use */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
 int pblHeapJoin( /*                        */
-PblHeap * heap, /** The heap to join to    */
-PblHeap * other /** The other heap to join */
+	PblHeap* heap, /** The heap to join to    */
+	PblHeap* other /** The other heap to join */
 )
 {
-	int otherSize = pblListSize((PblList *) other);
-	int size = pblListSize((PblList *) heap);
+	int otherSize = pblListSize((PblList*)other);
+	int size = pblListSize((PblList*)heap);
 
 	if (otherSize == 0)
 	{
@@ -688,14 +681,14 @@ PblHeap * other /** The other heap to join */
 	// elements having to be moved
 	//
 	size += otherSize;
-	if (pblListEnsureCapacity((PblList *) heap, size) < 0)
+	if (pblListEnsureCapacity((PblList*)heap, size) < 0)
 	{
 		return -1;
 	}
 
 	// Low level entry copy from 'other' to 'heap'
 	//
-	if (pblListAddAll((PblList *) heap, other) < 0)
+	if (pblListAddAll((PblList*)heap, other) < 0)
 	{
 		return -1;
 	}
@@ -703,7 +696,7 @@ PblHeap * other /** The other heap to join */
 	// The entries have been copied to 'heap',
 	// they can be cleared from 'other', thus implementing a move
 	//
-	pblListClear((PblList *) other);
+	pblListClear((PblList*)other);
 
 	// If 'size == otherSize', then 'heap' was originally empty,
 	// as 'other' fulfilled the heap condition before the join

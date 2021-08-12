@@ -24,18 +24,14 @@
    please see: http://www.mission-base.com/.
 
    $Log: pbl.c,v $
-   Revision 1.2  2021/06/12 11:27:38  peter
-   Synchronizing with github version
-
-   Revision 1.20  2021/06/12 11:18:27  peter
-   Synchronizing with github version
-
+   Revision 1.3  2021/08/12 21:28:40  peter
+   Cleanup of Arpoise directory
 
 */
 /*
  * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
  */
-char* pbl_c_id = "$Id: pbl.c,v 1.2 2021/06/12 11:27:38 peter Exp $";
+char* pbl_c_id = "$Id: pbl.c,v 1.3 2021/08/12 21:28:40 peter Exp $";
 
 #include <stdio.h>
 #include <string.h>
@@ -49,6 +45,52 @@ char* pbl_c_id = "$Id: pbl.c,v 1.2 2021/06/12 11:27:38 peter Exp $";
 
 #include "pbl.h"
 
+/*****************************************************************************/
+/* Typedefs                                                                  */
+/*****************************************************************************/
+
+#ifdef PBL_MEMTRACE
+/*
+ * The type is only needed if we keep a heap memory trace
+ */
+typedef struct pbl_memtrace_s
+{
+	char* tag;          /* tag used by calling function                */
+	time_t      time;         /* time when the chunk of memory was requested */
+	void* data;         /* pointer to data that was allocated          */
+	size_t      size;         /* number of bytes allocated                   */
+
+	struct pbl_memtrace_s* next;    /* memory chunks are kept in a linear   */
+	struct pbl_memtrace_s* prev;    /* list                                 */
+
+} pbl_memtrace_t;
+
+#endif
+
+/*****************************************************************************/
+/* Globals                                                                   */
+/*****************************************************************************/
+
+#ifdef PBL_MEMTRACE
+
+/*
+ * Head and tail of known memory chunks
+ */
+static pbl_memtrace_t* pbl_memtrace_head;
+static pbl_memtrace_t* pbl_memtrace_tail;
+
+/*
+ * Number of memory chunks known
+ */
+static long pbl_nmem_chunks = 0;
+
+/*
+ * Total size of all chunks known
+ */
+static long pbl_nmem_size = 0;
+
+#endif
+
 static char pbl_errbuf[PBL_ERRSTR_LEN + 1];
 
 int    pbl_errno;
@@ -58,6 +100,198 @@ char* pbl_errstr = pbl_errbuf;
 /* Functions                                                                 */
 /*****************************************************************************/
 
+#ifdef PBL_MEMTRACE
+
+/*
+ * Log a line for all memory chunks that are allocated for more than
+ * 3 minutes, or if call at the end of the program, log all chunks known
+ */
+void pbl_memtrace_out(int checktime)
+{
+	static int first = 1;
+	pbl_memtrace_t* memtrace;
+	pbl_memtrace_t* tmp;
+
+	char* outpath = "pblmemtrace.log";
+	FILE* outfile = NULL;
+	time_t now = time(0);
+	char* nowstr = NULL;
+	char* timestr = NULL;
+
+	if (!pbl_memtrace_head)
+	{
+		return;
+	}
+
+	memtrace = pbl_memtrace_head;
+	while (memtrace)
+	{
+		if (checktime && (now - memtrace->time < 180))
+		{
+			break;
+		}
+
+		if (!outfile)
+		{
+			if (first)
+			{
+				first = 0;
+				outfile = fopen(outpath, "w");
+				if (outfile)
+				{
+					fprintf(outfile, ">>memtrace at %s", ctime(&now));
+				}
+			}
+			else
+			{
+				outfile = fopen(outpath, "a");
+			}
+
+			if (!outfile)
+			{
+				break;
+			}
+		}
+
+		tmp = memtrace;
+		memtrace = memtrace->current;
+
+		if (!nowstr)
+		{
+			nowstr = strdup(ctime(&now));
+		}
+		timestr = ctime(&(tmp->time));
+
+		fprintf(outfile, "%s %.*s: %.*s %06ld %x %ld %ld \"%s\"\n",
+			checktime ? ">" : "e",
+			8, nowstr ? nowstr + 11 : "unknown",
+			8, timestr ? timestr + 11 : "unknown",
+			(long)tmp->size,
+			tmp->data - NULL,
+			pbl_nmem_chunks, pbl_nmem_size, tmp->tag
+		);
+
+		PBL_LIST_UNLINK(pbl_memtrace_head, pbl_memtrace_tail,
+			tmp, current, prev);
+		free(tmp);
+	}
+
+	if (nowstr)
+	{
+		free(nowstr);
+	}
+
+	if (outfile)
+	{
+		fclose(outfile);
+	}
+}
+
+static pblHashTable_t* _pblFreeHash = 0;
+static int pblTracingMemory = 0;
+
+/*
+ * Init the hash table used to detect multiple 'free' calls on the same memory
+ */
+void pbl_memtrace_init()
+{
+	if (!_pblFreeHash)
+	{
+		_pblFreeHash = pblHtCreate();
+	}
+}
+
+/*
+ * Remember a memory chunk that was allocated by some function
+ */
+void pbl_memtrace_create(
+	char* tag,
+	void* data,
+	size_t size
+)
+{
+	pbl_memtrace_t* memtrace;
+
+	memtrace = malloc(sizeof(pbl_memtrace_t));
+	if (!memtrace)
+	{
+		return;
+	}
+
+	memtrace->tag = tag;
+	memtrace->time = time(0);
+	memtrace->data = data;
+	memtrace->size = size;
+
+	PBL_LIST_APPEND(pbl_memtrace_head, pbl_memtrace_tail,
+		memtrace, current, prev);
+
+	pbl_nmem_chunks++;
+	pbl_nmem_size += size;
+
+	pbl_memtrace_out(1);
+
+	if (_pblFreeHash && !pblTracingMemory)
+	{
+		int saveErrno = pbl_errno;
+		pblTracingMemory = 1;
+		if (pblHtLookup(_pblFreeHash, &data, sizeof(data)))
+		{
+			pblHtRemove(_pblFreeHash, &data, sizeof(data));
+		}
+		pblTracingMemory = 0;
+		pbl_errno = saveErrno;
+	}
+}
+
+/*
+ * Remove a memory from the chunk list, the caller freed the memory
+ */
+void pbl_memtrace_delete(
+	void* data
+)
+{
+	pbl_memtrace_t* memtrace;
+
+	int found = 0;
+
+	for (memtrace = pbl_memtrace_head; memtrace; memtrace = memtrace->current)
+	{
+		if (memtrace->data == data)
+		{
+			pbl_nmem_chunks--;
+			pbl_nmem_size -= memtrace->size;
+
+			PBL_LIST_UNLINK(pbl_memtrace_head, pbl_memtrace_tail,
+				memtrace, current, prev);
+			free(memtrace);
+			found = 1;
+			break;
+		}
+	}
+
+	if (!found)
+	{
+		pbl_memtrace_out(0);
+	}
+
+	if (_pblFreeHash && !pblTracingMemory)
+	{
+		int saveErrno = pbl_errno;
+		pblTracingMemory = 1;
+		if (pblHtLookup(_pblFreeHash, &data, sizeof(data)))
+		{
+			pblHtRemove(_pblFreeHash, &data, sizeof(data));
+		}
+
+		pblHtInsert(_pblFreeHash, &data, sizeof(data), data);
+		pblTracingMemory = 0;
+		pbl_errno = saveErrno;
+	}
+}
+
+#endif /* PBL_MEMTRACE */
+
 /**
   * Replacement for malloc().
   *
@@ -65,16 +299,18 @@ char* pbl_errstr = pbl_errbuf;
   * @return  void * retptr != NULL: pointer to buffer allocated
   */
 void* pbl_malloc(
-	char* tag,           /** tag used for memory leak detection */
+	char* tag,        /** tag used for memory leak detection */
 	size_t   size        /** number of bytes to allocate        */
 )
 {
+	void* ptr;
+
 	if (!tag)
 	{
 		tag = "pbl_malloc";
 	}
 
-	void* ptr = malloc(size);
+	ptr = malloc(size);
 	if (!ptr)
 	{
 #ifdef PBL_MS_VS_2012
@@ -83,9 +319,15 @@ void* pbl_malloc(
 		snprintf(pbl_errstr, PBL_ERRSTR_LEN,
 			"%s: failed to malloc %d bytes\n", tag, (int)size);
 		pbl_errno = PBL_ERROR_OUT_OF_MEMORY;
+		return ptr;
 	}
+
+#ifdef PBL_MEMTRACE
+	pbl_memtrace_create(tag, ptr, size);
+#endif
+
 	return ptr;
-}
+		}
 
 /**
   * Replacement for malloc(), initializes the memory to 0.
@@ -94,26 +336,30 @@ void* pbl_malloc(
   * @return  void * retptr != NULL: pointer to buffer allocated
   */
 void* pbl_malloc0(
-	char* tag,           /** tag used for memory leak detection */
+	char* tag,        /** tag used for memory leak detection */
 	size_t   size        /** number of bytes to allocate        */
 )
 {
+	void* ptr;
+
 	if (!tag)
 	{
 		tag = "pbl_malloc0";
 	}
 
-	void* ptr = calloc((size_t)1, size);
+	ptr = calloc((size_t)1, size);
 	if (!ptr)
 	{
-#ifdef PBL_MS_VS_2012
-#pragma warning(disable: 4996)
-#endif
 		snprintf(pbl_errstr, PBL_ERRSTR_LEN,
 			"%s: failed to calloc %d bytes\n", tag, (int)size);
 		pbl_errno = PBL_ERROR_OUT_OF_MEMORY;
 		return ptr;
 	}
+
+#ifdef PBL_MEMTRACE
+	pbl_memtrace_create(tag, ptr, size);
+#endif
+
 	return ptr;
 }
 
@@ -125,23 +371,35 @@ void* pbl_malloc0(
   * @return  void * retptr != NULL: pointer to buffer allocated
   */
 void* pbl_memdup(
-	char* tag,         /** tag used for memory leak detection */
-	void* data,        /** buffer to duplicate                */
+	char* tag,        /** tag used for memory leak detection */
+	void* data,       /** buffer to duplicate                */
 	size_t size        /** size of that buffer                */
 )
 {
+	void* ptr;
+
 	if (!tag)
 	{
 		tag = "pbl_memdup";
 	}
 
-	void* ptr = pbl_malloc(tag, size);
+	ptr = malloc(size);
 	if (!ptr)
 	{
+		snprintf(pbl_errstr, PBL_ERRSTR_LEN,
+			"%s: failed to malloc %d bytes\n", tag, (int)size);
+		pbl_errno = PBL_ERROR_OUT_OF_MEMORY;
 		return ptr;
 	}
-	return memcpy(ptr, data, size);
-}
+
+	memcpy(ptr, data, size);
+
+#ifdef PBL_MEMTRACE
+	pbl_memtrace_create(tag, ptr, size);
+#endif
+
+	return ptr;
+	}
 
 /**
   * Duplicate a string, similar to strdup().
@@ -154,11 +412,14 @@ void* pbl_strdup(
 	char* data        /** string to duplicate                */
 )
 {
+	int length = strlen(data) + 1;
+
 	if (!tag)
 	{
 		tag = "pbl_strdup";
 	}
-	return pbl_memdup(tag, data, strlen(data) + 1);
+
+	return pbl_memdup(tag, data, length);
 }
 
 
@@ -169,32 +430,37 @@ void* pbl_strdup(
   * @return  void * retptr != NULL: pointer to new buffer allocated
   */
 void* pbl_mem2dup(
-	char* tag,         /** tag used for memory leak detection */
-	void* mem1,        /** first buffer to duplicate          */
+	char* tag,        /** tag used for memory leak detection */
+	void* mem1,       /** first buffer to duplicate          */
 	size_t len1,       /** length of first buffer             */
-	void* mem2,        /** second buffer to duplicate         */
+	void* mem2,       /** second buffer to duplicate         */
 	size_t len2        /** length of second buffer            */
 )
 {
+	void* ret;
+
 	if (!tag)
 	{
 		tag = "pbl_mem2dup";
 	}
 
-	void* ptr = pbl_malloc(tag, len1 + len2);
-	if (!ptr)
+	ret = pbl_malloc(tag, len1 + len2);
+	if (!ret)
 	{
-		return ptr;
+		return ret;
 	}
+
 	if (len1)
 	{
-		memcpy(ptr, mem1, len1);
+		memcpy(ret, mem1, len1);
 	}
+
 	if (len2)
 	{
-		memcpy(((char*)ptr) + len1, mem2, len2);
+		memcpy(((char*)ret) + len1, mem2, len2);
 	}
-	return ptr;
+
+	return ret;
 }
 
 /**
@@ -203,9 +469,9 @@ void* pbl_mem2dup(
  * @return   size_t rc: number of bytes copied
  */
 size_t pbl_memlcpy(
-	void* to,           /** target buffer to copy to                             */
+	void* to,          /** target buffer to copy to                             */
 	size_t tolen,       /** number of bytes in the target buffer                 */
-	void* from,         /** source to copy from                                  */
+	void* from,        /** source to copy from                                  */
 	size_t n            /** length of source                                     */
 )
 {
@@ -221,9 +487,9 @@ size_t pbl_memlcpy(
  * @return   int rc: number of equal bytes
  */
 int pbl_memcmplen(
-	void* left,     /** first buffer for compare               */
+	void* left,    /** first buffer for compare               */
 	size_t llen,    /** length of that buffer                  */
-	void* right,    /** second buffer for compare              */
+	void* right,   /** second buffer for compare              */
 	size_t rlen     /** length of that buffer                  */
 )
 {
@@ -255,13 +521,14 @@ int pbl_memcmplen(
  * @return   int rc  > 0: left is bigger than right
  */
 int pbl_memcmp(
-	void* left,     /** first buffer for compare               */
+	void* left,    /** first buffer for compare               */
 	size_t llen,    /** length of that buffer                  */
-	void* right,    /** second buffer for compare              */
+	void* right,   /** second buffer for compare              */
 	size_t rlen     /** length of that buffer                  */
 )
 {
 	size_t len;
+	int    rc;
 
 	/*
 	 * a buffer with a length 0 is logically smaller than any other buffer
@@ -294,7 +561,7 @@ int pbl_memcmp(
 	/*
 	 * memcmp is used, therefore the ordering is ascii
 	 */
-	int rc = memcmp(left, right, len);
+	rc = memcmp(left, right, len);
 	if (rc)
 	{
 		return rc;
@@ -340,7 +607,7 @@ int pbl_BufToShort(
  * Copy a four byte long to a buffer as hex string like "0f0f0f0f".
  */
 void pbl_LongToHexString(
-	unsigned char* buf,         /** buffer to copy to                 */
+	unsigned char* buf,        /** buffer to copy to                 */
 	unsigned long l             /** long value to copy                */
 )
 {
@@ -375,10 +642,11 @@ void pbl_LongToHexString(
  * Copy a four byte long to a four byte buffer.
  */
 void pbl_LongToBuf(
-	unsigned char* buf,         /** buffer to copy to                 */
+	unsigned char* buf,        /** buffer to copy to                 */
 	long l                      /** long value to copy                */
 )
 {
+
 	*buf++ = (unsigned char)((l >> 24));
 	*buf++ = (unsigned char)((l >> 16));
 	*buf++ = (unsigned char)((l >> 8));
@@ -413,12 +681,14 @@ int pbl_LongToVarBuf(unsigned char* buffer, unsigned long value)
 		*buffer = (unsigned char)value;
 		return 1;
 	}
+
 	if (value <= 0x3fff)
 	{
 		*buffer++ = (unsigned char)(value / 0x100) | 0x80;
 		*buffer = (unsigned char)value & 0xff;
 		return 2;
 	}
+
 	if (value <= 0x1fffff)
 	{
 		*buffer++ = (unsigned char)(value / 0x10000) | 0x80 | 0x40;
@@ -426,6 +696,7 @@ int pbl_LongToVarBuf(unsigned char* buffer, unsigned long value)
 		*buffer = (unsigned char)value & 0xff;
 		return 3;
 	}
+
 	if (value <= 0x0fffffff)
 	{
 		*buffer++ = (unsigned char)(value / 0x1000000) | 0x80 | 0x40 | 0x20;
@@ -434,8 +705,10 @@ int pbl_LongToVarBuf(unsigned char* buffer, unsigned long value)
 		*buffer = (unsigned char)value & 0xff;
 		return 4;
 	}
+
 	*buffer++ = (unsigned char)0xf0;
 	pbl_LongToBuf(buffer, value);
+
 	return 5;
 }
 
@@ -457,6 +730,7 @@ int pbl_VarBufToLong(
 		*value = c;
 		return 1;
 	}
+
 	if (!(c & 0x40))
 	{
 		*value = (c & 0x3f) * 0x100 + (*buffer & 0xff);
@@ -469,6 +743,7 @@ int pbl_VarBufToLong(
 		*value = val + ((*buffer) & 0xff);
 		return 3;
 	}
+
 	if (!(c & 0x10))
 	{
 		val = (c & 0x0f) * 0x1000000;
@@ -495,18 +770,22 @@ int pbl_LongSize(
 	{
 		return 1;
 	}
+
 	if (value <= 0x3fff)
 	{
 		return 2;
 	}
+
 	if (value <= 0x1fffff)
 	{
 		return 3;
 	}
+
 	if (value <= 0x0fffffff)
 	{
 		return 4;
 	}
+
 	return 5;
 }
 
@@ -525,17 +804,21 @@ int pbl_VarBufSize(
 	{
 		return 1;
 	}
+
 	if (!(c & 0x40))
 	{
 		return 2;
 	}
+
 	if (!(c & 0x20))
 	{
 		return 3;
 	}
+
 	if (!(c & 0x10))
 	{
 		return 4;
 	}
+
 	return 5;
 }

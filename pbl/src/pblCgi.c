@@ -24,17 +24,15 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblCgi.c,v $
- Revision 1.6  2021/06/12 11:27:38  peter
- Synchronizing with github version
-
- Revision 1.52  2021/06/12 11:18:27  peter
- Synchronizing with github version
+ Revision 1.7  2021/08/12 21:28:40  peter
+ Cleanup of Arpoise directory
 
  */
+
  /*
   * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
   */
-char* pblCgi_c_id = "$Id: pblCgi.c,v 1.6 2021/06/12 11:27:38 peter Exp $";
+char* pblCgi_c_id = "$Id: pblCgi.c,v 1.7 2021/08/12 21:28:40 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -51,9 +49,9 @@ char* pblCgi_c_id = "$Id: pblCgi.c,v 1.6 2021/06/12 11:27:38 peter Exp $";
 /*****************************************************************************/
 /* #defines                                                                  */
 /*****************************************************************************/
-#define PBL_CGI_MAX_SIZE_OF_BUFFER_ON_STACK		(15 * 1024)
+#define PBL_CGI_MAX_SIZE_OF_BUFFER_ON_STACK		(64 * 1024)
 #define PBL_CGI_MAX_QUERY_PARAMETERS_COUNT		128
-#define PBL_CGI_MAX_POST_INPUT_LEN				(32 * 1024 * 1024)
+#define PBL_CGI_MAX_POST_INPUT_LEN				(16 * 1024 * 1024)
 
 /*****************************************************************************/
 /* Variables                                                                 */
@@ -71,7 +69,7 @@ int pblCgiContentLength = -1;
 char* pblCgiCookieKey = PBL_CGI_COOKIE;
 char* pblCgiCookieTag = PBL_CGI_COOKIE "=";
 
-char* pblCgiMalloc(char* tag, size_t size)
+static char* pblCgiMalloc(char* tag, size_t size)
 {
 	char* result = pbl_malloc(tag, size);
 	if (!result)
@@ -98,7 +96,7 @@ static void pblCgiSetContentType(char* type)
 			printf(format, contentType);
 			PBL_CGI_TRACE(format, contentType);
 
-			format = "Set-Cookie: %s%s; Path=%s; Domain=%s; Max-Age=31536000; HttpOnly; Secure; SameSite=Strict\n\n";
+			format = "Set-Cookie: %s%s; Path=%s; DOMAIN=%s; HttpOnly\n\n";
 			printf(format, pblCgiCookieTag, cookie, cookiePath, cookieDomain);
 			PBL_CGI_TRACE(format, pblCgiCookieTag, cookie, cookiePath, cookieDomain);
 		}
@@ -214,13 +212,13 @@ PblMap* pblCgiFileToMap(PblMap* map, char* filePath)
 		if (pblMapGetStr(map, key))
 		{
 			// Multiple lines are comma separated
-			char* newValue = pbl_mem2dup(NULL, ", ", 2, value, strlen(value) + 1);
+			char* newValue = pbl_mem2dup(tag, ", ", 2, value, strlen(value) + 1);
 			int rc = pblMapAppendStrStr(map, key, newValue);
-			PBL_FREE(newValue)
-				if (rc < 0)
-				{
-					pblCgiExitOnError("%s: Failed to append a string, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
-				}
+			PBL_FREE(newValue);
+			if (rc < 0)
+			{
+				pblCgiExitOnError("%s: Failed to append a string, pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
+			}
 		}
 		else if (pblMapAddStrStr(map, key, value) < 0)
 		{
@@ -261,7 +259,7 @@ void pblCgiInitTrace(struct timeval* startTime, char* traceFilePath)
 
 	if (traceFilePath && *traceFilePath)
 	{
-		FILE* stream = NULL;
+		FILE* stream;
 
 #ifdef WIN32
 		errno_t err = fopen_s(&stream, traceFilePath, "r");
@@ -276,10 +274,7 @@ void pblCgiInitTrace(struct timeval* startTime, char* traceFilePath)
 		}
 #endif
 
-		if (stream)
-		{
-			fclose(stream);
-		}
+		fclose(stream);
 
 		pblCgiTraceFile = pblCgiFopen(traceFilePath, "a");
 		fputs("\n", pblCgiTraceFile);
@@ -400,10 +395,6 @@ void pblCgiTrace(const char* format, ...)
  */
 void pblCgiExitOnError(const char* format, ...)
 {
-#ifdef _WIN32
-#else
-	sleep(1);
-#endif
 	pblCgiSetContentType("text/html");
 
 	printf(
@@ -585,11 +576,8 @@ char* pblCgiStrRangeDup(char* start, char* end)
 		{
 			pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 		}
-		else
-		{
-			value[length] = '\0';
-			pblCgiStrTrimEnd(value);
-		}
+		value[length] = '\0';
+		pblCgiStrTrimEnd(value);
 		return value;
 	}
 	return pblCgiStrDup("");
@@ -990,27 +978,16 @@ FILE* pblCgiFopen(char* filePath, char* openType)
 char* pblCgiGetEnv(char* name)
 {
 #ifdef WIN32
+
 	char* value;
 	size_t len;
 	_dupenv_s(&value, &len, name);
 	return value;
+
 #else
+
 	return getenv(name);
-#endif
-}
 
-static void pblCgiSelfDestruct(int sig)
-{
-	pblCgiExitOnError("Timeout: The maximum life time has been reached.\n");
-	exit(-1);
-}
-
-void pblCgiSetSelfDestruction(int seconds)
-{
-#ifdef WIN32
-#else
-	signal(SIGALRM, pblCgiSelfDestruct);
-	alarm(seconds);
 #endif
 }
 
@@ -1023,6 +1000,7 @@ void pblCgiSetSelfDestruction(int seconds)
  *  the query string like
  *
  *      script 'key1=value1&key2=value2'
+ *
  */
 void pblCgiParseQuery(int argc, char* argv[])
 {
@@ -1059,7 +1037,7 @@ void pblCgiParseQuery(int argc, char* argv[])
 		{
 			pblCgiQueryString = pblCgiStrCat(ptr, "&");
 		}
-		size_t lengthOfQueryString = strlen(pblCgiQueryString);
+		size_t length = strlen(pblCgiQueryString);
 
 		ptr = pblCgiGetEnv("CONTENT_LENGTH");
 		if (ptr && *ptr)
@@ -1067,38 +1045,30 @@ void pblCgiParseQuery(int argc, char* argv[])
 			int contentLength = atoi(ptr);
 			if (contentLength > 0)
 			{
-				if (contentLength >= PBL_CGI_MAX_POST_INPUT_LEN)
+				if (length + contentLength >= PBL_CGI_MAX_POST_INPUT_LEN)
 				{
-					pblCgiExitOnError("%s: POST input too long, %d bytes\n", tag, contentLength);
+					pblCgiExitOnError("%s: POST input too long, %d bytes\n", tag,
+						length + contentLength);
 				}
+				pblCgiContentLength = contentLength;
 
-				int bytesToAllocate = lengthOfQueryString + contentLength + 1;
-				char* newQueryString = realloc(pblCgiQueryString, bytesToAllocate);
-				if (!newQueryString)
+				pblCgiQueryString = realloc(pblCgiQueryString, length + contentLength + 1);
+				if (!pblCgiQueryString)
 				{
 					pblCgiExitOnError("%s: Out of memory\n", tag);
-					return;
 				}
-				pblCgiQueryString = newQueryString;
-				char* endOfAllocatedBytes = pblCgiQueryString + bytesToAllocate;
 
 				int c;
-				int numberOfBytesRead = 0;
-				pblCgiPostData = ptr = pblCgiQueryString + lengthOfQueryString;
-				while (ptr < endOfAllocatedBytes - 1)
+				pblCgiPostData = ptr = pblCgiQueryString + length;
+				while (contentLength-- > 0)
 				{
 					if ((c = getchar()) == EOF)
 					{
 						break;
 					}
-					numberOfBytesRead++;
 					*ptr++ = c;
 				}
-				pblCgiContentLength = numberOfBytesRead;
-				while (ptr < endOfAllocatedBytes)
-				{
-					*ptr++ = '\0';
-				}
+				*ptr = '\0';
 			}
 		}
 	}
@@ -1490,13 +1460,11 @@ static char* pblCgiHandleFor(PblList* list, char* line, char* forKey)
 			{
 				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 			}
-			else
+			value[length] = '\0';
+
+			if (pblListAdd(list, value) < 0)
 			{
-				value[length] = '\0';
-				if (pblListAdd(list, value) < 0)
-				{
-					pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
-				}
+				pblCgiExitOnError("%s: pbl_errno = %d, message='%s'\n", tag, pbl_errno, pbl_errstr);
 			}
 		}
 		ptr += 11;
@@ -1974,5 +1942,7 @@ int gettimeofday(struct timeval* tp, struct timezone* tzp)
 	tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
 	return 0;
 }
+
+extern int getpid();
 
 #endif

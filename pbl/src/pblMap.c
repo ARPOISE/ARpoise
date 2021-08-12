@@ -24,22 +24,15 @@
  please see: http://www.mission-base.com/.
 
  $Log: pblMap.c,v $
- Revision 1.2  2021/06/12 11:27:38  peter
- Synchronizing with github version
-
- Revision 1.17  2021/06/12 11:18:26  peter
- Synchronizing with github version
-
-
- Revision 1.1  2019/01/19 00:03:55  peter
- PBL for arpoise directory service
+ Revision 1.3  2021/08/12 21:28:40  peter
+ Cleanup of Arpoise directory
 
  */
 
-/*
- * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
- */
-char* pblMap_c_id = "$Id: pblMap.c,v 1.2 2021/06/12 11:27:38 peter Exp $";
+ /*
+  * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
+  */
+char* pblMap_c_id = "$Id: pblMap.c,v 1.3 2021/08/12 21:28:40 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -64,10 +57,10 @@ char* pblMap_c_id = "$Id: pblMap.c,v 1.2 2021/06/12 11:27:38 peter Exp $";
  * @return int rc: The hash value of the entry that was passed.
  */
 static int pblMapEntryHashValue( /*                                          */
-const void *element /**                 Element to calculate hash value for  */
+	const void* element /**                 Element to calculate hash value for  */
 )
 {
-	PblMapEntry * entry = (PblMapEntry*) element;
+	PblMapEntry* entry = (PblMapEntry*)element;
 
 	if (!entry || 0 == entry->keyLength)
 	{
@@ -76,12 +69,12 @@ const void *element /**                 Element to calculate hash value for  */
 
 	if (entry->tag == PBL_MAP_ENTRY_TAG)
 	{
-		return pblHtHashValue((unsigned char *) entry->buffer, entry->keyLength);
+		return pblHtHashValue((unsigned char*)entry->buffer, entry->keyLength);
 	}
 	else
 	{
-		PblMapKey * key = (PblMapKey*) element;
-		return pblHtHashValue((unsigned char *) key->key, key->keyLength);
+		PblMapKey* key = (PblMapKey*)element;
+		return pblHtHashValue((unsigned char*)key->key, key->keyLength);
 	}
 }
 
@@ -95,12 +88,12 @@ const void *element /**                 Element to calculate hash value for  */
  * @return int rc  > 0: left is greater than right
  */
 static int pblMapEntryCompareFunction( /*                                    */
-const void * left, /*                     The left value for the comparison  */
-const void * right /*                     The right value for the comparison */
+	const void* left, /*                     The left value for the comparison  */
+	const void* right /*                     The right value for the comparison */
 )
 {
-	PblMapEntry * leftEntry = *(PblMapEntry**) left;
-	PblMapEntry * rightEntry = *(PblMapEntry**) right;
+	PblMapEntry* leftEntry = *(PblMapEntry**)left;
+	PblMapEntry* rightEntry = *(PblMapEntry**)right;
 
 	if (!leftEntry)
 	{
@@ -122,14 +115,14 @@ const void * right /*                     The right value for the comparison */
 		}
 		else
 		{
-			PblMapKey * rightKey = *(PblMapKey**) right;
+			PblMapKey* rightKey = *(PblMapKey**)right;
 
 			return pbl_memcmp(leftEntry->buffer, leftEntry->keyLength, rightKey->key, rightKey->keyLength);
 		}
 	}
 	else
 	{
-		PblMapKey * leftKey = *(PblMapKey**) left;
+		PblMapKey* leftKey = *(PblMapKey**)left;
 
 		if (rightEntry->tag == PBL_MAP_ENTRY_TAG)
 		{
@@ -137,7 +130,7 @@ const void * right /*                     The right value for the comparison */
 		}
 		else
 		{
-			PblMapKey * rightKey = *(PblMapKey**) right;
+			PblMapKey* rightKey = *(PblMapKey**)right;
 
 			return pbl_memcmp(leftKey->key, leftKey->keyLength, rightKey->key, rightKey->keyLength);
 		}
@@ -154,16 +147,16 @@ const void * right /*                     The right value for the comparison */
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-PblMap * pblMapNewTreeMap(void)
+PblMap* pblMapNewTreeMap(void)
 {
-	PblMap * pblMap = (PblMap *) pblSetNewTreeSet();
+	PblMap* pblMap = (PblMap*)pblSetNewTreeSet();
 	if (!pblMap)
 	{
 		return NULL;
 	}
 
-	pblSetSetCompareFunction((PblSet *) pblMap, pblMapEntryCompareFunction);
-	pblSetSetHashValueFunction((PblSet *) pblMap, pblMapEntryHashValue);
+	pblSetSetCompareFunction((PblSet*)pblMap, pblMapEntryCompareFunction);
+	pblSetSetHashValueFunction((PblSet*)pblMap, pblMapEntryHashValue);
 
 	return pblMap;
 }
@@ -178,16 +171,16 @@ PblMap * pblMapNewTreeMap(void)
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-PblMap * pblMapNewHashMap(void)
+PblMap* pblMapNewHashMap(void)
 {
-	PblMap * pblMap = (PblMap *) pblSetNewHashSet();
+	PblMap* pblMap = (PblMap*)pblSetNewHashSet();
 	if (!pblMap)
 	{
 		return NULL;
 	}
 
-	pblSetSetCompareFunction((PblSet *) pblMap, pblMapEntryCompareFunction);
-	pblSetSetHashValueFunction((PblSet *) pblMap, pblMapEntryHashValue);
+	pblSetSetCompareFunction((PblSet*)pblMap, pblMapEntryCompareFunction);
+	pblSetSetHashValueFunction((PblSet*)pblMap, pblMapEntryHashValue);
 
 	return pblMap;
 }
@@ -203,12 +196,12 @@ PblMap * pblMapNewHashMap(void)
  * @return void
  */
 void pblMapClear( /*                                               */
-PblMap * map /**                                  The map to clear */
+	PblMap* map /**                                  The map to clear */
 )
 {
-	while (pblSetSize((PblSet *) map) > 0)
+	while (pblSetSize((PblSet*)map) > 0)
 	{
-		void * ptr = pblSetRemove((PblSet *) map);
+		void* ptr = pblSetRemove((PblSet*)map);
 		PBL_FREE(ptr);
 	}
 }
@@ -222,7 +215,7 @@ PblMap * map /**                                  The map to clear */
  * @return void
  */
 void pblMapFree( /*                                              */
-PblMap * map /**                                 The map to free */
+	PblMap* map /**                                 The map to free */
 )
 {
 	pblMapClear(map);
@@ -242,8 +235,8 @@ PblMap * map /**                                 The map to free */
  * @return int rc == 0: The map did not contain a mapping for the key.
  */
 int pblMapContainsKeyStr( /*                                                 */
-PblMap * map, /**             The map to check                               */
-char * key /**                Key whose presence in this map is to be tested */
+	PblMap* map, /**             The map to check                               */
+	char* key /**                Key whose presence in this map is to be tested */
 )
 {
 	return pblMapContainsKey(map, key, key ? 1 + strlen(key) : 0);
@@ -262,9 +255,9 @@ char * key /**                Key whose presence in this map is to be tested */
  * @return int rc == 0: The map did not contain a mapping for the key.
  */
 int pblMapContainsKey( /*                                                    */
-PblMap * map, /**             The map to check                               */
-void * key, /**               Key whose presence in this map is to be tested */
-size_t keyLength /**          Length of the key                              */
+	PblMap* map, /**             The map to check                               */
+	void* key, /**               Key whose presence in this map is to be tested */
+	size_t keyLength /**          Length of the key                              */
 )
 {
 	PblMapKey mapKey;
@@ -273,7 +266,7 @@ size_t keyLength /**          Length of the key                              */
 	mapKey.keyLength = keyLength;
 	mapKey.key = key;
 
-	return pblSetContains((PblSet *) map, &mapKey);
+	return pblSetContains((PblSet*)map, &mapKey);
 }
 
 /**
@@ -288,8 +281,8 @@ size_t keyLength /**          Length of the key                              */
  * <BR>PBL_ERROR_CONCURRENT_MODIFICATION - The underlying collection was modified concurrently.
  */
 int pblMapContainsValueStr( /*                                               */
-PblMap * map, /**           The map to check                                 */
-char * value /**            Value whose presence in this map is to be tested */
+	PblMap* map, /**           The map to check                                 */
+	char* value /**            Value whose presence in this map is to be tested */
 )
 {
 	return pblMapContainsValue(map, value, value ? 1 + strlen(value) : 0);
@@ -307,29 +300,29 @@ char * value /**            Value whose presence in this map is to be tested */
  * <BR>PBL_ERROR_CONCURRENT_MODIFICATION - The underlying collection was modified concurrently.
  */
 int pblMapContainsValue( /*                                                  */
-PblMap * map, /**           The map to check                                 */
-void * value, /**           Value whose presence in this map is to be tested */
-size_t valueLength /**      Length of the value                              */
+	PblMap* map, /**           The map to check                                 */
+	void* value, /**           Value whose presence in this map is to be tested */
+	size_t valueLength /**      Length of the value                              */
 )
 {
 	int hasNext;
-	void * element;
-	PblMapEntry * entry;
+	void* element;
+	PblMapEntry* entry;
 
 	PblIterator iterator;
-	pblIteratorInit((PblSet *) map, &iterator);
+	pblIteratorInit((PblSet*)map, &iterator);
 
 	while ((hasNext = pblIteratorHasNext(&iterator)) > 0)
 	{
 		element = pblIteratorNext(&iterator);
-		if (element == (void*) -1)
+		if (element == (void*)-1)
 		{
 			// Concurrent modification
 			//
 			return -1;
 		}
 
-		entry = (PblMapEntry *) element;
+		entry = (PblMapEntry*)element;
 		if (!entry)
 		{
 			continue;
@@ -369,9 +362,9 @@ size_t valueLength /**      Length of the value                              */
  * @return void * retptr != NULL: The associated value.
  * @return void * retptr == NULL: There is no associated value.
  */
-void * pblMapGetStr( /*                                                   */
-PblMap * map, /**            The map to check                             */
-char * key /**               Key whose associated value is to be returned */
+void* pblMapGetStr( /*                                                   */
+	PblMap* map, /**            The map to check                             */
+	char* key /**               Key whose associated value is to be returned */
 )
 {
 	return pblMapGet(map, key, key ? 1 + strlen(key) : 0, NULL);
@@ -392,21 +385,21 @@ char * key /**               Key whose associated value is to be returned */
  * @return void * retptr != NULL: The associated value.
  * @return void * retptr == NULL: There is no associated value.
  */
-void * pblMapGet( /*                                                      */
-PblMap * map, /**            The map to check                             */
-void * key, /**              Key whose associated value is to be returned */
-size_t keyLength, /**        Length of the key                            */
-size_t * valueLengthPtr /**  Out: Length of the value returned            */
+void* pblMapGet( /*                                                      */
+	PblMap* map, /**            The map to check                             */
+	void* key, /**              Key whose associated value is to be returned */
+	size_t keyLength, /**        Length of the key                            */
+	size_t* valueLengthPtr /**  Out: Length of the value returned            */
 )
 {
-	PblMapEntry * mapEntry;
+	PblMapEntry* mapEntry;
 	PblMapKey mapKey;
 
 	mapKey.tag = PBL_MAP_KEY_TAG;
 	mapKey.keyLength = keyLength;
 	mapKey.key = key;
 
-	mapEntry = (PblMapEntry *) pblSetGetElement((PblSet *) map, &mapKey);
+	mapEntry = (PblMapEntry*)pblSetGetElement((PblSet*)map, &mapKey);
 	if (!mapEntry)
 	{
 		if (valueLengthPtr)
@@ -441,9 +434,9 @@ size_t * valueLengthPtr /**  Out: Length of the value returned            */
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - Maximum capacity of the hash set exceeded.
  */
 int pblMapAddStrStr( /*                                       */
-PblMap * map, /**                   The map to add to         */
-char * key, /**                     Key to add a mapping for  */
-char * value /**                    Value of the new mapping  */
+	PblMap* map, /**                   The map to add to         */
+	char* key, /**                     Key to add a mapping for  */
+	char* value /**                    Value of the new mapping  */
 )
 {
 	return pblMapAdd(map, key, key ? 1 + strlen(key) : 0, value, value ? 1 + strlen(value) : 0);
@@ -457,14 +450,14 @@ char * value /**                    Value of the new mapping  */
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-static PblMapEntry * pblMapEntryNew(void * key, /** Key to add a mapping for  */
-size_t keyLength, /**                               Length of the key         */
-void * value, /**                                   Value of the new mapping  */
-size_t valueLength /**                              Length of the value       */
+static PblMapEntry* pblMapEntryNew(void* key, /** Key to add a mapping for  */
+	size_t keyLength, /**                               Length of the key         */
+	void* value, /**                                   Value of the new mapping  */
+	size_t valueLength /**                              Length of the value       */
 )
 {
-	PblMapEntry * newEntry = (PblMapEntry *) pbl_malloc("pblMapEntryNew",
-			sizeof(PblMapEntry) + keyLength + valueLength);
+	PblMapEntry* newEntry = (PblMapEntry*)pbl_malloc("pblMapEntryNew",
+		sizeof(PblMapEntry) + keyLength + valueLength);
 	if (!newEntry)
 	{
 		return NULL;
@@ -501,29 +494,29 @@ size_t valueLength /**                              Length of the value       */
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - Maximum capacity of the hash set exceeded.
  */
 int pblMapAdd( /*                                             */
-PblMap * map, /**                   The map to add to         */
-void * key, /**                     Key to add a mapping for  */
-size_t keyLength, /**               Length of the key         */
-void * value, /**                   Value of the new mapping  */
-size_t valueLength /**              Length of the value       */
+	PblMap* map, /**                   The map to add to         */
+	void* key, /**                     Key to add a mapping for  */
+	size_t keyLength, /**               Length of the key         */
+	void* value, /**                   Value of the new mapping  */
+	size_t valueLength /**              Length of the value       */
 )
 {
 	int rc;
-	PblMapEntry * mapEntry;
-	PblMapEntry * newEntry = pblMapEntryNew(key, keyLength, value, valueLength);
+	PblMapEntry* mapEntry;
+	PblMapEntry* newEntry = pblMapEntryNew(key, keyLength, value, valueLength);
 	if (!newEntry)
 	{
 		return -1;
 	}
 
-	mapEntry = (PblMapEntry *) pblSetReplaceElement((PblSet *) map, newEntry);
+	mapEntry = (PblMapEntry*)pblSetReplaceElement((PblSet*)map, newEntry);
 	if (mapEntry)
 	{
 		PBL_FREE(mapEntry);
 		return 0;
 	}
 
-	rc = pblSetAdd((PblSet *) map, newEntry);
+	rc = pblSetAdd((PblSet*)map, newEntry);
 	if (rc < 0)
 	{
 		PBL_FREE(newEntry);
@@ -550,12 +543,12 @@ size_t valueLength /**              Length of the value       */
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - Maximum capacity of the hash set exceeded.
  */
 int pblMapAppendStrStr( /*                                    */
-PblMap * map, /**                   The map to add to         */
-char * key, /**                     Key to add a mapping for  */
-char * value /**                    Value to append           */
+	PblMap* map, /**                   The map to add to         */
+	char* key, /**                     Key to add a mapping for  */
+	char* value /**                    Value to append           */
 )
 {
-	char * oldValue = pblMapGetStr(map, key);
+	char* oldValue = pblMapGetStr(map, key);
 	if (!oldValue)
 	{
 		return pblMapAddStrStr(map, key, value);
@@ -565,10 +558,10 @@ char * value /**                    Value to append           */
 		return 0;
 	}
 
-	char * newValue = pbl_mem2dup( NULL, oldValue, strlen(oldValue), value, strlen(value) + 1);
+	char* newValue = pbl_mem2dup(NULL, oldValue, strlen(oldValue), value, strlen(value) + 1);
 	int rc = pblMapAddStrStr(map, key, newValue);
 	PBL_FREE(newValue)
-	return rc;
+		return rc;
 }
 
 /**
@@ -593,10 +586,10 @@ char * value /**                    Value to append           */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - Maximum capacity of the hash set exceeded.
  */
-void * pblMapPutStrStr( /*                                             */
-PblMap * map, /**                                    The map to add to */
-char * key, /**                               Key to add a mapping for */
-char * value /**                              Value of the new mapping */
+void* pblMapPutStrStr( /*                                             */
+	PblMap* map, /**                                    The map to add to */
+	char* key, /**                               Key to add a mapping for */
+	char* value /**                              Value of the new mapping */
 )
 {
 	return pblMapPut(map, key, key ? 1 + strlen(key) : 0, value, value ? 1 + strlen(value) : 0, NULL);
@@ -625,27 +618,27 @@ char * value /**                              Value of the new mapping */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  * <BR>PBL_ERROR_OUT_OF_BOUNDS - Maximum capacity of the hash set exceeded.
  */
-void * pblMapPut( /*                                                   */
-PblMap * map, /**                                    The map to add to */
-void * key, /**                               Key to add a mapping for */
-size_t keyLength, /**                                Length of the key */
-void * value, /**                             Value of the new mapping */
-size_t valueLength, /**                            Length of the value */
-size_t * valueLengthPtr /**          Out: Length of the value returned */
+void* pblMapPut( /*                                                   */
+	PblMap* map, /**                                    The map to add to */
+	void* key, /**                               Key to add a mapping for */
+	size_t keyLength, /**                                Length of the key */
+	void* value, /**                             Value of the new mapping */
+	size_t valueLength, /**                            Length of the value */
+	size_t* valueLengthPtr /**          Out: Length of the value returned */
 )
 {
 	int rc;
-	PblMapEntry * mapEntry;
-	PblMapEntry * newEntry = pblMapEntryNew(key, keyLength, value, valueLength);
+	PblMapEntry* mapEntry;
+	PblMapEntry* newEntry = pblMapEntryNew(key, keyLength, value, valueLength);
 	if (!newEntry)
 	{
-		return (void*) -1;
+		return (void*)-1;
 	}
 
-	mapEntry = (PblMapEntry *) pblSetReplaceElement((PblSet *) map, newEntry);
+	mapEntry = (PblMapEntry*)pblSetReplaceElement((PblSet*)map, newEntry);
 	if (mapEntry)
 	{
-		void * retptr;
+		void* retptr;
 
 		if (mapEntry->valueLength > 0)
 		{
@@ -661,9 +654,9 @@ size_t * valueLengthPtr /**          Out: Length of the value returned */
 			{
 				*valueLengthPtr = 0;
 			}
-			pblSetReplaceElement((PblSet *) map, mapEntry);
+			pblSetReplaceElement((PblSet*)map, mapEntry);
 			PBL_FREE(newEntry);
-			return (void*) -1;
+			return (void*)-1;
 		}
 
 		if (valueLengthPtr)
@@ -679,11 +672,11 @@ size_t * valueLengthPtr /**          Out: Length of the value returned */
 		*valueLengthPtr = 0;
 	}
 
-	rc = pblSetAdd((PblSet *) map, newEntry);
+	rc = pblSetAdd((PblSet*)map, newEntry);
 	if (rc < 0)
 	{
 		PBL_FREE(newEntry);
-		return (void*) -1;
+		return (void*)-1;
 	}
 
 	return NULL;
@@ -706,28 +699,28 @@ size_t * valueLengthPtr /**          Out: Length of the value returned */
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
 int pblMapPutAll( /*                                            */
-PblMap * map, /**                The map to copy the entries to */
-PblMap * sourceMap /**         The map to copy the entries from */
+	PblMap* map, /**                The map to copy the entries to */
+	PblMap* sourceMap /**         The map to copy the entries from */
 )
 {
 	int hasNext;
-	void * element;
-	PblMapEntry * entry;
+	void* element;
+	PblMapEntry* entry;
 
 	PblIterator iterator;
-	pblIteratorInit((PblSet *) sourceMap, &iterator);
+	pblIteratorInit((PblSet*)sourceMap, &iterator);
 
 	while ((hasNext = pblIteratorHasNext(&iterator)) > 0)
 	{
 		element = pblIteratorNext(&iterator);
-		if (element == (void*) -1)
+		if (element == (void*)-1)
 		{
 			// Concurrent modification
 			//
 			return -1;
 		}
 
-		entry = (PblMapEntry *) element;
+		entry = (PblMapEntry*)element;
 		if (!entry)
 		{
 			continue;
@@ -766,9 +759,9 @@ PblMap * sourceMap /**         The map to copy the entries from */
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-void * pblMapRemoveStr( /*                                          */
-PblMap * map, /**                            The map to remove from */
-char * key /**                     Key whose association is removed */
+void* pblMapRemoveStr( /*                                          */
+	PblMap* map, /**                            The map to remove from */
+	char* key /**                     Key whose association is removed */
 )
 {
 	return pblMapRemove(map, key, key ? 1 + strlen(key) : 0, NULL);
@@ -798,22 +791,22 @@ char * key /**                     Key whose association is removed */
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY - Out of memory.
  */
-void * pblMapRemove( /*                                             */
-PblMap * map, /**                            The map to remove from */
-void * key, /**                    Key whose association is removed */
-size_t keyLength, /**                             Length of the key */
-size_t * valueLengthPtr /**       Out: Length of the value returned */
+void* pblMapRemove( /*                                             */
+	PblMap* map, /**                            The map to remove from */
+	void* key, /**                    Key whose association is removed */
+	size_t keyLength, /**                             Length of the key */
+	size_t* valueLengthPtr /**       Out: Length of the value returned */
 )
 {
-	PblMapEntry * mapEntry;
-	void * retptr = NULL;
+	PblMapEntry* mapEntry;
+	void* retptr = NULL;
 	PblMapKey mapKey;
 
 	mapKey.tag = PBL_MAP_KEY_TAG;
 	mapKey.keyLength = keyLength;
 	mapKey.key = key;
 
-	mapEntry = (PblMapEntry *) pblSetGetElement((PblSet *) map, &mapKey);
+	mapEntry = (PblMapEntry*)pblSetGetElement((PblSet*)map, &mapKey);
 	if (!mapEntry)
 	{
 		if (valueLengthPtr)
@@ -837,7 +830,7 @@ size_t * valueLengthPtr /**       Out: Length of the value returned */
 		{
 			*valueLengthPtr = 0;
 		}
-		return (void*) -1;
+		return (void*)-1;
 	}
 
 	if (valueLengthPtr)
@@ -845,7 +838,7 @@ size_t * valueLengthPtr /**       Out: Length of the value returned */
 		*valueLengthPtr = mapEntry->valueLength;
 	}
 
-	pblSetRemoveElement((PblSet *) map, mapEntry);
+	pblSetRemoveElement((PblSet*)map, mapEntry);
 
 	PBL_FREE(mapEntry);
 
@@ -867,8 +860,8 @@ size_t * valueLengthPtr /**       Out: Length of the value returned */
  * @return int rc == 0: The map did contain a mapping for the key.
  */
 int pblMapUnmapStr( /*                                              */
-PblMap * map, /**                            The map to remove from */
-char * key /**                     Key whose association is removed */
+	PblMap* map, /**                            The map to remove from */
+	char* key /**                     Key whose association is removed */
 )
 {
 	return pblMapUnmap(map, key, key ? 1 + strlen(key) : 0);
@@ -889,25 +882,25 @@ char * key /**                     Key whose association is removed */
  * @return int rc == 0: The map did contain a mapping for the key.
  */
 int pblMapUnmap( /*                                                 */
-PblMap * map, /**                            The map to remove from */
-void * key, /**                    Key whose association is removed */
-size_t keyLength /**                              Length of the key */
+	PblMap* map, /**                            The map to remove from */
+	void* key, /**                    Key whose association is removed */
+	size_t keyLength /**                              Length of the key */
 )
 {
-	PblMapEntry * mapEntry;
+	PblMapEntry* mapEntry;
 	PblMapKey mapKey;
 
 	mapKey.tag = PBL_MAP_KEY_TAG;
 	mapKey.keyLength = keyLength;
 	mapKey.key = key;
 
-	mapEntry = (PblMapEntry *) pblSetGetElement((PblSet *) map, &mapKey);
+	mapEntry = (PblMapEntry*)pblSetGetElement((PblSet*)map, &mapKey);
 	if (!mapEntry)
 	{
 		return 1;
 	}
 
-	pblSetRemoveElement((PblSet *) map, mapEntry);
+	pblSetRemoveElement((PblSet*)map, mapEntry);
 
 	PBL_FREE(mapEntry);
 
@@ -923,10 +916,10 @@ size_t keyLength /**                              Length of the key */
  * @return int rc == 0: This map has elements.
  */
 int pblMapIsEmpty( /*                               */
-PblMap * map /**                    The map to test */
+	PblMap* map /**                    The map to test */
 )
 {
-	return 0 == ((PblSet *) map)->size;
+	return 0 == ((PblSet*)map)->size;
 }
 
 /**
@@ -937,10 +930,10 @@ PblMap * map /**                    The map to test */
  * @return int rc: The number of entries in this map.
  */
 int pblMapSize( /*                              */
-PblMap * map /**                 The map to use */
+	PblMap* map /**                 The map to use */
 )
 {
-	return ((PblSet *) map)->size;
+	return ((PblSet*)map)->size;
 }
 
 /**
@@ -973,11 +966,11 @@ PblMap * map /**                 The map to use */
  * <BR>PBL_ERROR_OUT_OF_MEMORY       - Out of memory.
  * <BR>PBL_ERROR_PARAM_COLLECTION    - The parameter map is not of type (PblCollection *).
  */
-PblIterator * pblMapIteratorNew( /*                 */
-PblMap * map /** The map to create the iterator for */
+PblIterator* pblMapIteratorNew( /*                 */
+	PblMap* map /** The map to create the iterator for */
 )
 {
-	return pblIteratorNew((PblSet *) map);
+	return pblIteratorNew((PblSet*)map);
 }
 
 /**
@@ -1010,11 +1003,11 @@ PblMap * map /** The map to create the iterator for */
  * <BR>PBL_ERROR_OUT_OF_MEMORY       - Out of memory.
  * <BR>PBL_ERROR_PARAM_COLLECTION    - The parameter map is not of type (PblMap *).
  */
-PblIterator * pblMapIteratorReverseNew( /*          */
-PblMap * map /** The map to create the iterator for */
+PblIterator* pblMapIteratorReverseNew( /*          */
+	PblMap* map /** The map to create the iterator for */
 )
 {
-	return pblIteratorReverseNew((PblSet *) map);
+	return pblIteratorReverseNew((PblSet*)map);
 }
 
 /**
@@ -1025,7 +1018,7 @@ PblMap * map /** The map to create the iterator for */
  * @return size_t length: The key length of the map entry.
  */
 size_t pblMapEntryKeyLength( /*                   */
-PblMapEntry * entry /**                 The entry */
+	PblMapEntry* entry /**                 The entry */
 )
 {
 	return entry->keyLength;
@@ -1039,7 +1032,7 @@ PblMapEntry * entry /**                 The entry */
  * @return size_t length: The value length of the map entry.
  */
 size_t pblMapEntryValueLength( /*                   */
-PblMapEntry * entry /**                   The entry */
+	PblMapEntry* entry /**                   The entry */
 )
 {
 	return entry->valueLength;
@@ -1052,8 +1045,8 @@ PblMapEntry * entry /**                   The entry */
  *
  * @return void * ptr: The key of the map entry.
  */
-void * pblMapEntryKey( /*                         */
-PblMapEntry * entry /**                 The entry */
+void* pblMapEntryKey( /*                         */
+	PblMapEntry* entry /**                 The entry */
 )
 {
 	return entry->buffer;
@@ -1066,8 +1059,8 @@ PblMapEntry * entry /**                 The entry */
  *
  * @return void * ptr: The value of the map entry.
  */
-void * pblMapEntryValue( /*                       */
-PblMapEntry * entry /**                 The entry */
+void* pblMapEntryValue( /*                       */
+	PblMapEntry* entry /**                 The entry */
 )
 {
 	return entry->buffer + entry->keyLength;
@@ -1076,16 +1069,16 @@ PblMapEntry * entry /**                 The entry */
 typedef struct
 {
 
-	PblStringBuilder * stringBuilder;
-	char * separator;
-	char * separator2;
+	PblStringBuilder* stringBuilder;
+	char* separator;
+	char* separator2;
 
 } PblMapContext;
 
-static int pblMapStrAppendToStringBuilder(void * context, int index, void * element)
+static int pblMapStrAppendToStringBuilder(void* context, int index, void* element)
 {
-	PblMapContext * mapContext = (PblMapContext *) context;
-	PblMapEntry * entry = (PblMapEntry*) element;
+	PblMapContext* mapContext = (PblMapContext*)context;
+	PblMapEntry* entry = (PblMapEntry*)element;
 
 	if (entry->keyLength < 1)
 	{
@@ -1093,29 +1086,29 @@ static int pblMapStrAppendToStringBuilder(void * context, int index, void * elem
 	}
 	if (index > 0)
 	{
-		if (pblStringBuilderAppendStr(mapContext->stringBuilder, mapContext->separator) == ((size_t) -1))
+		if (pblStringBuilderAppendStr(mapContext->stringBuilder, mapContext->separator) == ((size_t)-1))
 		{
 			return -1;
 		}
 	}
-	if (pblStringBuilderAppendStr(mapContext->stringBuilder, pblMapEntryKey(entry)) == ((size_t) -1))
+	if (pblStringBuilderAppendStr(mapContext->stringBuilder, pblMapEntryKey(entry)) == ((size_t)-1))
 	{
 		return -1;
 	}
-	if (pblStringBuilderAppendStr(mapContext->stringBuilder, mapContext->separator2) == ((size_t) -1))
+	if (pblStringBuilderAppendStr(mapContext->stringBuilder, mapContext->separator2) == ((size_t)-1))
 	{
 		return -1;
 	}
 	if (entry->valueLength > 0)
 	{
-		if (pblStringBuilderAppendStr(mapContext->stringBuilder, pblMapEntryValue(entry)) == ((size_t) -1))
+		if (pblStringBuilderAppendStr(mapContext->stringBuilder, pblMapEntryValue(entry)) == ((size_t)-1))
 		{
 			return -1;
 		}
 	}
 	else
 	{
-		if (pblStringBuilderAppendStr(mapContext->stringBuilder, "") == ((size_t) -1))
+		if (pblStringBuilderAppendStr(mapContext->stringBuilder, "") == ((size_t)-1))
 		{
 			return -1;
 		}
@@ -1137,10 +1130,10 @@ static int pblMapStrAppendToStringBuilder(void * context, int index, void * elem
  *
  * <BR>PBL_ERROR_OUT_OF_MEMORY       - Out of memory.
  */
-PblStringBuilder * pblMapStrStrToStringBuilder( /*          */
-PblMap * map, /**                            The map to use */
-char * separator, /**     Separator between key-value pairs */
-char * separator2 /**     Separator between keys and values */
+PblStringBuilder* pblMapStrStrToStringBuilder( /*          */
+	PblMap* map, /**                            The map to use */
+	char* separator, /**     Separator between key-value pairs */
+	char* separator2 /**     Separator between keys and values */
 )
 {
 	PblMapContext context;
@@ -1153,7 +1146,7 @@ char * separator2 /**     Separator between keys and values */
 		return NULL;
 	}
 
-	if (pblCollectionAggregate((PblSet *) map, &context, pblMapStrAppendToStringBuilder) != 0)
+	if (pblCollectionAggregate((PblSet*)map, &context, pblMapStrAppendToStringBuilder) != 0)
 	{
 		pblStringBuilderFree(context.stringBuilder);
 		return NULL;
