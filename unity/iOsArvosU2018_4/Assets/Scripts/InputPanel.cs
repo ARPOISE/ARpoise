@@ -33,6 +33,13 @@ using UnityEngine.UI;
 
 namespace com.arpoise.arpoiseapp
 {
+    public enum ArpoiseSettings
+    {
+        ArpoiseSettingsLatitude = 0,
+        ArpoiseSettingsLongitude = 1,
+        ArpoiseSettingsActivated = 2
+    }
+
     public class InputPanel : MonoBehaviour
     {
         public GameObject GameObject;
@@ -51,9 +58,9 @@ namespace com.arpoise.arpoiseapp
         {
             _behaviour = behaviour;
 
-            LatInputField.text = PlayerPrefs.GetString("ArpoiseSettingsLatitude");
-            LonInputField.text = PlayerPrefs.GetString("ArpoiseSettingsLongitude");
-            ActivationToggle.isOn = true.ToString().Equals(PlayerPrefs.GetString("ArpoiseSettingsActivated"));
+            LatInputField.text = PlayerPrefs.GetString(nameof(ArpoiseSettings.ArpoiseSettingsLatitude));
+            LonInputField.text = PlayerPrefs.GetString(nameof(ArpoiseSettings.ArpoiseSettingsLongitude));
+            ActivationToggle.isOn = true.ToString().Equals(PlayerPrefs.GetString(nameof(ArpoiseSettings.ArpoiseSettingsActivated)));
         }
 
         public float? GetLongitude()
@@ -89,9 +96,9 @@ namespace com.arpoise.arpoiseapp
 
         public void HandleClick()
         {
-            PlayerPrefs.SetString("ArpoiseSettingsLatitude", LatInputField.text);
-            PlayerPrefs.SetString("ArpoiseSettingsLongitude", LonInputField.text);
-            PlayerPrefs.SetString("ArpoiseSettingsActivated", ActivationToggle.isOn ? true.ToString() : string.Empty);
+            PlayerPrefs.SetString(nameof(ArpoiseSettings.ArpoiseSettingsLatitude), LatInputField.text);
+            PlayerPrefs.SetString(nameof(ArpoiseSettings.ArpoiseSettingsLongitude), LonInputField.text);
+            PlayerPrefs.SetString(nameof(ArpoiseSettings.ArpoiseSettingsActivated), ActivationToggle.isOn ? true.ToString() : string.Empty);
 
             //Debug.Log("InputPanel " + false);
             GameObject.SetActive(false);

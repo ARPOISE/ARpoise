@@ -59,8 +59,8 @@ namespace com.arpoise.arpoiseapp
         public readonly long PoiId;
         public readonly GameObject Wrapper;
         public readonly GameObject GameObject;
-        public readonly string Name;
-        public readonly string FollowedBy;
+        public readonly string Name = string.Empty;
+        public readonly string[] FollowedBy = Array.Empty<string>();
 
         private readonly ArCreature _creature;
         private readonly Transform _transform;
@@ -86,6 +86,7 @@ namespace com.arpoise.arpoiseapp
 
         private float? _initialA = null;
         private long _startTicks = 0;
+        private List<Material> _materialsToFade = null;
 
         public bool IsToBeDestroyed { get; private set; }
         public bool IsToBeDuplicated { get; set; }
@@ -101,7 +102,10 @@ namespace com.arpoise.arpoiseapp
             }
             if (poiAnimation != null)
             {
-                Name = poiAnimation.name;
+                Name = poiAnimation.name?.Trim();
+                FollowedBy = !string.IsNullOrWhiteSpace(poiAnimation.followedBy)
+                    ? poiAnimation.followedBy.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToArray()
+                    : FollowedBy;
                 _lengthTicks = (long)(10000000.0 * poiAnimation.length);
                 _delayTicks = (long)(10000000.0 * poiAnimation.delay);
                 if (poiAnimation.type != null)
@@ -133,7 +137,6 @@ namespace com.arpoise.arpoiseapp
                 {
                     _creature = GameObject.GetComponent(typeof(ArCreature)) as ArCreature;
                 }
-                FollowedBy = poiAnimation.followedBy;
             }
         }
 
@@ -148,41 +151,20 @@ namespace com.arpoise.arpoiseapp
             Animate(startTicks, nowTicks);
         }
 
-        private static readonly string _openUrl = "openUrl:";
-        public bool HandleOpenUrl(string s)
-        {
-            if (!string.IsNullOrWhiteSpace(s) && s.Length > _openUrl.Length)
-            {
-                if (_openUrl.Equals(s.Substring(0, _openUrl.Length), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    var url = s.Substring(_openUrl.Length);
-                    if (!string.IsNullOrWhiteSpace(url))
-                    {
-                        Application.OpenURL(url);
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
         public void Animate(long startTicks, long nowTicks)
         {
-            JustActivated = false;
-            JustStopped = false;
+            JustStopped = JustActivated = false;
 
             if (startTicks <= 0 || !IsActive || _lengthTicks < 1 || _delayTicks < 0)
             {
                 return;
             }
-
             if (_delayTicks > 0 && startTicks + _delayTicks > nowTicks)
             {
                 return;
             }
 
             float animationValue = 0;
-
             if (_startTicks == 0)
             {
                 _startTicks = nowTicks;
@@ -196,7 +178,7 @@ namespace com.arpoise.arpoiseapp
                 {
                     if (!_repeating)
                     {
-                        Stop(startTicks, nowTicks, false);
+                        Stop(startTicks, endTicks, true);
                         return;
                     }
                     _startTicks = endTicks + lengthTicks >= nowTicks ? endTicks : nowTicks;
@@ -270,15 +252,8 @@ namespace com.arpoise.arpoiseapp
             if (JustActivated)
             {
                 HandleOpenUrl(Name);
-
-                if (GameObject != null)
-                {
-                    var audioSource = GameObject.GetComponent<AudioSource>();
-                    if (audioSource != null)
-                    {
-                        audioSource.Play();
-                    }
-                }
+                HandleSetActive(Name, true);
+                HandleAudioSource();
             }
         }
 
@@ -292,6 +267,7 @@ namespace com.arpoise.arpoiseapp
             IsActive = false;
             if (!_persisting)
             {
+                HandleSetActive(Name, false);
                 switch (_animationType)
                 {
                     case ArAnimationType.Rotate:
@@ -325,12 +301,58 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
+        private static readonly string _openUrl = "openUrl:";
+        public bool HandleOpenUrl(string s)
+        {
+            if (!string.IsNullOrWhiteSpace(s)
+                && s.Length > _openUrl.Length
+                && _openUrl.Equals(s.Substring(0, _openUrl.Length), StringComparison.InvariantCultureIgnoreCase))
+            {
+                var url = s.Substring(_openUrl.Length);
+                if (!string.IsNullOrWhiteSpace(url))
+                {
+                    Application.OpenURL(url);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static readonly string _setInActive = "SetInActive";
+        public bool HandleSetActive(string s, bool setActive)
+        {
+            var gameObject = GameObject;
+            if (gameObject != null)
+            {
+                if (nameof(gameObject.SetActive).Equals(s, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    gameObject.SetActive(setActive);
+                }
+                else if (_setInActive.Equals(s, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    gameObject.SetActive(!setActive);
+                }
+            }
+            return false;
+        }
+
+        private void HandleAudioSource()
+        {
+            if (GameObject != null)
+            {
+                var audioSource = GameObject.GetComponent<AudioSource>();
+                if (audioSource != null)
+                {
+                    audioSource.Play();
+                }
+            }
+        }
+
         private void Rotate(float value)
         {
             if (_transform != null)
             {
-                var axis = _axis;
-                _transform.localEulerAngles = new Vector3(axis.x * value, axis.y * value, axis.z * value);
+                _transform.localEulerAngles = new Vector3(_axis.x * value, _axis.y * value, _axis.z * value);
             }
         }
 
@@ -338,9 +360,8 @@ namespace com.arpoise.arpoiseapp
         {
             if (_transform != null)
             {
-                var axis = _axis;
                 _transform.localScale = new Vector3(
-                    axis.x == 0 ? 1 : axis.x * value, axis.y == 0 ? 1 : axis.y * value, axis.z == 0 ? 1 : axis.z * value);
+                    _axis.x == 0 ? 1 : _axis.x * value, _axis.y == 0 ? 1 : _axis.y * value, _axis.z == 0 ? 1 : _axis.z * value);
             }
         }
 
@@ -348,8 +369,7 @@ namespace com.arpoise.arpoiseapp
         {
             if (_transform != null)
             {
-                var axis = _axis;
-                _transform.localPosition = new Vector3(axis.x * value, axis.y * value, axis.z * value);
+                _transform.localPosition = new Vector3(_axis.x * value, _axis.y * value, _axis.z * value);
             }
         }
 
@@ -363,53 +383,53 @@ namespace com.arpoise.arpoiseapp
 
         private void Fade(float value)
         {
-            var gameObject = GameObject;
-            if (gameObject == null)
+            if (_materialsToFade == null)
             {
-                return;
+                GetMaterialsToFade(GameObject, _materialsToFade = new List<Material>());
             }
-
-            //particle system also have renderers that could be accessed
-            //var ps = gameObject.GetComponent<ParticleSystem>();
-            //var x = ps.shape.meshRenderer.material.color;
-            //var y = ps.shape.spriteRenderer.material.color;
-            //var z = ps.shape.skinnedMeshRenderer.material.color;
-
-            var rendererColorPairs = new List<KeyValuePair<Renderer, Color>>();
-            Renderer objectRenderer = gameObject.GetComponent<MeshRenderer>();
-            if (objectRenderer != null && objectRenderer.material != null)
+            foreach (var material in _materialsToFade)
             {
-                rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+                var color = material.color;
+                if (!_initialA.HasValue)
+                {
+                    _initialA = color.a;
+                }
+                material.color = new Color(color.r, color.g, color.b, value);
             }
-            else
+        }
+
+        private void GetMaterialsToFade(GameObject gameObject, List<Material> materials)
+        {
+            if (gameObject != null)
             {
+                //particle system also have renderers that could be accessed
+                //var ps = gameObject.GetComponent<ParticleSystem>();
+                //var x = ps.shape.meshRenderer.material.color;
+                //var y = ps.shape.spriteRenderer.material.color;
+                //var z = ps.shape.skinnedMeshRenderer.material.color;
+
+                var renderer = gameObject.GetComponent<MeshRenderer>();
+                if (renderer != null && renderer.material != null)
+                {
+                    materials.Add(renderer.material);
+                }
                 foreach (var child in gameObject.GetComponentsInChildren<Transform>().Select(x => x.gameObject))
                 {
                     if (child != null)
                     {
-                        objectRenderer = child.GetComponent<MeshRenderer>();
-                        if (objectRenderer != null && objectRenderer.material != null)
+                        renderer = child.GetComponent<MeshRenderer>();
+                        if (renderer != null && renderer.material != null)
                         {
-                            rendererColorPairs.Add(new KeyValuePair<Renderer, Color>(objectRenderer, objectRenderer.material.color));
+                            materials.Add(renderer.material);
                         }
                     }
-                }
-            }
-            if (rendererColorPairs.Any())
-            {
-                foreach (var pair in rendererColorPairs)
-                {
-                    var color = pair.Value;
-                    if (_initialA == null)
-                    {
-                        _initialA = color.a;
-                    }
-                    pair.Key.material.color = new Color(color.r, color.g, color.b, value);
+                    // Making this fully recursive is too slow for example in AyCorona
+                    // GetMaterialsToFade(transform.gameObject, materials);
                 }
             }
         }
 
-        // This does not really work, it was work in progress from October 2020, a version of Nothing of him
+        // This does not really work, it was work in progress from October 2020, a version of Nothing of Him
         //
         //private void SetBleachingValue(float value)
         //{

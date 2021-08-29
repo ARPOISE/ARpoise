@@ -59,6 +59,7 @@ namespace com.arpoise.arpoiseapp
         protected const string AppName = "ARpoise";
 #endif
 #endif
+        protected const float PositionTolerance = 1.25f;
         protected int AreaSize = 0;
         protected int AreaWidth = 0;
 
@@ -138,9 +139,18 @@ namespace com.arpoise.arpoiseapp
                 foreach (var arObject in arObjectsToPlace)
                 {
                     arObject.IsDirty = false;
+                    if (arObject.Poi.visibilityRange > 0)
+                    {
+                        var distance = CalculateDistance(arObject.Latitude, arObject.Longitude, filteredLatitude, filteredLongitude);
+                        var isVisible = Math.Abs(distance) <= PositionTolerance * arObject.Poi.visibilityRange;
+                        if (isVisible != arObject.WrapperObject.activeSelf)
+                        {
+                            arObject.WrapperObject.SetActive(isVisible);
+                        }
+                    }
                     var latDistance = CalculateDistance(arObject.Latitude, arObject.Longitude, filteredLatitude, arObject.Longitude);
                     var lonDistance = CalculateDistance(arObject.Latitude, arObject.Longitude, arObject.Latitude, filteredLongitude);
-
+                    
                     if (arObject.Latitude < UsedLatitude)
                     {
                         if (latDistance > 0)
@@ -275,15 +285,19 @@ namespace com.arpoise.arpoiseapp
             // If in editor mode, set a fixed initial location and forget about the location service
             //
             {
-                // Quest-UG-EOF
-                FilteredLatitude = OriginalLatitude = 48.158f;
-                FilteredLongitude = OriginalLongitude = 11.58f;
+                // MUC-HDK
+                //FilteredLatitude = OriginalLatitude = 48.144f;
+                //FilteredLongitude = OriginalLongitude = 11.586f;
+
+                // MUC-AINMILLER
+                FilteredLatitude = OriginalLatitude = 47.158526f;
+                FilteredLongitude = OriginalLongitude = 11.578670f;
 
                 Debug.Log("UNITY_EDITOR fixed location, lat " + OriginalLatitude + ", lon " + OriginalLongitude);
 
                 var second = DateTime.Now.Ticks / 10000000L;
                 var random = new System.Random((int)second);
-                var nextMove = second + 3 + random.Next(0, 6);
+                var nextMove = second + 9 + random.Next(0, 6);
 
                 while (second > 0 || second <= 0)
                 {
@@ -391,18 +405,35 @@ namespace com.arpoise.arpoiseapp
                 }
                 CurrentHeading = Input.compass.trueHeading;
 
-                if (LocationLatitude != Input.location.lastData.latitude
-                    || LocationLongitude != Input.location.lastData.longitude
-                    || LocationTimestamp != Input.location.lastData.timestamp
-                    || LocationHorizontalAccuracy != Input.location.lastData.horizontalAccuracy
-                )
+                var setLocation = true;
+                if (PositionUpdateInterval > 0)
                 {
-                    LocationLatitude = Input.location.lastData.latitude;
-                    LocationLongitude = Input.location.lastData.longitude;
-                    LocationTimestamp = Input.location.lastData.timestamp;
-                    LocationHorizontalAccuracy = Input.location.lastData.horizontalAccuracy;
+                    var now = DateTime.Now;
+                    if (_nextPositionUpdate < now)
+                    {
+                        _nextPositionUpdate = now.AddMilliseconds(PositionUpdateInterval * 1000f);
+                    }
+                    else
+                    {
+                        setLocation = false;
+                    }
+                }
 
-                    KalmanFilter(LocationLatitude, LocationLongitude, LocationHorizontalAccuracy, (long)(1000L * LocationTimestamp));
+                if (setLocation)
+                {
+                    if (LocationLatitude != Input.location.lastData.latitude
+                        || LocationLongitude != Input.location.lastData.longitude
+                        || LocationTimestamp != Input.location.lastData.timestamp
+                        || LocationHorizontalAccuracy != Input.location.lastData.horizontalAccuracy
+                    )
+                    {
+                        LocationLatitude = Input.location.lastData.latitude;
+                        LocationLongitude = Input.location.lastData.longitude;
+                        LocationTimestamp = Input.location.lastData.timestamp;
+                        LocationHorizontalAccuracy = Input.location.lastData.horizontalAccuracy;
+
+                        KalmanFilter(LocationLatitude, LocationLongitude, LocationHorizontalAccuracy, (long)(1000L * LocationTimestamp));
+                    }
                 }
 
                 var arObjectState = ArObjectState;
@@ -414,6 +445,10 @@ namespace com.arpoise.arpoiseapp
             }
             yield break;
         }
+
+        private DateTime _nextPositionUpdate = DateTime.MinValue;
+        protected float PositionUpdateInterval = 0;
+
         #endregion
 
         #region Misc

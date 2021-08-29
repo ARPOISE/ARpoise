@@ -117,7 +117,7 @@ public class EvolutionOfFish : ArFlock
             {
                 _fish = Transforms
                     .Select(x => x.gameObject)
-                    .Where(x => "Fish".Equals(x.gameObject.name)).ToArray();
+                    .Where(x => "Fish".Equals(x.name)).ToArray();
             }
             return _fish;
         }
@@ -132,7 +132,7 @@ public class EvolutionOfFish : ArFlock
             {
                 _garbage = Transforms
                     .Select(x => x.gameObject)
-                    .Where(x => "Garbage".Equals(x.gameObject.name)).ToArray();
+                    .Where(x => "Garbage".Equals(x.name)).ToArray();
             }
             return _garbage;
         }

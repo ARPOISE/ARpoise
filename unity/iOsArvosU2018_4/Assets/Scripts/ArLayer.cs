@@ -29,6 +29,7 @@ ARpoise, see www.ARpoise.com/
 */
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -151,6 +152,7 @@ namespace com.arpoise.arpoiseapp
         public PoiAnimations animations = null;
         public string attribution = string.Empty;
         public float distance = 0;
+        public int visibilityRange = 0;
         public float relativeAlt = 0;
         public string imageURL = string.Empty;
         public int lat = 0;
@@ -236,7 +238,7 @@ namespace com.arpoise.arpoiseapp
                 if (!_maximumCount.HasValue)
                 {
                     _maximumCount = 0;
-                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(MaximumCount).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(MaximumCount).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         int value = 0;
@@ -259,7 +261,7 @@ namespace com.arpoise.arpoiseapp
                 if (!_trackingTimeout.HasValue)
                 {
                     _trackingTimeout = 0;
-                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(TrackingTimeout).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(TrackingTimeout).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         double value = 0;
@@ -282,7 +284,7 @@ namespace com.arpoise.arpoiseapp
                 if (_lindenmayerString == null)
                 {
                     _lindenmayerString = string.Empty;
-                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerString).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerString).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         _lindenmayerString = action.activityMessage;
@@ -305,7 +307,7 @@ namespace com.arpoise.arpoiseapp
                 if (_leafPrefab == null)
                 {
                     _leafPrefab = string.Empty;
-                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LeafPrefab).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LeafPrefab).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         _leafPrefab = action.activityMessage;
@@ -328,7 +330,7 @@ namespace com.arpoise.arpoiseapp
                 if (!_lindenmayerAngle.HasValue)
                 {
                     _lindenmayerAngle = 22.5f;
-                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerAngle).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerAngle).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         float value = 0;
@@ -351,7 +353,7 @@ namespace com.arpoise.arpoiseapp
                 if (!_lindenmayerFactor.HasValue)
                 {
                     _lindenmayerFactor = 0.8f;
-                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerFactor).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerFactor).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         float value = 0;
@@ -374,7 +376,7 @@ namespace com.arpoise.arpoiseapp
                 if (!_derivations.HasValue)
                 {
                     _derivations = 1;
-                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerDerivations).Equals(x.label) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(LindenmayerDerivations).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
                     if (action != null)
                     {
                         int value = 0;
@@ -428,6 +430,106 @@ namespace com.arpoise.arpoiseapp
         public override string ToString()
         {
             return JsonUtility.ToJson(this);
+        }
+
+        [NonSerialized]
+        private float _latitude = float.MinValue;
+        public float Latitude
+        {
+            get
+            {
+                if (_latitude == float.MinValue)
+                {
+                    if (hotspots.Any())
+                    {
+                        _latitude = hotspots.Select(x => x.Latitude).Average();
+                    }
+                    else
+                    {
+                        _latitude = 0;
+                    }
+                }
+                return _latitude;
+            }
+        }
+
+        [NonSerialized]
+        private float _longitude = float.MinValue;
+        public float Longitude
+        {
+            get
+            {
+                if (_longitude == float.MinValue)
+                {
+                    if (hotspots.Any())
+                    {
+                        _longitude = hotspots.Select(x => x.Longitude).Average();
+                    }
+                    else
+                    {
+                        _longitude = 0;
+                    }
+                }
+                return _longitude;
+            }
+        }
+
+        [NonSerialized]
+        private HashSet<string> _actionLabels = new HashSet<string>(new string[] { nameof(PositionUpdateInterval) });
+        [NonSerialized]
+        private bool? _showInfo;
+        public bool ShowInfo
+        {
+            get
+            {
+                if (!_showInfo.HasValue)
+                {
+                    _showInfo = (actions?.FirstOrDefault(x => !_actionLabels.Contains(x.label?.Trim()) && x.showActivity)) != null;
+                }
+                return _showInfo.Value;
+            }
+        }
+        [NonSerialized]
+        private string _informationMessage;
+        public string InformationMessage
+        {
+            get
+            {
+                if (_informationMessage == null)
+                {
+                    _informationMessage = actions.Where(x => !_actionLabels.Contains(x.label?.Trim()) && x.showActivity).Select(x => x.activityMessage).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+                    if (_informationMessage == null)
+                    {
+                        _informationMessage = string.Empty;
+                    }
+                }
+                return _informationMessage;
+            }
+        }
+        [NonSerialized]
+        private float? _positionUpdateInterval;
+        public float PositionUpdateInterval
+        {
+            get
+            {
+                if (_positionUpdateInterval == null)
+                {
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(PositionUpdateInterval).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        float value = 0;
+                        if (float.TryParse(action.activityMessage, out value))
+                        {
+                            _positionUpdateInterval = value;
+                        }
+                    }
+                    if (_positionUpdateInterval == null)
+                    {
+                        _positionUpdateInterval = 0;
+                    }
+                }
+                return _positionUpdateInterval.Value;
+            }
         }
     }
 }

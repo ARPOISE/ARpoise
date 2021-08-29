@@ -354,7 +354,7 @@ public class AbEvolutionOfFish : ArFlock
         {
             if (_fish == null)
             {
-                _fish = Transforms.Select(x => x.gameObject).Where(x => nameof(Fish).Equals(x.gameObject.name)).ToArray();
+                _fish = Transforms.Select(x => x.gameObject).Where(x => nameof(Fish).Equals(x.name)).ToArray();
             }
             return _fish;
         }
@@ -367,7 +367,7 @@ public class AbEvolutionOfFish : ArFlock
         {
             if (_garbage == null)
             {
-                _garbage = Transforms.Select(x => x.gameObject).Where(x => nameof(Garbage).Equals(x.gameObject.name)).ToArray();
+                _garbage = Transforms.Select(x => x.gameObject).Where(x => nameof(Garbage).Equals(x.name)).ToArray();
             }
             return _garbage;
         }

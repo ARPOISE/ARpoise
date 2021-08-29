@@ -60,9 +60,12 @@ namespace com.arpoise.arpoiseapp
     public class ArBehaviourArObject : ArBehaviourPosition
     {
         #region Globals
+        public static int FramesPerSecond = 30;
+        public GameObject SceneAnchor = null;
         public string LayerWebUrl { get; protected set; }
         public readonly Dictionary<int, TriggerObject> TriggerObjects = new Dictionary<int, TriggerObject>();
         public GameObject Wrapper = null;
+        public void RequestRefresh(RefreshRequest refreshRequest) { RefreshRequest = refreshRequest; }
         #endregion
 
         #region Protecteds
@@ -77,6 +80,8 @@ namespace com.arpoise.arpoiseapp
         protected readonly Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
         protected readonly Dictionary<string, Texture2D> TriggerImages = new Dictionary<string, Texture2D>();
         protected readonly List<TriggerObject> SlamObjects = new List<TriggerObject>();
+        protected volatile RefreshRequest RefreshRequest = null;
+        protected long NowTicks { get; private set; }
         #endregion
 
         public GameObject CreateObject(GameObject objectToAdd)
@@ -117,6 +122,27 @@ namespace com.arpoise.arpoiseapp
         }
 
         private int _abEvolutionOfFishIndex = 0;
+
+        private GameObject GetWrapper(Dictionary<string, GameObject> wrappers, PoiAnimation animation)
+        {
+            int index = animation.name.IndexOf("/");
+            if (index >= 0)
+            {
+                GameObject wrapper;
+                string key = animation.name.Substring(0, index + 1);
+                if (wrappers.TryGetValue(key, out wrapper))
+                {
+                    return wrapper;
+                }
+                wrapper = Instantiate(Wrapper);
+                if (wrapper != null)
+                {
+                    wrappers[key] = wrapper;
+                }
+                return wrapper;
+            }
+            return Instantiate(Wrapper);
+        }
 
         // Create ar object for a poi and link it
         public string CreateArObject(
@@ -185,7 +211,7 @@ namespace com.arpoise.arpoiseapp
 
                     foreach (var action in poi.actions)
                     {
-                        evolutionOfFish.SetParameter(action.showActivity, action.label, action.activityMessage);
+                        evolutionOfFish.SetParameter(action.showActivity, action.label.Trim(), action.activityMessage);
                     }
                 }
             }
@@ -244,21 +270,27 @@ namespace com.arpoise.arpoiseapp
 
             // Look at the animations present for the object
             if (poi.animations != null)
-            {
+            {        
+                var wrappers = new Dictionary<string, GameObject>();
+
                 if (poi.animations.onCreate != null)
                 {
                     foreach (var poiAnimation in poi.animations.onCreate)
                     {
+
                         // Put the animation into a wrapper
-                        var animationWrapper = Instantiate(Wrapper);
+                        var animationWrapper = GetWrapper(wrappers, poiAnimation);
                         if (animationWrapper == null)
                         {
                             return "Instantiate(OnCreateWrapper) failed";
                         }
-                        animationWrapper.name = "OnCreateWrapper";
                         arObjectState.AddOnCreateAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, true));
-                        animationWrapper.transform.parent = parentTransform;
-                        parentTransform = animationWrapper.transform;
+                        if (animationWrapper.transform.parent == null)
+                        {
+                            animationWrapper.name = "OnCreateWrapper";
+                            animationWrapper.transform.parent = parentTransform;
+                            parentTransform = animationWrapper.transform;
+                        }
                     }
                 }
 
@@ -266,15 +298,18 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var poiAnimation in poi.animations.onFocus)
                     {
-                        var animationWrapper = Instantiate(Wrapper);
+                        var animationWrapper = GetWrapper(wrappers, poiAnimation);
                         if (animationWrapper == null)
                         {
                             return "Instantiate(OnFocusWrapper) failed";
                         }
-                        animationWrapper.name = "OnFocusWrapper";
                         arObjectState.AddOnFocusAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
-                        animationWrapper.transform.parent = parentTransform;
-                        parentTransform = animationWrapper.transform;
+                        if (animationWrapper.transform.parent == null)
+                        {
+                            animationWrapper.name = "OnFocusWrapper";
+                            animationWrapper.transform.parent = parentTransform;
+                            parentTransform = animationWrapper.transform;
+                        }
                     }
                 }
 
@@ -282,15 +317,18 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var poiAnimation in poi.animations.inFocus)
                     {
-                        var animationWrapper = Instantiate(Wrapper);
+                        var animationWrapper = GetWrapper(wrappers, poiAnimation);
                         if (animationWrapper == null)
                         {
                             return "Instantiate(InFocusWrapper) failed";
                         }
-                        animationWrapper.name = "InFocusWrapper";
                         arObjectState.AddInFocusAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
-                        animationWrapper.transform.parent = parentTransform;
-                        parentTransform = animationWrapper.transform;
+                        if (animationWrapper.transform.parent == null)
+                        {
+                            animationWrapper.name = "InFocusWrapper";
+                            animationWrapper.transform.parent = parentTransform;
+                            parentTransform = animationWrapper.transform;
+                        }
                     }
                 }
 
@@ -298,15 +336,18 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var poiAnimation in poi.animations.onClick)
                     {
-                        var animationWrapper = Instantiate(Wrapper);
+                        var animationWrapper = GetWrapper(wrappers, poiAnimation);
                         if (animationWrapper == null)
                         {
                             return "Instantiate(OnClickWrapper) failed";
                         }
-                        animationWrapper.name = "OnClickWrapper";
                         arObjectState.AddOnClickAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
-                        animationWrapper.transform.parent = parentTransform;
-                        parentTransform = animationWrapper.transform;
+                        if (animationWrapper.transform.parent == null)
+                        {
+                            animationWrapper.name = "OnClickWrapper";
+                            animationWrapper.transform.parent = parentTransform;
+                            parentTransform = animationWrapper.transform;
+                        }
                     }
                 }
 
@@ -314,15 +355,18 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var poiAnimation in poi.animations.onFollow)
                     {
-                        var animationWrapper = Instantiate(Wrapper);
+                        var animationWrapper = GetWrapper(wrappers, poiAnimation);
                         if (animationWrapper == null)
                         {
                             return "Instantiate(OnFollowWrapper) failed";
                         }
-                        animationWrapper.name = "OnFollowWrapper";
                         arObjectState.AddOnFollowAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
-                        animationWrapper.transform.parent = parentTransform;
-                        parentTransform = animationWrapper.transform;
+                        if (animationWrapper.transform.parent == null)
+                        {
+                            animationWrapper.name = "OnFollowWrapper";
+                            animationWrapper.transform.parent = parentTransform;
+                            parentTransform = animationWrapper.transform;
+                        }
                     }
                 }
             }
@@ -388,7 +432,7 @@ namespace com.arpoise.arpoiseapp
                 float filteredLongitude = UsedLongitude;
 
                 var distance = CalculateDistance(poi.Latitude, poi.Longitude, filteredLatitude, filteredLongitude);
-                if (distance <= ((poi.ArLayer != null) ? poi.ArLayer.visibilityRange : 1500))
+                if (distance <= PositionTolerance * ((poi.ArLayer != null) ? poi.ArLayer.visibilityRange : 1500))
                 {
                     var arObject = new ArObject(
                         poi, arObjectId, poi.title, objectToAdd.name, poi.BaseUrl, wrapper, objectToAdd,
@@ -413,7 +457,7 @@ namespace com.arpoise.arpoiseapp
             return null;
         }
 
-        protected string CreateArObject(ArObjectState arObjectState, ArObject parentObject, Transform parentObjectTransform, Poi poi, long arObjectId)
+        private string CreateArObject(ArObjectState arObjectState, ArObject parentObject, Transform parentObjectTransform, Poi poi, long arObjectId)
         {
             string assetBundleUrl = poi.BaseUrl;
             if (string.IsNullOrWhiteSpace(assetBundleUrl))
@@ -560,6 +604,7 @@ namespace com.arpoise.arpoiseapp
             bool showInfo = false;
             string informationMessage = null;
             float refreshInterval = 0;
+            float positionUpdateInterval = 0;
             int bleachingValue = -1;
             int areaSize = -1;
             int areaWidth = -1;
@@ -595,11 +640,15 @@ namespace com.arpoise.arpoiseapp
                 {
                     if (!showInfo)
                     {
-                        showInfo = layer.actions.FirstOrDefault(x => x.showActivity) != null;
+                        showInfo = layer.ShowInfo;
                     }
                     if (informationMessage == null)
                     {
-                        informationMessage = layer.actions.Select(x => x.activityMessage).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+                        informationMessage = layer.InformationMessage;
+                    }
+                    if (positionUpdateInterval <= 0)
+                    {
+                        positionUpdateInterval = layer.PositionUpdateInterval;
                     }
                 }
 
@@ -618,7 +667,7 @@ namespace com.arpoise.arpoiseapp
             {
                 RefreshInterval = refreshInterval;
             }
-
+            PositionUpdateInterval = positionUpdateInterval;
             bool setBleachingValues = false;
             if (_bleachingValue != bleachingValue)
             {
@@ -712,8 +761,211 @@ namespace com.arpoise.arpoiseapp
         }
         #endregion
 
-        #region Misc
+        #region Update
+        private static long _arObjectId = -1000000000;
+        private static readonly System.Random _random = new System.Random();
+        protected override void Update()
+        {
+            NowTicks = DateTime.Now.Ticks;
+            base.Update();
+        }
+        protected bool UpdateArObjects()
+        {
+            var arObjectState = ArObjectState;
+            if (arObjectState.IsDirty)
+            {
+                if (arObjectState.ArObjectsToDelete.Any())
+                {
+                    arObjectState.DestroyArObjects();
+                }
+                if (arObjectState.ArPois.Any())
+                {
+                    CreateArObjects(arObjectState, null, SceneAnchor.transform, arObjectState.ArPois);
+                    arObjectState.ArPois.Clear();
+                }
+                arObjectState.SetArObjectsToPlace();
+                arObjectState.IsDirty = false;
+                foreach (var triggerObject in TriggerObjects.Values)
+                {
+                    triggerObject.isActive = triggerObject.layerWebUrl == LayerWebUrl;
+                }
+                HasTriggerImages = TriggerObjects.Values.Any(x => x.isActive);
+            }
+            var result = arObjectState.HandleAnimations(this, StartTicks, NowTicks);
+            DuplicateArObjects(arObjectState);
 
+            // Place the ar objects
+            PlaceArObjects(arObjectState);
+            return result;
+        }
+
+        protected bool CheckDistance()
+        {
+            var filteredLatitude = UsedLatitude;
+            var filteredLongitude = UsedLongitude;
+
+            var absoluteArObjects = ArObjectState.ArObjectsToPlace;
+            if (absoluteArObjects != null)
+            {
+                if (absoluteArObjects.Where(x => x.WrapperObject.activeSelf).Any())
+                {
+                    return true;
+                }
+            }
+            var relativeArObjects = ArObjectState.ArObjectsRelative;
+            if (relativeArObjects != null)
+            {
+                var activeObjects = relativeArObjects.Where(x => x.WrapperObject.activeSelf).ToList();
+                foreach (var arObject in activeObjects)
+                {
+                    if (arObject.Poi.visibilityRange > 0)
+                    {
+                        var distance = CalculateDistance(arObject.Latitude, arObject.Longitude, filteredLatitude, filteredLongitude);
+                        if (Math.Abs(distance) <= PositionTolerance * arObject.Poi.visibilityRange)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                foreach (var arLayer in activeObjects.Select(x => x.Poi?.ArLayer).Distinct())
+                {
+                    if (arLayer != null && arLayer.visibilityRange > 0)
+                    {
+                        var distance = CalculateDistance(arLayer.Latitude, arLayer.Longitude, filteredLatitude, filteredLongitude);
+                        if (Math.Abs(distance) <= PositionTolerance * arLayer.visibilityRange)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            var arvosObjects = TriggerObjects.Values.Union(SlamObjects);
+            foreach (var poi in arvosObjects.Select(x => x.poi).Distinct())
+            {
+                if (poi != null && poi.visibilityRange > 0)
+                {
+                    var distance = CalculateDistance(poi.Latitude, poi.Longitude, filteredLatitude, filteredLongitude);
+                    if (Math.Abs(distance) <= PositionTolerance * poi.visibilityRange)
+                    {
+                        return true;
+                    }
+                }
+            }
+            foreach (var arLayer in arvosObjects.Select(x => x.poi?.ArLayer).Distinct())
+            {
+                if (arLayer != null && arLayer.visibilityRange > 0)
+                {
+                    var distance = CalculateDistance(arLayer.Latitude, arLayer.Longitude, filteredLatitude, filteredLongitude);
+                    if (Math.Abs(distance) <= PositionTolerance * arLayer.visibilityRange)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void DuplicateArObjects(ArObjectState arObjectState)
+        {
+            var toBeDuplicated = arObjectState.ArObjectsToBeDuplicated();
+            if (toBeDuplicated != null)
+            {
+                foreach (var arObject in toBeDuplicated)
+                {
+                    var poi = arObject.Poi.Clone();
+                    if (IsSlamUrl(poi.TriggerImageURL))
+                    {
+                        poi.poiObject.triggerImageURL = string.Empty;
+
+                        var relativeLocation = poi.poiObject.RelativeLocation;
+                        relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                        relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                        poi.poiObject.RelativeLocation = relativeLocation;
+                        CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(poi.TriggerImageURL))
+                    {
+                        poi.poiObject.triggerImageURL = string.Empty;
+
+                        var relativeLocation = poi.poiObject.RelativeLocation;
+                        relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                        relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
+                        poi.poiObject.RelativeLocation = relativeLocation;
+                        CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(poi?.poiObject?.relativeLocation))
+                    {
+                        var relativeLocation = poi.poiObject.RelativeLocation;
+                        relativeLocation[0] += (_random.Next(2001) - 1000) / 100f;
+                        relativeLocation[2] += (_random.Next(2001) - 1000) / 100f;
+                        poi.poiObject.RelativeLocation = relativeLocation;
+                        CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
+                    }
+                    else
+                    {
+                        poi.lat += _random.Next(201) - 100;
+                        poi.lon += _random.Next(201) - 100;
+                        CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
+                    }
+                }
+            }
+        }
+
+        private void PlaceArObjects(ArObjectState arObjectState)
+        {
+            var arObjectsToPlace = arObjectState.ArObjectsToPlace;
+            if (arObjectsToPlace != null)
+            {
+                foreach (var arObject in arObjectsToPlace)
+                {
+                    var jump = false;
+
+                    // Linearly interpolate from current position to target position
+                    Vector3 position;
+                    if (AreaSize > 0 && AreaWidth > 0
+                        && (Math.Abs(arObject.WrapperObject.transform.position.x - arObject.TargetPosition.x) > AreaWidth * .75
+                        || Math.Abs(arObject.WrapperObject.transform.position.z - arObject.TargetPosition.z) > AreaSize * .75))
+                    {
+                        // Jump if area handling is active and distance is too big
+                        position = new Vector3(arObject.TargetPosition.x, arObject.TargetPosition.y, arObject.TargetPosition.z);
+                        jump = true;
+                    }
+                    else
+                    {
+                        position = Vector3.Lerp(arObject.WrapperObject.transform.position, arObject.TargetPosition, .5f / FramesPerSecond);
+                    }
+                    arObject.WrapperObject.transform.position = position;
+
+                    if (AreaSize > 0)
+                    {
+                        // Scale the objects at the edge of the area
+                        var scale = arObject.Scale;
+                        if (scale < 0)
+                        {
+                            scale = 1;
+                        }
+                        Vector3 localScale;
+                        if (jump)
+                        {
+                            if (scale < 1)
+                            {
+                                scale = 0.01f;
+                            }
+                            localScale = new Vector3(scale, scale, scale);
+                        }
+                        else
+                        {
+                            localScale = new Vector3(scale, scale, scale);
+                            localScale = Vector3.Lerp(arObject.WrapperObject.transform.localScale, localScale, 1f / FramesPerSecond);
+                        }
+                        arObject.WrapperObject.transform.localScale = localScale;
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region Misc
         protected bool IsSlamUrl(string url)
         {
             return !string.IsNullOrWhiteSpace(url) && "slam".Equals(url.ToLower().Trim());

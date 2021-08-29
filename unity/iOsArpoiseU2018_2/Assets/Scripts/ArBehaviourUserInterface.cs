@@ -63,8 +63,6 @@ namespace com.arpoise.arpoiseapp
         public bool HasHitOnObject { get; private set; }
 
         #region Globals
-
-        public static int FramesPerSecond = 30;
         public GameObject InfoText = null;
         public GameObject MenuButton = null;
         public GameObject HeaderButton = null;
@@ -75,7 +73,6 @@ namespace com.arpoise.arpoiseapp
         public GameObject PanelHeaderButton = null;
         public Transform ContentPanel;
         public SimpleObjectPool ButtonObjectPool;
-
         #endregion
 
         public override bool InfoPanelIsActive()
@@ -338,10 +335,6 @@ namespace com.arpoise.arpoiseapp
         #endregion
 
         #region Update
-
-        private long _arObjectId = -1;
-        private static readonly System.Random _random = new System.Random();
-
         protected override void Update()
         {
             base.Update();
@@ -399,9 +392,7 @@ namespace com.arpoise.arpoiseapp
                 return;
             }
 
-            long nowTicks = DateTime.Now.Ticks;
-            var second = nowTicks / 10000000L;
-
+            var second = NowTicks / 10000000L;
             var arObjectState = ArObjectState;
             if (StartTicks == 0 || arObjectState == null)
             {
@@ -412,70 +403,6 @@ namespace com.arpoise.arpoiseapp
                 }
                 SetInfoText(LoadingText + progress);
                 return;
-            }
-
-            if (arObjectState.IsDirty)
-            {
-                if (arObjectState.ArObjectsToDelete.Any())
-                {
-                    arObjectState.DestroyArObjects();
-                }
-                if (arObjectState.ArPois.Any())
-                {
-                    CreateArObjects(arObjectState, null, SceneAnchor.transform, arObjectState.ArPois);
-                    arObjectState.ArPois.Clear();
-                }
-                arObjectState.SetArObjectsToPlace();
-                arObjectState.IsDirty = false;
-                foreach (var triggerObject in TriggerObjects.Values)
-                {
-                    triggerObject.isActive = triggerObject.layerWebUrl == LayerWebUrl;
-                }
-                HasTriggerImages = TriggerObjects.Values.Any(x => x.isActive);
-            }
-            HasHitOnObject = arObjectState.HandleAnimations(this, StartTicks, nowTicks);
-
-            var toBeDuplicated = arObjectState.ArObjectsToBeDuplicated();
-            if (toBeDuplicated != null)
-            {
-                foreach (var arObject in toBeDuplicated)
-                {
-                    var poi = arObject.Poi.Clone();
-                    if (IsSlamUrl(poi.TriggerImageURL))
-                    {
-                        poi.poiObject.triggerImageURL = string.Empty;
-
-                        var relativeLocation = poi.poiObject.RelativeLocation;
-                        relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
-                        relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
-                        poi.poiObject.RelativeLocation = relativeLocation;
-                        CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(poi.TriggerImageURL))
-                    {
-                        poi.poiObject.triggerImageURL = string.Empty;
-
-                        var relativeLocation = poi.poiObject.RelativeLocation;
-                        relativeLocation[0] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
-                        relativeLocation[2] += 0.001f * ((_random.Next(2001) - 1000) / 100f);
-                        poi.poiObject.RelativeLocation = relativeLocation;
-                        CreateArObject(arObjectState, arObject, arObject.GameObjects.First().transform, poi, _arObjectId--);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(poi?.poiObject?.relativeLocation))
-                    {
-                        var relativeLocation = poi.poiObject.RelativeLocation;
-                        relativeLocation[0] += (_random.Next(2001) - 1000) / 100f;
-                        relativeLocation[2] += (_random.Next(2001) - 1000) / 100f;
-                        poi.poiObject.RelativeLocation = relativeLocation;
-                        CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
-                    }
-                    else
-                    {
-                        poi.lat += _random.Next(201) - 100;
-                        poi.lon += _random.Next(201) - 100;
-                        CreateArObject(arObjectState, null, SceneAnchor.transform, poi, _arObjectId--);
-                    }
-                }
             }
 
             if (_currentSecond == second)
@@ -495,6 +422,23 @@ namespace com.arpoise.arpoiseapp
                 _framesPerCurrentSecond = 1;
                 _currentSecond = second;
             }
+
+            // Update the objects shown
+            UpdateArObjects();
+
+            // If we moved away from the current layer
+            //if (!CheckDistance())
+            //{
+            //    InputPanel inputPanel;
+            //    if (InputPanel != null && (inputPanel = InputPanel.GetComponent<InputPanel>()) != null)
+            //    {
+            //        HandleInputPanelClosed(inputPanel.GetLatitude(), inputPanel.GetLongitude());
+            //    }
+            //    else
+            //    {
+            //        HandleInputPanelClosed(null, null);
+            //    }
+            //}
 
             // Set any error text onto the canvas
             if (!string.IsNullOrWhiteSpace(ErrorMessage))
@@ -521,60 +465,8 @@ namespace com.arpoise.arpoiseapp
             {
                 HeadingShown -= 360;
             }
-
-            // Place the ar objects
-            var arObjectsToPlace = arObjectState.ArObjectsToPlace;
-            if (arObjectsToPlace != null)
-            {
-                foreach (var arObject in arObjectsToPlace)
-                {
-                    var jump = false;
-
-                    // Linearly interpolate from current position to target position
-                    Vector3 position;
-                    if (AreaSize > 0 && AreaWidth > 0
-                        && (Math.Abs(arObject.WrapperObject.transform.position.x - arObject.TargetPosition.x) > AreaWidth * .75
-                        || Math.Abs(arObject.WrapperObject.transform.position.z - arObject.TargetPosition.z) > AreaSize * .75))
-                    {
-                        // Jump if area handling is active and distance is too big
-                        position = new Vector3(arObject.TargetPosition.x, arObject.TargetPosition.y, arObject.TargetPosition.z);
-                        jump = true;
-                    }
-                    else
-                    {
-                        position = Vector3.Lerp(arObject.WrapperObject.transform.position, arObject.TargetPosition, .5f / FramesPerSecond);
-                    }
-                    arObject.WrapperObject.transform.position = position;
-
-                    if (AreaSize > 0)
-                    {
-                        // Scale the objects at the edge of the area
-                        var scale = arObject.Scale;
-                        if (scale < 0)
-                        {
-                            scale = 1;
-                        }
-                        Vector3 localScale;
-                        if (jump)
-                        {
-                            if (scale < 1)
-                            {
-                                scale = 0.01f;
-                            }
-                            localScale = new Vector3(scale, scale, scale);
-                        }
-                        else
-                        {
-                            localScale = new Vector3(scale, scale, scale);
-                            localScale = Vector3.Lerp(arObject.WrapperObject.transform.localScale, localScale, 1f / FramesPerSecond);
-                        }
-                        arObject.WrapperObject.transform.localScale = localScale;
-                    }
-                }
-            }
             SceneAnchor.transform.localEulerAngles = new Vector3(0, DeviceAngle - InitialHeading, 0);
 
-            // Turn the ar objects
             if (CameraIsInitializing)
             {
                 InitialHeading = HeadingShown;

@@ -71,18 +71,21 @@ namespace com.arpoise.arpoiseapp
         public IEnumerable<ArObject> ArObjects { get { return _arObjects; } }
         public List<ArObject> ArObjectsToDelete { get; private set; }
         public List<ArObject> ArObjectsToPlace { get; private set; }
+        public List<ArObject> ArObjectsRelative { get; private set; }
         public List<Poi> ArPois { get; private set; }
 
         public ArObjectState()
         {
             ArObjectsToDelete = new List<ArObject>();
             ArObjectsToPlace = null;
+            ArObjectsRelative = null;
             ArPois = new List<Poi>();
         }
 
         public void SetArObjectsToPlace()
         {
             ArObjectsToPlace = ArObjects.Where(x => !x.IsRelative).ToList();
+            ArObjectsRelative = ArObjects.Where(x => x.IsRelative).ToList();
         }
 
         public void AddOnCreateAnimation(ArAnimation animation)
@@ -174,7 +177,7 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
-        public bool HandleAnimations(ArBehaviourData arBehaviourData, long startTicks, long nowTicks)
+        public bool HandleAnimations(ArBehaviourArObject arBehaviour, long startTicks, long nowTicks)
         {
             if (_billboardAnimations.Count > 0)
             {
@@ -262,33 +265,29 @@ namespace com.arpoise.arpoiseapp
                     animation.Animate(startTicks, nowTicks);
                 }
 
-                if (animation.JustStopped && !string.IsNullOrWhiteSpace(animation.FollowedBy))
+                if (animation.JustStopped)
                 {
-                    var animationsToFollow = animation.FollowedBy.Split(',');
-                    if (animationsToFollow != null)
+                    foreach (var animationName in animation.FollowedBy)
                     {
-                        foreach (var animationToFollow in animationsToFollow)
+                        if (nameof(RefreshRequest.ReloadLayerData).Equals(animationName, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            if (!string.IsNullOrWhiteSpace(animationToFollow))
+                            var refreshRequest = new RefreshRequest() { layerName = nameof(RefreshRequest.ReloadLayerData) };
+                            arBehaviour.RequestRefresh(refreshRequest);
+                            break;
+                        }
+                        if (animation.HandleOpenUrl(animationName))
+                        {
+                            continue;
+                        }
+                        if (animation.HandleSetActive(animationName, true))
+                        {
+                            continue;
+                        }
+                        foreach (var animationToFollow in animations.Where(x => animationName.Equals(x.Name)))
+                        {
+                            if (!animationToFollow.IsActive)
                             {
-                                var animationName = animationToFollow.Trim();
-                                if (nameof(RefreshRequest.ReloadLayerData).Equals(animationName, StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    var refreshRequest = new RefreshRequest() { layerName = nameof(RefreshRequest.ReloadLayerData) };
-                                    arBehaviourData.RequestRefresh(refreshRequest);
-                                    continue;
-                                }
-                                if (animation.HandleOpenUrl(animationName))
-                                {
-                                    continue;
-                                }
-                                foreach (var arAnimationToFollow in animations.Where(x => animationName.Equals(x.Name)))
-                                {
-                                    if (!arAnimationToFollow.IsActive)
-                                    {
-                                        arAnimationToFollow.Activate(startTicks, nowTicks);
-                                    }
-                                }
+                                animationToFollow.Activate(startTicks, nowTicks);
                             }
                         }
                     }

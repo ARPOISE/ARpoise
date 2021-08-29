@@ -91,6 +91,12 @@ namespace com.arpoise.arpoiseapp
         }
     }
 
+    public class UploadRequest
+    {
+        public string url;
+        public byte[] data;
+    }
+
     public class ArBehaviourData : ArBehaviourArObject
     {
         #region Constants
@@ -102,8 +108,7 @@ namespace com.arpoise.arpoiseapp
         #endregion
         
         #region Globals
-        public GameObject SceneAnchor = null;
-        public void RequestRefresh(RefreshRequest refreshRequest) { RefreshRequest = refreshRequest; }
+
         #endregion
 
         #region Protecteds
@@ -111,7 +116,6 @@ namespace com.arpoise.arpoiseapp
         protected readonly List<ArItem> LayerItemList = new List<ArItem>();
         protected bool IsNewLayer = false;
         protected bool? MenuEnabled = null;
-        protected volatile RefreshRequest RefreshRequest = null;
         protected MenuButtonSetActiveActivity MenuButtonSetActive;
         protected HeaderSetActiveActivity HeaderSetActive;
         protected MenuButtonClickActivity MenuButtonClick;
@@ -127,17 +131,79 @@ namespace com.arpoise.arpoiseapp
         private readonly string _clientApplicationName = ArpoiseApplicationName;
 #endif
 #endif
+        private string _os = "Android";
+        private readonly string _bundle = "20210814";
+
+        #endregion
+
+        #region UploadData
+        private List<UploadRequest> _uploadRequests = new List<UploadRequest>();
+
+        public void RequestUpload(string url, byte[]data)
+        {
+            _uploadRequests.Add(new UploadRequest { url = url, data = data });
+        }
+
+        public IEnumerator UploadData()
+        {
+            while (string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                while (_uploadRequests.Count == 0)
+                {
+                    yield return new WaitForSeconds(.1f);
+                }
+
+                var upLoadRequest = _uploadRequests[0];
+                _uploadRequests.RemoveAt(0);
+
+                // Create a Web Form
+                WWWForm form = new WWWForm();
+                form.AddBinaryData("fileUpload", upLoadRequest.data);
+
+                var url = upLoadRequest.url + "?action=uploadImageFromApp"
+                    + "&userId=" + SystemInfo.deviceUniqueIdentifier
+                    + "&client=" + _clientApplicationName
+                    + "&bundle=" + _bundle
+                    + "&os=" + _os
+                ;
+
+                //Debug.Log("Loading Url " + url);
+                var request = UnityWebRequest.Post(url, form);
+                request.certificateHandler = new ArpoiseCertificateHandler();
+                request.timeout = 60;
+                //Debug.Log("SendWebRequest " + url);
+                yield return request.SendWebRequest();
+                //Debug.Log("Webrequest sent " + url);
+
+                var maxWait = request.timeout * 100;
+                while (!(request.isNetworkError || request.isHttpError) && !request.isDone && maxWait > 0)
+                {
+                    yield return new WaitForSeconds(.01f);
+                    maxWait--;
+                }
+
+                if (maxWait < 1)
+                {
+                    ErrorMessage = "Url '" + upLoadRequest.url + "' upload timeout.";
+                    yield break;
+                }
+
+                if (request.isNetworkError || request.isHttpError)
+                {
+                    ErrorMessage = "Url '" + upLoadRequest.url + "': " + request.error;
+                    yield break;
+                }
+            }
+        }
         #endregion
 
         #region GetData
         // A coroutine retrieving the objects
         protected override IEnumerator GetData()
         {
-            var os = "Android";
 #if UNITY_IOS
-            os = "iOS";
+            _os = "iOS";
 #endif
-            var bundle = "20210410";
             long count = 0;
             string layerName = ArpoiseDirectoryLayer;
             string uri = ArpoiseDirectoryUrl;
@@ -154,6 +220,8 @@ namespace com.arpoise.arpoiseapp
             {
                 yield return new WaitForSeconds(.01f);
             }
+
+            StartCoroutine(nameof(UploadData));
 
             while (string.IsNullOrWhiteSpace(ErrorMessage))
             {
@@ -183,8 +251,8 @@ namespace com.arpoise.arpoiseapp
                         + (!string.IsNullOrWhiteSpace(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
                         + "&client=" + _clientApplicationName
-                        + "&bundle=" + bundle
-                        + "&os=" + os
+                        + "&bundle=" + _bundle
+                        + "&os=" + _os
                         + "&count=" + count
                     ;
 
@@ -353,7 +421,7 @@ namespace com.arpoise.arpoiseapp
                                         spriteObject = iconAssetBundle.LoadAsset<GameObject>(spriteName);
                                     }
                                 }
-                                var sprite = spriteObject != null ? spriteObject.GetComponent<SpriteRenderer>().sprite : (Sprite)null; ;
+                                var sprite = spriteObject != null ? spriteObject.GetComponent<SpriteRenderer>().sprite : (Sprite)null;
 
                                 itemList.Add(new ArItem
                                 {
@@ -437,8 +505,8 @@ namespace com.arpoise.arpoiseapp
                         + (!string.IsNullOrWhiteSpace(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
                         + "&client=" + _clientApplicationName
-                        + "&bundle=" + bundle
-                        + "&os=" + os
+                        + "&bundle=" + _bundle
+                        + "&os=" + _os
                         ;
 
                         url = FixUrl(url);
