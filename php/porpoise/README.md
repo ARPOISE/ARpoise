@@ -80,7 +80,7 @@ The following properties of a layer can be edited:
 * POI-list-**DEL**: Delete the POI from the layer.
 
 ### Optional Layer Parameters
-An optional layer parameter **PositionUpdateInterval** can be added to a layer by clicking on the **New action** button shown above.
+An optional layer parameter **PositionUpdateInterval** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
 ![LayerAction-PositionUpdateInterval](/images/LayerAction-PositionUpdateInterval.PNG)
 ### Explanation:
 The GPS coordinates received by the apps sometimes show really wide fluctuations of the location.
@@ -176,6 +176,7 @@ Animations allow opening a web page in a browser on the user's device. In order 
 The enhancement has been implemented with the releases done on August of 2021. If an animation with a name of **SetActive** or **SetInActive** is **started**, or an animation with such a **Followed by** value **ends**, the game object of the POI is set to active/inactive.
 
 ![GameObject-SetInActive](/images/GameObject-SetInActive.png)
+
 The animation shown above would make a game object blink on/of with a one second frequency.
 
 ### Animating the Same Values with two Animations
