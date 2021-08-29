@@ -1,7 +1,7 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
-# ARpoise and AR-vos -Mobile- Apps
+# Release Notes for ARpoise and AR-vos -Mobile- Apps
 
-## Release Notes - Version 20210814
+## Version 20210814
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.11 (20210814)** and **iOS ARpoise 1.12 (20210814)**
   - Fixed Bug #17. Made sure non-repeating, persistent animations are ended correctly and do not end in a random state.
   - Added position update interval feature. The new layer action PositionUpdateInterval allows to restrict the time intervals after which the device position is updated into the app.
