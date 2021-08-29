@@ -5,9 +5,9 @@
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.11 (20210814)** and **iOS ARpoise 1.12 (20210814)**
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.9 (20210814)** and **iOS AR-vos 1.6 (20210814)**
   - Fixed [Bug #17](https://github.com/ARPOISE/ARpoise/issues/17). Made sure non-repeating, persistent animations are ended correctly and do not end in a random state.
-  - Added feature [Position Update Interval](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#optional-layer-parameters).
-  - Added feature [Animating the Same Values with two Animations](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#animating-the-same-values-with-two-animations).
-  - Added feature [Setting the Game Object State](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#setting-the-game-object-state).
+  - Added feature [Position Update Interval](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#optional-layer-parameters), see [#20](https://github.com/ARPOISE/ARpoise/issues/20).
+  - Added feature [Animating the Same Values with two Animations](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#animating-the-same-values-with-two-animations), see [#19](https://github.com/ARPOISE/ARpoise/issues/19).
+  - Added feature [Setting the Game Object State](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#setting-the-game-object-state), see [#18](https://github.com/ARPOISE/ARpoise/issues/18).
 
 ## Version 20210408 - April 2021
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.10 (20210408)** and **iOS ARpoise 1.11 (20210408)** 
