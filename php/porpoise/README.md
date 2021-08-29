@@ -86,7 +86,11 @@ The following properties of a layer can be edited:
 An optional layer parameter **PositionUpdateInterval** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
 
 ![LayerAction-PositionUpdateInterval](/images/LayerAction-PositionUpdateInterval.PNG)
-### Explanation:
+
+**Explanation:**
+
+The values set above would only update the location information every 5.5 seconds.
+
 The GPS coordinates received by the apps sometimes show really wide fluctuations of the location.
 As a consequence, all pois with absolute locations move around very often, very quickly and very far.
 This layer parameter allows to restrict the time intervals after which the device position is updated into the app,
