@@ -15,10 +15,7 @@
   - The game object of a poi can now be set to active or in-active. If an animation has a name of SetActive or SetInActive and the animation is started the game object of the POI is set to active/inactive. If a follow animation of an animation is called SetActive or SetInActive and the animation ends, the game object of the POI is set to active/inactive.
 
 ## Version 20210408
-- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.10 (20210408)** and **iOS ARpoise 1.11 (20210408)**
-  - Fixed Bug #12.
-  - Fixed Bug #11.
-  
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.10 (20210408)** and **iOS ARpoise 1.11 (20210408)** 
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.8 (20210408)** and **iOS AR-vos 1.5 (20210408)**
   - Fixed Bug #12.
   - Fixed Bug #11.
