@@ -30,7 +30,6 @@ $Log: ArpoiseDirectory.c,v $
 Revision 1.55  2021/08/26 18:51:03  peter
 Client specific area values
 
-
 */
 
 /*
