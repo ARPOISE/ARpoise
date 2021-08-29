@@ -172,8 +172,11 @@ If an animation is started and the Unity-prefab of the POI contains an AudioSour
 ### Opening a WEB Page
 Animations allow opening a web page in a browser on the user's device. In order to do so, either the **Name** or the **Followed by** value of the animation must be of the form "**openUrl:https://www.apoise.com/**". If an animation with such a **Name** is **started**, or an animation with such a **Followed by** value **ends**, the app will open the URL given after the "**openUrl:**" tag in a web browser. 
 
-### Setting the GameObject State
+### Setting the Game Object State
 The enhancement has been implemented with the releases done on August of 2021. If an animation with such a **SetActive** or **SetInActive** is **started**, or an animation with such a **Followed by** value **ends**, the game object of the POI is set to active/inactive.
+
+![GameObject-SetInActive](/images/GameObject-SetInActive.png)
+The animation shown above would make a game object blink on/of with a one second frequency.
 
 ### Animating the Same Values with two Animations
 The enhancement has been implemented with the releases done on August of 2021.
