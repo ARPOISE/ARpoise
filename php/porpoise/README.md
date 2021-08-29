@@ -79,6 +79,14 @@ The following properties of a layer can be edited:
 * POI-list-**Save**: Save changes to the POI's location to the layer's xml file.
 * POI-list-**DEL**: Delete the POI from the layer.
 
+### Optional Layer Parameters
+![LayerAction-PositionUpdateInterval](/images/LayerAction-PositionUpdateInterval.PNG)
+### Explanation:
+The GPS coordinates received by the apps sometimes show really wide fluctuations of the location.
+As a consequence, all pois with absolute locations move around very often, very quickly and very far.
+This layer parameter allows to restrict the time intervals after which the device position is updated into the app,
+so the movements can be restricted to happen only each time when the interval expires.
+
 ## ARpoise Back-End POI Configuration
 ### Screen Shot:
 ![BackEndImg3](/images/BackEnd3.png)
