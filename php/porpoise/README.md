@@ -171,6 +171,14 @@ If an animation is started and the Unity-prefab of the POI contains an AudioSour
 
 ### Opening a WEB Page
 Animations allow opening a web page in a browser on the user's device. In order to do so, either the **Name** or the **Followed by** value of the animation must be of the form "**openUrl:https://www.apoise.com/**". If an animation with such a **Name** is **started**, or an animation with such a **Followed by** value **ends**, the app will open the URL given after the "**openUrl:**" tag in a web browser. 
+
+### Setting the GameObject State
+The enhancement has been implemented with the releases done on August of 2021. If an animation with such a **SetActive** or **SetInActive** is **started**, or an animation with such a **Followed by** value **ends**, the game object of the POI is set to active/inactive.
+
+### Animating the Same Values with two Animations
+The enhancement has been implemented with the releases done on August of 2021.
+In order to allow to have two animations to change the same wrapper object, animations whose name starts with the same sequence of characters before the first **/** in the name, e.g. **scaleObject/up** and **scaleObject/down**, are animating the same transform.
+
 ## Original Documentation
 ===PorPOISe for Layar===
 Portable Point-of-Interest Server for Layar
