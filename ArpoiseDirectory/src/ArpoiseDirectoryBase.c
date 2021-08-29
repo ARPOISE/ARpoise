@@ -27,15 +27,16 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectoryBase.c,v $
-Revision 1.6  2021/08/12 21:28:40  peter
-Cleanup of Arpoise directory
+Revision 1.10  2021/08/26 18:51:03  peter
+Client specific area values
+
 
 */
 
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.6 2021/08/12 21:28:40 peter Exp $";
+char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.10 2021/08/26 18:51:03 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -76,6 +77,11 @@ char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.6 2021/08/12 
 #endif
 
 #include "pblCgi.h"
+
+char* ArvosApplicationName = "Arvos";
+char* ArpoiseApplicationName = "Arpoise";
+char* OperatingSystemAndroid = "Android";
+char* OperatingSystemiOS = "iOS";
 
 /*
  * Receive some bytes from a socket
@@ -728,7 +734,7 @@ char* adbChangeShowMenuOption(char* string, char* value)
 
 static PblList* devicePositionList = NULL;
 
-char* adbHandleDevicePosition(char* deviceId, char* client, char* queryString, int* latDifference, int* lonDifference)
+char* adbHandleDevicePosition(char* deviceId, char* clientApplication, char* queryString, int* latDifference, int* lonDifference)
 {
 	if (pblCgiStrIsNullOrWhiteSpace(deviceId))
 	{
@@ -930,13 +936,13 @@ void adbCreateStatisticsHits(int layer, char* layerName, int layerServed)
 				bundle = "UnknownBundle";
 			}
 
-			char* client = pblCgiQueryValue("client");
-			if (!client || !*client || strstr(client, ".."))
+			char* clientApplication = pblCgiQueryValue("client");
+			if (!clientApplication || !*clientApplication || strstr(clientApplication, ".."))
 			{
-				client = "UnknownClient";
+				clientApplication = "UnknownClient";
 			}
 
-			char* fileName = pblCgiSprintf("%s_%s_%s.htm", os, client, bundle);
+			char* fileName = pblCgiSprintf("%s_%s_%s.htm", os, clientApplication, bundle);
 			createStatisticsFile(versionsDirectory, fileName);
 			char* uri = pblCgiSprintf("/ArpoiseDirectory/AppVersions/%s", fileName);
 			adbGetHttpResponse("www.arpoise.com", 80, uri, 16, "ArpoiseDirectory/AppVersions");
@@ -1026,82 +1032,107 @@ static void freeStringList(PblList* list)
 	pblListFree(list);
 }
 
-char* adbGetArea(char* queryString)
+static int adbGetIntValue(char* queryString, char* label)
 {
-	int lat = 0;
-	int lon = 0;
-	char* latPtr = strstr(queryString, "lat=");
-	if (latPtr)
+	int value = 0;
+	char* start = strstr(queryString, label);
+	if (start)
 	{
-		char* ptr = strstr(latPtr, "&");
+		char* ptr = strstr(start, "&");
 		if (ptr)
 		{
-			latPtr = pblCgiStrRangeDup(latPtr, ptr);
+			ptr = pblCgiStrRangeDup(start, ptr);
 		}
 		else
 		{
-			latPtr = pblCgiStrDup(latPtr);
+			ptr = pblCgiStrDup(start);
 		}
-		double latDouble = strtod(latPtr + 4, NULL);
-		lat = (int)(1000000.0 * latDouble);
-		PBL_FREE(latPtr);
+		double latDouble = strtod(ptr + 4, NULL);
+		value = (int)(1000000.0 * latDouble);
+		PBL_FREE(ptr);
 	}
-	char* lonPtr = strstr(queryString, "lon=");
-	if (lonPtr)
-	{
-		char* ptr = strstr(lonPtr, "&");
-		if (ptr)
-		{
-			lonPtr = pblCgiStrRangeDup(lonPtr, ptr);
-		}
-		else
-		{
-			lonPtr = pblCgiStrDup(lonPtr);
-		}
-		double lonDouble = strtod(lonPtr + 4, NULL);
-		lon = (int)(1000000.0 * lonDouble);
-		PBL_FREE(lonPtr);
-	}
+	return value;
+}
+
+static int adbGetLat(char* queryString)
+{
+	return adbGetIntValue(queryString, "lat=");
+}
+
+static int adbGetLon(char* queryString)
+{
+	return adbGetIntValue(queryString, "lon=");
+}
+
+char* adbGetArea(char* queryString, char* clientApplication)
+{
+	int lat = adbGetLat(queryString);
+	int lon = adbGetLon(queryString);
+
 	for (int i = 1; i <= 1000; i++)
 	{
-		char* areaKey = pblCgiSprintf("Area_%d", i);
-		char* areaValue = pblCgiConfigValue(areaKey, NULL);
+		char* areaKey = NULL;
+		char* areaValue = NULL;
 
-		if (pblCgiStrIsNullOrWhiteSpace(areaValue))
+		for (int j = 0; j < 2; j++)
 		{
-			PBL_CGI_TRACE("No value for area %s", areaKey);
 			PBL_FREE(areaKey);
-			return NULL;
-		}
+			if (j == 0)
+			{
+				if (pblCgiStrEquals(ArvosApplicationName, clientApplication))
+				{
+					areaKey = pblCgiSprintf("%s_Area_%d", ArvosApplicationName, i);
+					areaValue = pblCgiConfigValue(areaKey, NULL);
+				}
+				else if (pblCgiStrEquals(ArpoiseApplicationName, clientApplication))
+				{
+					areaKey = pblCgiSprintf("%s_Area_%d", ArpoiseApplicationName, i);
+					areaValue = pblCgiConfigValue(areaKey, NULL);
+				}
+			}
+			else
+			{
+				areaKey = pblCgiSprintf("Area_%d", i);
+				areaValue = pblCgiConfigValue(areaKey, NULL);
+			}
+			if (pblCgiStrIsNullOrWhiteSpace(areaValue))
+			{
+				if (j == 0)
+				{
+					continue;
+				}
+				PBL_CGI_TRACE("No value for area %s", areaKey);
+				PBL_FREE(areaKey);
+				return NULL;
+			}
 
-		PblList* locationList = pblCgiStrSplitToList(areaValue, ",");
-		int size = pblListSize(locationList);
-		if (size != 4)
-		{
-			PBL_CGI_TRACE("%s, expecting 4 location values, current value is %s", areaKey, areaValue);
+			PblList* locationList = pblCgiStrSplitToList(areaValue, ",");
+			int size = pblListSize(locationList);
+			if (size != 4)
+			{
+				PBL_CGI_TRACE("%s, expecting 4 location values, current value is %s", areaKey, areaValue);
+
+				freeStringList(locationList);
+				continue;
+			}
+
+			int list0 = atoi(pblListGet(locationList, 0));
+			int list1 = atoi(pblListGet(locationList, 1));
+			int list2 = atoi(pblListGet(locationList, 2));
+			int list3 = atoi(pblListGet(locationList, 3));
+
+			if (lat < list0 || lon < list1 || lat > list2 || lon > list3)
+			{
+				PBL_CGI_TRACE("%s, lat %d, lon %d is outside area value %s", areaKey, lat, lon, areaValue);
+
+				freeStringList(locationList);
+				continue;
+			}
+			PBL_CGI_TRACE("%s, lat %d, lon %d is inside area value %s", areaKey, lat, lon, areaValue);
 
 			freeStringList(locationList);
-			PBL_FREE(areaKey);
-			continue;
+			return areaKey;
 		}
-
-		int list0 = atoi(pblListGet(locationList, 0));
-		int list1 = atoi(pblListGet(locationList, 1));
-		int list2 = atoi(pblListGet(locationList, 2));
-		int list3 = atoi(pblListGet(locationList, 3));
-
-		if (lat < list0 || lon < list1 || lat > list2 || lon > list3)
-		{
-			PBL_CGI_TRACE("%s, lat %d, lon %d is outside area value %s", areaKey, lat, lon, areaValue);
-
-			freeStringList(locationList);
-			PBL_FREE(areaKey);
-			continue;
-		}
-		PBL_CGI_TRACE("%s, lat %d, lon %d is inside area value %s", areaKey, lat, lon, areaValue);
-
-		freeStringList(locationList);
-		return areaKey;
 	}
 	return NULL;
 }
