@@ -39,7 +39,20 @@ The examples include various image triggered and SLAM AR objects.
 
 - **AR-vos** allows the prefabs shown to either be triggered by an image or to be placed by SLAM or to be location based or to be relative to the user.
 
-## Release Notes - Version 20210408
+## Release Notes - Version 20210814
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.11 (20210814)** and **iOS ARpoise 1.12 (20210814)**
+  - Fixed Bug #17.
+  - Added position update interval feature. The new layer action PositionUpdateInterval allows to restrict the time intervals after which the device position is updated into the app.
+  - By default, each animation on a poi creates a new wrapper object for the animation. In order to allow to have two animations to change the same wrapper object, animations whose name starts with the same sequence of characters before the first '/' in the name, e.g. 'scaleObject/up' and 'scaleObject/down', are animating the same transform.
+  - The game object of a poi can now set to active or in-active. If an animation has a name of SetActive or SetInActive and the animation is started the game object of the POI is set to active/inactive. If a follow animation of an animation is called SetActive or SetInActive and the animation ends, the game object of the POI is set to active/inactive.
+  
+- ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.9 (20210814)** and **iOS AR-vos 1.6 (20210814)**
+  - Fixed Bug #17.
+  - Added position update interval feature. The new layer action PositionUpdateInterval allows to restrict the time intervals after which the device position is updated into the app.
+  - By default, each animation on a poi creates a new wrapper object for the animation. In order to allow to have two animations to change the same wrapper object, animations whose name starts with the same sequence of characters before the first '/' in the name, e.g. 'scaleObject/up' and 'scaleObject/down', are animating the same transform.
+  - The game object of a poi can now set to active or in-active. If an animation has a name of SetActive or SetInActive and the animation is started the game object of the POI is set to active/inactive. If a follow animation of an animation is called SetActive or SetInActive and the animation ends, the game object of the POI is set to active/inactive.
+
+## Version 20210408
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.10 (20210408)** and **iOS ARpoise 1.11 (20210408)**
   - Fixed Bug #12.
   - Fixed Bug #11.
