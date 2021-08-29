@@ -24,7 +24,7 @@ For more information on
 
 Tamiko Thiel, see www.TamikoThiel.com/
 Peter Graf, see www.mission-base.com/peter/
-ARpoise, see http://www.ARpoise.com/
+ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectoryBase.c,v $
 Revision 1.10  2021/08/26 18:51:03  peter
