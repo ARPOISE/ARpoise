@@ -80,6 +80,7 @@ The following properties of a layer can be edited:
 * POI-list-**DEL**: Delete the POI from the layer.
 
 ### Optional Layer Parameters
+An optional layer parameter **PositionUpdateInterval** can be added to a layer by clicking on the **New action** button shown above.
 ![LayerAction-PositionUpdateInterval](/images/LayerAction-PositionUpdateInterval.PNG)
 ### Explanation:
 The GPS coordinates received by the apps sometimes show really wide fluctuations of the location.
