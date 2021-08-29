@@ -12,8 +12,8 @@
 ## Version 20210408 - April 2021
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.10 (20210408)** and **iOS ARpoise 1.11 (20210408)** 
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.8 (20210408)** and **iOS AR-vos 1.5 (20210408)**
-  - Fixed Bug #12.
-  - Fixed Bug #11.
+  - Fixed [Bug #12](https://github.com/ARPOISE/ARpoise/issues/12).
+  - Fixed [Bug #11](https://github.com/ARPOISE/ARpoise/issues/11).
   
 ## Version 20210124 - January 2021
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.9 (20210124)** and **iOS ARpoise 1.10 (20210124)**
@@ -33,7 +33,7 @@
   
 ## Version 20200522 - May 2020
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **iOS AR-vos 1.2 (20200522), May 28, 2020 at 10:45 PM**
-  - Fixed Bug #8.
+  - Fixed [Bug #8](https://github.com/ARPOISE/ARpoise/issues/8).
   - iOS AR-vos now uses Unity 2018.4.23 LTS as build environment.
   - Added the two new animation types 'Fade' and 'Destroy'.
 
@@ -41,7 +41,7 @@
   - Added the two new animation types 'Fade' and 'Destroy'.
 
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.5 (200522), May 23, 2020 at 4:10 PM**
-  - Fixed Bug #8.
+  - Fixed [Bug #8](https://github.com/ARPOISE/ARpoise/issues/8).
   - Android AR-vos now uses Unity 2018.4.23 LTS as build environment.
   - Added the two new animation types 'Fade' and 'Destroy'. 
 
