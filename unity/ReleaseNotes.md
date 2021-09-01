@@ -29,7 +29,7 @@
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **iOS ARpoise 1.9 (20200608), Jun 8, 2020 at 3:57 PM**
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.6 (200608), Jun 08, 2020**
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.8 (200608), Jun 08, 2020**
-  - Fixed Bug #10. Destroy of POIs with absolute GPS coordinates works now.
+  - Fixed [Bug #10](https://github.com/ARPOISE/ARpoise/issues/10).
   
 ## Version 20200522 - May 2020
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **iOS AR-vos 1.2 (20200522), May 28, 2020 at 10:45 PM**
