@@ -185,7 +185,7 @@ The enhancement has been implemented with the releases done on August of 2021. I
 
 ![GameObject-SetInActive](/images/GameObject-SetInActive.png)
 
-The animation shown above would make a game object blink on/of with a one second frequency.
+The animations shown above would make a game object blink on/of with a one second frequency.
 
 ### Animating the Same Values with two Animations
 The enhancement has been implemented with the releases done on August of 2021.
