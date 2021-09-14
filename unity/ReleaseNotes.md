@@ -5,7 +5,7 @@
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.12 (20210912)** and **iOS ARpoise 1.13 (20210912)**
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.10 (20210912)** and **iOS AR-vos 1.7 (20210912)**
   - Fixed [Bug #21](https://github.com/ARPOISE/ARpoise/issues/21). Made sure SetActive/SetInActive animations can be triggered for seperate pois.
-  - Added feature [Loading inner layers of inner layers](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#optional-layer-parameters), see [#14](https://github.com/ARPOISE/ARpoise/issues/14).
+  - Added feature **Loading inner layers of inner layers**, see [#14](https://github.com/ARPOISE/ARpoise/issues/14).
 
 ## Version 20210814 - August 2021
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.11 (20210814)** and **iOS ARpoise 1.12 (20210814)**
