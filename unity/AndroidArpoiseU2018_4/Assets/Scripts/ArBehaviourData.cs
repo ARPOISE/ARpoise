@@ -132,7 +132,7 @@ namespace com.arpoise.arpoiseapp
 #endif
 #endif
         private string _os = "Android";
-        private readonly string _bundle = "20210814";
+        private readonly string _bundle = "20210829";
 
         #endregion
 
@@ -473,14 +473,19 @@ namespace com.arpoise.arpoiseapp
                 {
                     foreach (var hotspot in layer.hotspots.Where(x => !string.IsNullOrWhiteSpace(x.InnerLayerName)))
                     {
-                        innerLayers[hotspot.InnerLayerName] = layer.isDefaultLayer;
+                        if (!innerLayers.ContainsKey(hotspot.InnerLayerName))
+                        {
+                            innerLayers[hotspot.InnerLayerName] = layer.isDefaultLayer;
+                        }
                     }
                 }
 
-                foreach (var innerLayer in innerLayers.Keys)
+                string innerLayer;
+                while ((innerLayer = innerLayers.Keys.FirstOrDefault()) != null)
                 {
                     if (InnerLayers.ContainsKey(innerLayer))
                     {
+                        innerLayers.Remove(innerLayer);
                         continue;
                     }
 
@@ -556,6 +561,16 @@ namespace com.arpoise.arpoiseapp
                         try
                         {
                             var layer = ArLayer.Create(text);
+                            if (layer != null)
+                            {
+                                foreach (var hotspot in layer.hotspots.Where(x => !string.IsNullOrWhiteSpace(x.InnerLayerName)))
+                                {
+                                    if (!innerLayers.ContainsKey(hotspot.InnerLayerName))
+                                    {
+                                        innerLayers[hotspot.InnerLayerName] = layer.isDefaultLayer;
+                                    }
+                                }
+                            }
 
                             List<ArLayer> layersList = null;
                             if (InnerLayers.TryGetValue(innerLayer, out layersList))

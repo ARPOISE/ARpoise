@@ -252,7 +252,7 @@ namespace com.arpoise.arpoiseapp
             if (JustActivated)
             {
                 HandleOpenUrl(Name);
-                HandleSetActive(Name, true);
+                HandleSetActive(Name, false, true);
                 HandleAudioSource();
             }
         }
@@ -267,7 +267,7 @@ namespace com.arpoise.arpoiseapp
             IsActive = false;
             if (!_persisting)
             {
-                HandleSetActive(Name, false);
+                HandleSetActive(Name, false, false);
                 switch (_animationType)
                 {
                     case ArAnimationType.Rotate:
@@ -304,9 +304,7 @@ namespace com.arpoise.arpoiseapp
         private static readonly string _openUrl = "openUrl:";
         public bool HandleOpenUrl(string s)
         {
-            if (!string.IsNullOrWhiteSpace(s)
-                && s.Length > _openUrl.Length
-                && _openUrl.Equals(s.Substring(0, _openUrl.Length), StringComparison.InvariantCultureIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(s) && s.StartsWith(_openUrl, StringComparison.InvariantCultureIgnoreCase))
             {
                 var url = s.Substring(_openUrl.Length);
                 if (!string.IsNullOrWhiteSpace(url))
@@ -318,19 +316,30 @@ namespace com.arpoise.arpoiseapp
             return false;
         }
 
-        private static readonly string _setInActive = "SetInActive";
-        public bool HandleSetActive(string s, bool setActive)
+        protected static readonly string SetInActive; 
+        public bool HandleSetActive(string s, bool onFollow, bool setOn)
         {
             var gameObject = GameObject;
-            if (gameObject != null)
+            if (!string.IsNullOrWhiteSpace(s) && gameObject != null)
             {
-                if (nameof(gameObject.SetActive).Equals(s, StringComparison.InvariantCultureIgnoreCase))
+                if (!onFollow || Name.Equals(s, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    gameObject.SetActive(setActive);
-                }
-                else if (_setInActive.Equals(s, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    gameObject.SetActive(!setActive);
+                    if (s.EndsWith(nameof(gameObject.SetActive), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (gameObject.activeSelf != setOn)
+                        {
+                            gameObject.SetActive(!gameObject.activeSelf);
+                        }
+                        return true;
+                    }
+                    if (s.EndsWith(nameof(SetInActive), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (gameObject.activeSelf == setOn)
+                        {
+                            gameObject.SetActive(!gameObject.activeSelf);
+                        }
+                        return true;
+                    }
                 }
             }
             return false;
