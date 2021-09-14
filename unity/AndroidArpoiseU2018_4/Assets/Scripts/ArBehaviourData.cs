@@ -132,7 +132,7 @@ namespace com.arpoise.arpoiseapp
 #endif
 #endif
         private string _os = "Android";
-        private readonly string _bundle = "20210829";
+        private readonly string _bundle = "20210915";
 
         #endregion
 

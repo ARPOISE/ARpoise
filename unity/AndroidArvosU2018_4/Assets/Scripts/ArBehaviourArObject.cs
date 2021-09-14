@@ -95,28 +95,28 @@ namespace com.arpoise.arpoiseapp
         // Link ar object to ar object state or to parent object
         private string LinkArObject(ArObjectState arObjectState, ArObject parentObject, Transform parentTransform, ArObject arObject, GameObject arGameObject, Poi poi)
         {
+            var transform = parentTransform;
             if (parentObject == null)
             {
-                // Add to ar object state
                 arObjectState.Add(arObject);
-
-                List<ArLayer> innerLayers = null;
-                if (!string.IsNullOrWhiteSpace(poi.InnerLayerName) && InnerLayers.TryGetValue(poi.InnerLayerName, out innerLayers))
-                {
-                    foreach (var layer in innerLayers.Where(x => x.hotspots != null))
-                    {
-                        var result = CreateArObjects(arObjectState, arObject, parentTransform, layer.hotspots);
-                        if (result != null)
-                        {
-                            return result;
-                        }
-                    }
-                }
             }
             else
             {
                 parentObject.GameObjects.Add(arGameObject);
                 parentObject.ArObjects.Add(arObject);
+                transform = arGameObject.transform;
+            }
+            List<ArLayer> innerLayers = null;
+            if (!string.IsNullOrWhiteSpace(poi?.InnerLayerName) && InnerLayers.TryGetValue(poi.InnerLayerName, out innerLayers))
+            {
+                foreach (var layer in innerLayers.Where(x => x.hotspots != null))
+                {
+                    var result = CreateArObjects(arObjectState, arObject, transform, layer.hotspots);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
             }
             return null;
         }
@@ -396,10 +396,11 @@ namespace com.arpoise.arpoiseapp
             // Relative to user, parent or with absolute coordinates
             var relativePosition = poi.poiObject.relativeLocation;
 
-            if (parentObject != null || !string.IsNullOrWhiteSpace(relativePosition))
+            if ((poi.Latitude == 0 && poi.Longitude == 0) || !string.IsNullOrWhiteSpace(relativePosition))
             {
                 // Relative to user or parent
                 var relativeLocation = poi.poiObject.RelativeLocation;
+
                 var xOffset = relativeLocation[0];
                 var yOffset = relativeLocation[1];
                 var zOffset = relativeLocation[2];
@@ -437,6 +438,11 @@ namespace com.arpoise.arpoiseapp
                     var arObject = new ArObject(
                         poi, arObjectId, poi.title, objectToAdd.name, poi.BaseUrl, wrapper, objectToAdd,
                         poi.Latitude, poi.Longitude, poi.relativeAlt, false);
+
+                    if (parentObject != null)
+                    {
+                        arObject.RelativeAltitude += parentObject.RelativeAltitude;
+                    }
 
                     var result = LinkArObject(arObjectState, parentObject, parentTransform, arObject, objectToAdd, poi);
                     if (result != null)
@@ -570,6 +576,16 @@ namespace com.arpoise.arpoiseapp
             return null;
         }
 
+        private readonly long _shift = 10000000;
+        private long _negativeId;
+        protected long NegativeId
+        {
+            get
+            {
+                return _negativeId -= _shift;
+            }
+        }
+
         // Create ar objects for the pois and link them
         protected string CreateArObjects(ArObjectState arObjectState, ArObject parentObject, Transform parentObjectTransform, IEnumerable<Poi> pois)
         {
@@ -578,7 +594,7 @@ namespace com.arpoise.arpoiseapp
                 long arObjectId = poi.id;
                 if (parentObject != null)
                 {
-                    arObjectId = -1000000 * parentObject.Id - arObjectId;
+                    arObjectId = NegativeId - (Math.Abs(arObjectId) % _shift);
                 }
 
                 var result = CreateArObject(arObjectState, parentObject, parentObjectTransform, poi, arObjectId);
@@ -657,7 +673,8 @@ namespace com.arpoise.arpoiseapp
                     continue;
                 }
                 var layerPois = layer.hotspots.Where(x => x.isVisible && !string.IsNullOrWhiteSpace(x.GameObjectName) && (x.ArLayer = layer) == layer);
-                pois.AddRange(layerPois.Where(x => CalculateDistance(x.Latitude, x.Longitude, UsedLatitude, UsedLongitude) <= layer.visibilityRange));
+                var visiblePois = layerPois.Where(x => CalculateDistance(x.Latitude, x.Longitude, UsedLatitude, UsedLongitude) <= layer.visibilityRange);
+                pois.AddRange(visiblePois);
             }
 
             ApplyKalmanFilter = applyKalmanFilter;
@@ -769,6 +786,7 @@ namespace com.arpoise.arpoiseapp
             NowTicks = DateTime.Now.Ticks;
             base.Update();
         }
+
         protected bool UpdateArObjects()
         {
             var arObjectState = ArObjectState;

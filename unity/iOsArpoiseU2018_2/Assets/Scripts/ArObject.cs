@@ -47,7 +47,7 @@ namespace com.arpoise.arpoiseapp
         public readonly string Text;
         public float Latitude;
         public float Longitude;
-        public readonly float RelativeAltitude;
+        public float RelativeAltitude;
         public Vector3 TargetPosition;
         public readonly bool IsRelative;
         public float Scale;

@@ -290,12 +290,12 @@ namespace com.arpoise.arpoiseapp
                 //FilteredLongitude = OriginalLongitude = 11.586f;
 
                 // MUC-AINMILLER
-                //FilteredLatitude = OriginalLatitude = 48.158526f;
-                //FilteredLongitude = OriginalLongitude = 11.578670f;
+                FilteredLatitude = OriginalLatitude = 48.158526f;
+                FilteredLongitude = OriginalLongitude = 11.578670f;
 
                 // R-Bahnhof
-                FilteredLatitude = OriginalLatitude = 49.012142f;
-                FilteredLongitude = OriginalLongitude = 12.098089f;
+                //FilteredLatitude = OriginalLatitude = 49.012142f;
+                //FilteredLongitude = OriginalLongitude = 12.098089f;
 
 
                 Debug.Log("UNITY_EDITOR fixed location, lat " + OriginalLatitude + ", lon " + OriginalLongitude);

@@ -84,7 +84,17 @@ namespace com.arpoise.arpoiseapp
 
         public void SetArObjectsToPlace()
         {
-            ArObjectsToPlace = ArObjects.Where(x => !x.IsRelative).ToList();
+            var arObjectsToPlace = new HashSet<ArObject>(ArObjects.Where(x => !x.IsRelative));
+            for (; ; )
+            {
+                var childrenToPlace = arObjectsToPlace.SelectMany(x => x.ArObjects).Where(x => !x.IsRelative && !arObjectsToPlace.Contains(x)).ToList();
+                if (!childrenToPlace.Any())
+                {
+                    break;
+                }
+                childrenToPlace.ForEach(x => arObjectsToPlace.Add(x));
+            }
+            ArObjectsToPlace = arObjectsToPlace.ToList();
             ArObjectsRelative = ArObjects.Where(x => x.IsRelative).ToList();
         }
 
@@ -166,6 +176,28 @@ namespace com.arpoise.arpoiseapp
             get
             {
                 return _arObjects.Count;
+            }
+        }
+
+        public int CountArObjects(List<ArObject> arObjects = null)
+        {
+            if (arObjects == null)
+            {
+                arObjects = _arObjects;
+            }
+            var result = arObjects.Count;
+            foreach (var arObject in arObjects)
+            {
+                result += CountArObjects(arObject.ArObjects);
+            }
+            return result;
+        }
+
+        public int NumberOfArObjects
+        {
+            get
+            {
+                return AllAnimations.Length;
             }
         }
 
@@ -279,7 +311,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             continue;
                         }
-                        if (animation.HandleSetActive(animationName, true))
+                        if (animation.HandleSetActive(animationName, true, true))
                         {
                             continue;
                         }
