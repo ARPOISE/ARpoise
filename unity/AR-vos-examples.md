@@ -3,7 +3,7 @@
 
 ## Overview
 
-**AR-vos**, [see ar-vos.com](https://ar-vos.com), is an open source app that can do **geolocative**, **SLAM** and **image trigger** AR. It is part of the [**ARpoise** (**A**ugmented **R**eality **p**oint **o**f **i**nterest **s**ervice **e**nvironment)](https://arpoise.com/) open-source Augmented Reality platform.
+**AR-vos**, see [ar-vos.com](https://ar-vos.com), is an open source app that can do **geolocative**, **SLAM** and **image trigger** AR. It is part of the [**ARpoise** (**A**ugmented **R**eality **p**oint **o**f **i**nterest **s**ervice **e**nvironment)](https://arpoise.com/) open-source Augmented Reality platform.
 
 **Download the AR-vos app** from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARvos) Store and the Apple [App Store](https://apps.apple.com/us/app/ar-vos/id1483218444). 
 
