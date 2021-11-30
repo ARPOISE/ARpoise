@@ -182,7 +182,7 @@ Animations allow opening a web page in a browser on the user's device. In order 
 
 ### Setting the Game Object State
 This feature has been implemented as an enhancement with the releases done in August of 2021.
-If an animation with a name of **SetActive** or **SetInActive** is **started**, or an animation with such a **Followed by** value **ends**, the game object of the POI is set to active/inactive.
+If an animation whose name starts or ends with **SetActive** or **SetInActive** is **started**, or an animation with such a **Followed by** value **ends**, the game object of the POI is set to active/inactive.
 
 ![GameObject-SetInActive](/images/GameObject-SetInActive.png)
 
