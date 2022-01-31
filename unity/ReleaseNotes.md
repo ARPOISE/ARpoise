@@ -1,6 +1,13 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+
+## Version 20220131 - January 2022
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.13 (202200131)** and **iOS ARpoise 1.14 (20220131)**
+- ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.11 (20220131)** and **iOS AR-vos 1.8 (20220131)**
+  - Fixed [Bug #23](https://github.com/ARPOISE/ARpoise/issues/23). Made sure animations run currectly with recorder.
+  - Added feature **Time synchronization between more than one device **, see [#22](https://github.com/ARPOISE/ARpoise/issues/22).
+
 ## Version 20210912 - September 2021
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.12 (20210912)** and **iOS ARpoise 1.13 (20210912)**
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.10 (20210912)** and **iOS AR-vos 1.7 (20210912)**
