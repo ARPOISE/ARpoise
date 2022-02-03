@@ -38,18 +38,39 @@ using UnityEngine.Android;
 
 namespace com.arpoise.arpoiseapp
 {
-    public class ArBehaviourPosition : ArBehaviourMultiUser
+    public interface IArpoiseBehaviour
+    {
+        float? DurationStretchFactor { get; }
+        void TimeSync();
+    }
+
+    public class ArBehaviourPosition : ArBehaviourMultiUser, IArpoiseBehaviour
     {
         #region Globals
 
         public GameObject ArCamera = null;
-
         public ArObjectState ArObjectState { get; protected set; }
         public string ErrorMessage { get; set; }
+        public float RecordingFrameRate = 0;
         #endregion
 
         #region Protecteds
 
+        protected static readonly long InitialSecond = DateTime.Now.Ticks / 10000000L;
+        private long _nowTicks;
+        protected long NowTicks
+        {
+            get
+            {
+                return _nowTicks;
+            }
+            private set
+            {
+                _nowTicks = value;
+                CurrentSecond = _nowTicks / 10000000L;
+            }
+        }
+        protected long CurrentSecond { get; private set; }
 #if HAS_AR_CORE
         protected const string AppName = "AR-vos";
 #else
@@ -113,8 +134,33 @@ namespace com.arpoise.arpoiseapp
                 return FilteredLongitude;
             }
         }
+
         #endregion
 
+        #region Start
+        protected override void Start()
+        {
+            NowTicks = DateTime.Now.Ticks;
+            base.Start();
+        }
+        #endregion
+
+        #region Update
+        protected override void Update()
+        {
+            base.Update();
+            if (RecordingFrameRate > 0)
+            {
+                // If Unity recording is used, one frame time elapses between two calls to Update
+                //
+                NowTicks += (long)(10000000L / RecordingFrameRate);
+            }
+            else
+            {
+                NowTicks = DateTime.Now.Ticks; // No recording, use time from system
+            }
+        }
+        #endregion
         #region PlaceArObjects
 
         private float _handledLatitude = 0;
@@ -297,12 +343,15 @@ namespace com.arpoise.arpoiseapp
                 //FilteredLatitude = OriginalLatitude = 49.012142f;
                 //FilteredLongitude = OriginalLongitude = 12.098089f;
 
+                // DC SmithS...
+                //FilteredLatitude = OriginalLatitude = 38.888411f;
+                //FilteredLongitude = OriginalLongitude = -77.024183f;
 
                 Debug.Log("UNITY_EDITOR fixed location, lat " + OriginalLatitude + ", lon " + OriginalLongitude);
 
                 var second = DateTime.Now.Ticks / 10000000L;
                 var random = new System.Random((int)second);
-                var nextMove = second + 9 + random.Next(0, 6);
+                var nextMove = second + 90000 + random.Next(0, 6);
 
                 while (second > 0 || second <= 0)
                 {
@@ -454,6 +503,37 @@ namespace com.arpoise.arpoiseapp
         private DateTime _nextPositionUpdate = DateTime.MinValue;
         protected float PositionUpdateInterval = 0;
 
+        public float? DurationStretchFactor { get; private set; }
+
+        private float _timeSync;
+        protected void TimeSync(float timeSync)
+        {
+            _timeSync = timeSync;
+            if (_timeSync > 0)
+            {
+                DurationStretchFactor = 1;
+            }
+        }
+
+        public void TimeSync()
+        {
+            if (_timeSync <= 0)
+            {
+                DurationStretchFactor = null;
+                return;
+            }
+            var syncTime = CurrentSecond % ((long)_timeSync);
+            if (syncTime < 0.75 * _timeSync)
+            {
+                var restTime = _timeSync - syncTime;
+                DurationStretchFactor = restTime / _timeSync;
+            }
+            else
+            {
+                var restTime = _timeSync - syncTime;
+                DurationStretchFactor = (_timeSync + restTime) / _timeSync;
+            }
+        }
         #endregion
 
         #region Misc

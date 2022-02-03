@@ -212,6 +212,19 @@ public class AbEvolutionOfFish : ArFlock
         }
     }
 
+    private int? _percentage;
+    public int Percentage
+    {
+        get
+        {
+            if (_percentage.HasValue)
+            {
+                return _percentage.Value;
+            }
+            return -1;
+        }
+    }
+
     public override void SetParameter(bool setValue, string label, string value)
     {
         if (label.Equals(nameof(NumberOfFish)))
@@ -261,6 +274,10 @@ public class AbEvolutionOfFish : ArFlock
         else if (label.Equals(nameof(SwimLimitZ)))
         {
             _swimLimitZ = SetParameter(setValue, value, (int?)null);
+        }
+        else if (label.Equals(nameof(Percentage)))
+        {
+            _percentage = SetParameter(setValue, value, (int?)null);
         }
         else
         {
@@ -375,6 +392,10 @@ public class AbEvolutionOfFish : ArFlock
 
     private void ShowFishOrGarbage(int percentage)
     {
+        if (Percentage >= 0)
+        {
+            percentage = Percentage;
+        }
         if (percentage < 0)
         {
             percentage = 0;

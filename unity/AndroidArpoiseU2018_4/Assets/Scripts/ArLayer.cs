@@ -115,7 +115,7 @@ namespace com.arpoise.arpoiseapp
                 var relativePosition = relativeLocation;
                 if (string.IsNullOrWhiteSpace(relativePosition))
                 {
-                    relativePosition = "0,0,0";
+                    return new float[] { 0, 0, 0 };
                 }
                 var parts = relativePosition.Split(',');
 
@@ -475,7 +475,7 @@ namespace com.arpoise.arpoiseapp
         }
 
         [NonSerialized]
-        private HashSet<string> _actionLabels = new HashSet<string>(new string[] { nameof(PositionUpdateInterval) });
+        private HashSet<string> _actionLabels = new HashSet<string>(new string[] { nameof(PositionUpdateInterval), nameof(TimeSync) });
         [NonSerialized]
         private bool? _showInfo;
         public bool ShowInfo
@@ -529,6 +529,32 @@ namespace com.arpoise.arpoiseapp
                     }
                 }
                 return _positionUpdateInterval.Value;
+            }
+        }
+
+        [NonSerialized]
+        private float? _timeSync;
+        public float TimeSync
+        {
+            get
+            {
+                if (_timeSync == null)
+                {
+                    var action = actions?.FirstOrDefault(x => x.showActivity && nameof(TimeSync).Equals(x.label?.Trim()) && !string.IsNullOrWhiteSpace(x.activityMessage));
+                    if (action != null)
+                    {
+                        float value = 0;
+                        if (float.TryParse(action.activityMessage, out value))
+                        {
+                            _timeSync = value;
+                        }
+                    }
+                    if (_timeSync == null)
+                    {
+                        _timeSync = 0;
+                    }
+                }
+                return _timeSync.Value;
             }
         }
     }

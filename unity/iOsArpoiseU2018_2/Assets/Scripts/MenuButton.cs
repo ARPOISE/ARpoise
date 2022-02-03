@@ -28,9 +28,7 @@ ARpoise, see www.ARpoise.com/
 
 */
 
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace com.arpoise.arpoiseapp
@@ -69,24 +67,26 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
-        public void TakeScreenshot()
-        {
-            var camera = Camera.main;
-            if (camera != null)
-            {
-                RenderTexture rt = new RenderTexture(camera.pixelWidth, camera.pixelHeight, 24);
-                Camera.main.targetTexture = rt;
-                Texture2D screenShot = new Texture2D(camera.pixelWidth, camera.pixelHeight, TextureFormat.RGB24, false);
-                Camera.main.Render();
-                RenderTexture.active = rt;
-                screenShot.ReadPixels(new Rect(0, 0, camera.pixelWidth, camera.pixelHeight), 0, 0);
-                Camera.main.targetTexture = null;
-                RenderTexture.active = null; // JC: added to avoid errors
-                Destroy(rt);
-                byte[] bytes = screenShot.EncodeToPNG();
+        // This is unused, it was a try to allow to upload a screenshot
+        //
+        //public void TakeScreenshot()
+        //{
+        //    var camera = Camera.main;
+        //    if (camera != null)
+        //    {
+        //        RenderTexture rt = new RenderTexture(camera.pixelWidth, camera.pixelHeight, 24);
+        //        Camera.main.targetTexture = rt;
+        //        Texture2D screenShot = new Texture2D(camera.pixelWidth, camera.pixelHeight, TextureFormat.RGB24, false);
+        //        Camera.main.Render();
+        //        RenderTexture.active = rt;
+        //        screenShot.ReadPixels(new Rect(0, 0, camera.pixelWidth, camera.pixelHeight), 0, 0);
+        //        Camera.main.targetTexture = null;
+        //        RenderTexture.active = null; // JC: added to avoid errors
+        //        Destroy(rt);
+        //        byte[] bytes = screenShot.EncodeToPNG();
 
-                _behaviour.RequestUpload("https://www.tamikothiel.com/cgi-bin/LendMeYourFace.cgi", bytes);
-            }
-        }
+        //        _behaviour.RequestUpload("https://www.tamikothiel.com/cgi-bin/LendMeYourFace.cgi", bytes);
+        //    }
+        //}
     }
 }

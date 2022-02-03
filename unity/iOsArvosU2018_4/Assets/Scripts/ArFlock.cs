@@ -31,7 +31,6 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 */
-using com.arpoise.arpoiseapp;
 using UnityEngine;
 
 public class ArFlock : MonoBehaviour
@@ -158,31 +157,31 @@ public class ArFlock : MonoBehaviour
 
     public virtual void SetParameter(bool setValue, string label, string value)
     {
-        if (label.Equals("NeighbourDistance"))
+        if (label.Equals(nameof(NeighbourDistance)))
         {
             _neighbourDistance = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("MinNeighbourDistance"))
+        else if (label.Equals(nameof(MinNeighbourDistance)))
         {
             _minNeighbourDistance = SetParameter(setValue, value, (float?)null);
         }
-        else if (label.Equals("SpeedFactor"))
+        else if (label.Equals(nameof(SpeedFactor)))
         {
             _speedFactor = SetParameter(setValue, value, (float?)null).Value;
         }
-        else if (label.Equals("RotationSpeed"))
+        else if (label.Equals(nameof(RotationSpeed)))
         {
             _rotationSpeed = SetParameter(setValue, value, (float?)null).Value;
         }
-        else if (label.Equals("ApplyRulesPercentage"))
+        else if (label.Equals(nameof(ApplyRulesPercentage)))
         {
             _applyRulesPercentage = SetParameter(setValue, value, (float?)null).Value;
         }
-        else if (label.Equals("MinimumSpeed"))
+        else if (label.Equals(nameof(MinimumSpeed)))
         {
             _minimumSpeed = SetParameter(setValue, value, (float?)null).Value;
         }
-        else if (label.Equals("MaximumSpeed"))
+        else if (label.Equals(nameof(MaximumSpeed)))
         {
             _maximumSpeed = SetParameter(setValue, value, (float?)null).Value;
         }
@@ -229,6 +228,6 @@ public class ArFlock : MonoBehaviour
         GoalPosition = transform.position;
         RenderSettings.fogColor = Camera.main.backgroundColor;
         RenderSettings.fogDensity = 0.03F;
-        RenderSettings.fog = true;
+        RenderSettings.fog = false;
     }
 }

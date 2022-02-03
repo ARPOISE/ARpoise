@@ -40,7 +40,8 @@ namespace com.arpoise.arpoiseapp
         Linear = 0,
         Cyclic = 1,
         Sine = 2,
-        Halfsine = 3
+        Halfsine = 3,
+        Smooth = 4
     }
 
     public enum ArAnimationType
@@ -73,6 +74,8 @@ namespace com.arpoise.arpoiseapp
         private readonly float _from;
         private readonly float _to;
         private readonly Vector3 _axis;
+        private readonly IArpoiseBehaviour _behaviour;
+        private readonly bool _isTimeSync;
 
         private static readonly string _rotate = nameof(ArAnimationType.Rotate).ToLower();
         private static readonly string _scale = nameof(ArAnimationType.Scale).ToLower();
@@ -83,7 +86,9 @@ namespace com.arpoise.arpoiseapp
         private static readonly string _cyclic = nameof(ArInterpolation.Cyclic).ToLower();
         private static readonly string _halfsine = nameof(ArInterpolation.Halfsine).ToLower();
         private static readonly string _sine = nameof(ArInterpolation.Sine).ToLower();
+        private static readonly string _smooth = nameof(ArInterpolation.Smooth).ToLower();
 
+        private float? _durationStretchFactor;
         private float? _initialA = null;
         private long _startTicks = 0;
         private List<Material> _materialsToFade = null;
@@ -91,7 +96,7 @@ namespace com.arpoise.arpoiseapp
         public bool IsToBeDestroyed { get; private set; }
         public bool IsToBeDuplicated { get; set; }
 
-        public ArAnimation(long poiId, GameObject wrapper, GameObject gameObject, PoiAnimation poiAnimation, bool isActive)
+        public ArAnimation(long poiId, GameObject wrapper, GameObject gameObject, PoiAnimation poiAnimation, bool isActive, IArpoiseBehaviour behaviour)
         {
             PoiId = poiId;
             GameObject = gameObject;
@@ -103,11 +108,13 @@ namespace com.arpoise.arpoiseapp
             if (poiAnimation != null)
             {
                 Name = poiAnimation.name?.Trim();
+                _isTimeSync = Name.Contains(nameof(_behaviour.TimeSync));
                 FollowedBy = !string.IsNullOrWhiteSpace(poiAnimation.followedBy)
                     ? poiAnimation.followedBy.Split(',').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToArray()
                     : FollowedBy;
                 _lengthTicks = (long)(10000000.0 * poiAnimation.length);
                 _delayTicks = (long)(10000000.0 * poiAnimation.delay);
+                _behaviour = behaviour;
                 if (poiAnimation.type != null)
                 {
                     var type = poiAnimation.type.ToLower();
@@ -124,6 +131,7 @@ namespace com.arpoise.arpoiseapp
                     var interpolation = poiAnimation.interpolation.ToLower();
                     _interpolation = interpolation.Contains(_cyclic) ? ArInterpolation.Cyclic
                         : interpolation.Contains(_halfsine) ? ArInterpolation.Halfsine
+                        : interpolation.Contains(_smooth) ? ArInterpolation.Smooth
                         : interpolation.Contains(_sine) ? ArInterpolation.Sine
                         : ArInterpolation.Linear;
                 }
@@ -150,16 +158,18 @@ namespace com.arpoise.arpoiseapp
             _startTicks = 0;
             Animate(startTicks, nowTicks);
         }
-
+  
         public void Animate(long startTicks, long nowTicks)
         {
             JustStopped = JustActivated = false;
+            _durationStretchFactor = _behaviour.DurationStretchFactor;
 
             if (startTicks <= 0 || !IsActive || _lengthTicks < 1 || _delayTicks < 0)
             {
                 return;
             }
-            if (_delayTicks > 0 && startTicks + _delayTicks > nowTicks)
+            var delayTicks = (long)(_durationStretchFactor.HasValue ? _durationStretchFactor * _delayTicks : _delayTicks);
+            if (delayTicks > 0 && startTicks + delayTicks > nowTicks)
             {
                 return;
             }
@@ -172,19 +182,24 @@ namespace com.arpoise.arpoiseapp
             }
             else
             {
-                var lengthTicks = _lengthTicks;
+                var lengthTicks = (long)(_durationStretchFactor.HasValue ? _durationStretchFactor * _lengthTicks : _lengthTicks);
                 var endTicks = _startTicks + lengthTicks;
                 if (endTicks < nowTicks)
                 {
                     if (!_repeating)
                     {
-                        Stop(startTicks, endTicks, true);
+                        Stop(startTicks, endTicks);
                         return;
                     }
                     _startTicks = endTicks + lengthTicks >= nowTicks ? endTicks : nowTicks;
                     JustActivated = true;
                 }
                 animationValue = (nowTicks - _startTicks) / ((float)lengthTicks);
+            }
+
+            if (_isTimeSync && JustActivated && _behaviour.DurationStretchFactor.HasValue)
+            {
+                _behaviour.TimeSync();
             }
 
             var from = _from;
@@ -205,6 +220,10 @@ namespace com.arpoise.arpoiseapp
 
                 case ArInterpolation.Halfsine:
                     animationValue = (float)Math.Sin(Math.PI * animationValue);
+                    break;
+
+                case ArInterpolation.Smooth:
+                    animationValue = (-1f + (float)Math.Cos(Math.PI * animationValue)) / 2;
                     break;
 
                 case ArInterpolation.Sine:
@@ -257,12 +276,10 @@ namespace com.arpoise.arpoiseapp
             }
         }
 
-        public void Stop(long startTicks, long nowTicks, bool animate = true)
+        public void Stop(long startTicks, long nowTicks)
         {
-            if (animate)
-            {
-                Animate(startTicks, nowTicks);
-            }
+            Animate(startTicks, nowTicks);
+
             JustStopped = true;
             IsActive = false;
             if (!_persisting)
@@ -347,9 +364,10 @@ namespace com.arpoise.arpoiseapp
 
         private void HandleAudioSource()
         {
-            if (GameObject != null)
+            var gameObject = GameObject;
+            if (gameObject != null)
             {
-                var audioSource = GameObject.GetComponent<AudioSource>();
+                var audioSource = gameObject.GetComponent<AudioSource>();
                 if (audioSource != null)
                 {
                     audioSource.Play();

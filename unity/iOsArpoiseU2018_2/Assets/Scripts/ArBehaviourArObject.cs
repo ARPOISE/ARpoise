@@ -81,7 +81,6 @@ namespace com.arpoise.arpoiseapp
         protected readonly Dictionary<string, Texture2D> TriggerImages = new Dictionary<string, Texture2D>();
         protected readonly List<TriggerObject> SlamObjects = new List<TriggerObject>();
         protected volatile RefreshRequest RefreshRequest = null;
-        protected long NowTicks { get; private set; }
         #endregion
 
         public GameObject CreateObject(GameObject objectToAdd)
@@ -251,7 +250,7 @@ namespace com.arpoise.arpoiseapp
                 billboardWrapper.name = "BillboardWrapper";
                 billboardWrapper.transform.parent = parentTransform;
                 parentTransform = billboardWrapper.transform;
-                arObjectState.AddBillboardAnimation(new ArAnimation(arObjectId, billboardWrapper, objectToAdd, null, true));
+                arObjectState.AddBillboardAnimation(new ArAnimation(arObjectId, billboardWrapper, objectToAdd, null, true, this));
             }
 
             // Prepare the rotation of the object
@@ -284,7 +283,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             return "Instantiate(OnCreateWrapper) failed";
                         }
-                        arObjectState.AddOnCreateAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, true));
+                        arObjectState.AddOnCreateAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, true, this));
                         if (animationWrapper.transform.parent == null)
                         {
                             animationWrapper.name = "OnCreateWrapper";
@@ -303,7 +302,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             return "Instantiate(OnFocusWrapper) failed";
                         }
-                        arObjectState.AddOnFocusAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
+                        arObjectState.AddOnFocusAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false, this));
                         if (animationWrapper.transform.parent == null)
                         {
                             animationWrapper.name = "OnFocusWrapper";
@@ -322,7 +321,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             return "Instantiate(InFocusWrapper) failed";
                         }
-                        arObjectState.AddInFocusAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
+                        arObjectState.AddInFocusAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false, this));
                         if (animationWrapper.transform.parent == null)
                         {
                             animationWrapper.name = "InFocusWrapper";
@@ -341,7 +340,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             return "Instantiate(OnClickWrapper) failed";
                         }
-                        arObjectState.AddOnClickAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
+                        arObjectState.AddOnClickAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false, this));
                         if (animationWrapper.transform.parent == null)
                         {
                             animationWrapper.name = "OnClickWrapper";
@@ -360,7 +359,7 @@ namespace com.arpoise.arpoiseapp
                         {
                             return "Instantiate(OnFollowWrapper) failed";
                         }
-                        arObjectState.AddOnFollowAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false));
+                        arObjectState.AddOnFollowAnimation(new ArAnimation(arObjectId, animationWrapper, objectToAdd, poiAnimation, false, this));
                         if (animationWrapper.transform.parent == null)
                         {
                             animationWrapper.name = "OnFollowWrapper";
@@ -621,6 +620,7 @@ namespace com.arpoise.arpoiseapp
             string informationMessage = null;
             float refreshInterval = 0;
             float positionUpdateInterval = 0;
+            float timeSync = 0;
             int bleachingValue = -1;
             int areaSize = -1;
             int areaWidth = -1;
@@ -666,6 +666,10 @@ namespace com.arpoise.arpoiseapp
                     {
                         positionUpdateInterval = layer.PositionUpdateInterval;
                     }
+                    if (timeSync <= 0)
+                    {
+                        timeSync = layer.TimeSync;
+                    }
                 }
 
                 if (layer.hotspots == null)
@@ -685,6 +689,8 @@ namespace com.arpoise.arpoiseapp
                 RefreshInterval = refreshInterval;
             }
             PositionUpdateInterval = positionUpdateInterval;
+            TimeSync(timeSync);
+
             bool setBleachingValues = false;
             if (_bleachingValue != bleachingValue)
             {
@@ -778,12 +784,17 @@ namespace com.arpoise.arpoiseapp
         }
         #endregion
 
+        #region Start
+        protected override void Start()
+        {
+            base.Start();
+        }
+        #endregion
         #region Update
         private static long _arObjectId = -1000000000;
         private static readonly System.Random _random = new System.Random();
         protected override void Update()
         {
-            NowTicks = DateTime.Now.Ticks;
             base.Update();
         }
 

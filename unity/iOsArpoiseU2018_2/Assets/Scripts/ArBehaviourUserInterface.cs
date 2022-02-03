@@ -30,6 +30,7 @@ ARpoise, see www.ARpoise.com/
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,8 +52,7 @@ namespace com.arpoise.arpoiseapp
         private const string ConfirmText = "Please confirm.";
         private const string SelectingText = "Please select a layer.";
         private const string LoadingText = "Loading data, please wait";
-        private static readonly long _initialSecond = DateTime.Now.Ticks / 10000000L;
-        private long _currentSecond = _initialSecond;
+        private long _currentSecond = InitialSecond;
         private int _framesPerCurrentSecond = 1;
         private bool _headerButtonActivated = false;
         private ArLayerScrollList _layerScrollList = null;
@@ -392,12 +392,11 @@ namespace com.arpoise.arpoiseapp
                 return;
             }
 
-            var second = NowTicks / 10000000L;
             var arObjectState = ArObjectState;
             if (StartTicks == 0 || arObjectState == null)
             {
                 string progress = string.Empty;
-                for (long s = _initialSecond; s < second; s++)
+                for (long s = InitialSecond; s < CurrentSecond; s++)
                 {
                     progress += ".";
                 }
@@ -405,13 +404,13 @@ namespace com.arpoise.arpoiseapp
                 return;
             }
 
-            if (_currentSecond == second)
+            if (_currentSecond == CurrentSecond)
             {
                 _framesPerCurrentSecond++;
             }
             else
             {
-                if (_currentSecond == second - 1)
+                if (_currentSecond == CurrentSecond - 1)
                 {
                     FramesPerSecond = _framesPerCurrentSecond;
                 }
@@ -420,7 +419,7 @@ namespace com.arpoise.arpoiseapp
                     FramesPerSecond = 1;
                 }
                 _framesPerCurrentSecond = 1;
-                _currentSecond = second;
+                _currentSecond = CurrentSecond;
             }
 
             // Update the objects shown
@@ -492,7 +491,7 @@ namespace com.arpoise.arpoiseapp
                     var message = InformationMessage;
                     if (message.Contains("{"))
                     {
-                        message = message.Replace("{t}", string.Empty + (_currentSecond - _initialSecond));
+                        message = message.Replace("{t}", string.Empty + (_currentSecond - InitialSecond));
 
                         message = message.Replace("{F}", string.Empty + FramesPerSecond);
                         message = message.Replace("{N}", string.Empty + arObjectState.Count);
@@ -507,14 +506,22 @@ namespace com.arpoise.arpoiseapp
                         message = message.Replace("{H}", string.Empty + (int)HeadingShown);
                         message = message.Replace("{C}", string.Empty + (int)currentHeading);
 
-                        message = message.Replace("{LAT}", UsedLatitude.ToString("F6"));
-                        message = message.Replace("{LON}", UsedLongitude.ToString("F6"));
+                        message = message.Replace("{LAT}", UsedLatitude.ToString("F6", CultureInfo.InvariantCulture));
+                        message = message.Replace("{LON}", UsedLongitude.ToString("F6", CultureInfo.InvariantCulture));
 
-                        message = message.Replace("{LAT1}", (firstArObject != null ? firstArObject.Latitude : 0).ToString("F6"));
-                        message = message.Replace("{LON1}", (firstArObject != null ? firstArObject.Longitude : 0).ToString("F6"));
-                        message = message.Replace("{D1}", (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, firstArObject.Longitude) : 0).ToString("F1"));
-                        message = message.Replace("{DNS1}", (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, UsedLongitude) : 0).ToString("F1"));
-                        message = message.Replace("{DEW1}", (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, UsedLatitude, firstArObject.Longitude) : 0).ToString("F1"));
+                        message = message.Replace("{LAT1}", (firstArObject != null ? firstArObject.Latitude : 0).ToString("F6", CultureInfo.InvariantCulture));
+                        message = message.Replace("{LON1}", (firstArObject != null ? firstArObject.Longitude : 0).ToString("F6", CultureInfo.InvariantCulture));
+                        message = message.Replace("{D1}", (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, firstArObject.Longitude) : 0).ToString("F1", CultureInfo.InvariantCulture));
+                        message = message.Replace("{DNS1}", (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, UsedLongitude) : 0).ToString("F1", CultureInfo.InvariantCulture));
+                        message = message.Replace("{DEW1}", (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, UsedLatitude, firstArObject.Longitude) : 0).ToString("F1", CultureInfo.InvariantCulture));
+
+                        message = message.Replace("{DAVF}", DisplayAnimationValueForward.ToString("F1", CultureInfo.InvariantCulture));
+                        message = message.Replace("{DAVR}", DisplayAnimationValueRight.ToString("F1", CultureInfo.InvariantCulture));
+                        message = message.Replace("{DGPX}", DisplayGoalPosition.x.ToString("F1", CultureInfo.InvariantCulture));
+                        message = message.Replace("{DGPY}", DisplayGoalPosition.y.ToString("F1", CultureInfo.InvariantCulture));
+                        message = message.Replace("{DGPZ}", DisplayGoalPosition.z.ToString("F1", CultureInfo.InvariantCulture));
+
+                        message = message.Replace("{DSF}", DurationStretchFactor?.ToString("F2", CultureInfo.InvariantCulture));
                     }
                     SetInfoText(message);
                     return;
@@ -523,37 +530,37 @@ namespace com.arpoise.arpoiseapp
                 var text =
                     string.Empty
                     //+ "B " + _bleachingValue
-                    //+ " CA " + (_locationLatitude).ToString("F6")
-                    //+ " A " + (_locationHorizontalAccuracy).ToString("F6")
-                    //+ string.Empty + (UsedLatitude).ToString("F6")
-                    //+ " CO " + (_locationLongitude).ToString("F6")
-                    //+ " " + (UsedLongitude).ToString("F6")
+                    //+ " CA " + (_locationLatitude).ToString("F6", CultureInfo.InvariantCulture)
+                    //+ " A " + (_locationHorizontalAccuracy).ToString("F6", CultureInfo.InvariantCulture)
+                    //+ string.Empty + (UsedLatitude).ToString("F6", CultureInfo.InvariantCulture)
+                    //+ " CO " + (_locationLongitude).ToString("F6", CultureInfo.InvariantCulture)
+                    //+ " " + (UsedLongitude).ToString("F6", CultureInfo.InvariantCulture)
                     //+ " AS " + _areaSize
-                    //+ " F " + DisplayAnimationValueForward.ToString("F1")
-                    //+ " R " + DisplayAnimationValueRight.ToString("F1")
-                    //+ " % " + DisplayPercentage.ToString("F1")
-                    //+ " Z " + DisplayGoalPosition.z.ToString("F1")
-                    //+ " X " + DisplayGoalPosition.x.ToString("F1")
-                    //+ " Y " + DisplayGoalPosition.y.ToString("F1")
-                    //+ " Z " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).z.ToString("F1")
-                    //+ " X " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).x.ToString("F1")
-                    //+ " Y " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).y.ToString("F1")
-                    //+ " OH " + (firstArObject != null ? firstArObject.Latitude : 0).ToString("F6")
-                    //+ " OL " + (firstArObject != null ? firstArObject.Longitude : 0).ToString("F6")
-                    //+ " D " + (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, firstArObject.Longitude) : 0).ToString("F1")
+                    //+ " F " + DisplayAnimationValueForward.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " R " + DisplayAnimationValueRight.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " % " + DisplayPercentage.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " Z " + DisplayGoalPosition.z.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " X " + DisplayGoalPosition.x.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " Y " + DisplayGoalPosition.y.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " Z " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).z.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " X " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).x.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " Y " + (LastObject != null ? LastObject.TargetPosition : Vector3.zero).y.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " OH " + (firstArObject != null ? firstArObject.Latitude : 0).ToString("F6", CultureInfo.InvariantCulture)
+                    //+ " OL " + (firstArObject != null ? firstArObject.Longitude : 0).ToString("F6", CultureInfo.InvariantCulture)
+                    //+ " D " + (firstArObject != null ? CalculateDistance(UsedLatitude, UsedLongitude, firstArObject.Latitude, firstArObject.Longitude) : 0).ToString("F1", CultureInfo.InvariantCulture)
                     //+ " F " + _framesPerSecond
-                    //+ " C " + _cameraTransform.eulerAngles.y.ToString("F")
+                    //+ " C " + _cameraTransform.eulerAngles.y.ToString("F", CultureInfo.InvariantCulture)
                     + " I " + (int)InitialHeading
                     + " D " + (int)DeviceAngle
                     + " Y " + (int)SceneAnchor.transform.eulerAngles.y
                     + " H " + (int)HeadingShown
                     + " C " + (int)currentHeading
-                    //+ " IH " + _initialHeading.ToString("F")
+                    //+ " IH " + _initialHeading.ToString("F", CultureInfo.InvariantCulture)
                     + " N " + arObjectState.ArObjects.Sum(x => x.GameObjects.Count)
                     //+ " O " + _onFocusAnimations.Count
                     //+ " R " + ray.ToString()
-                    //+ " R " + ray.origin.x.ToString("F1") + " " + ray.origin.y.ToString("F1") + " " + ray.origin.z.ToString("F1")
-                    //+ " " + ray.direction.x.ToString("F1") + " " + ray.direction.y.ToString("F1") + " " + ray.direction.z.ToString("F1")
+                    //+ " R " + ray.origin.x.ToString("F1", CultureInfo.InvariantCulture) + " " + ray.origin.y.ToString("F1", CultureInfo.InvariantCulture) + " " + ray.origin.z.ToString("F1", CultureInfo.InvariantCulture)
+                    //+ " " + ray.direction.x.ToString("F1", CultureInfo.InvariantCulture) + " " + ray.direction.y.ToString("F1", CultureInfo.InvariantCulture) + " " + ray.direction.z.ToString("F1", CultureInfo.InvariantCulture)
                     + (HasHitOnObject ? " h " : string.Empty)
                     ;
                 SetInfoText(text);

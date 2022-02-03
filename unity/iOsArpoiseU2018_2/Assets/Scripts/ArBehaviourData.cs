@@ -31,6 +31,7 @@ ARpoise, see www.ARpoise.com/
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -132,69 +133,71 @@ namespace com.arpoise.arpoiseapp
 #endif
 #endif
         private string _os = "Android";
-        private readonly string _bundle = "20210915";
+        private readonly string _bundle = "20220203";
 
         #endregion
 
-        #region UploadData
-        private List<UploadRequest> _uploadRequests = new List<UploadRequest>();
+        #region UploadData 
+        
+        // This is unused, it was a try to allow to upload a screenshot
+        //private List<UploadRequest> _uploadRequests = new List<UploadRequest>();
 
-        public void RequestUpload(string url, byte[]data)
-        {
-            _uploadRequests.Add(new UploadRequest { url = url, data = data });
-        }
+        //public void RequestUpload(string url, byte[]data)
+        //{
+        //    _uploadRequests.Add(new UploadRequest { url = url, data = data });
+        //}
 
-        public IEnumerator UploadData()
-        {
-            while (string.IsNullOrWhiteSpace(ErrorMessage))
-            {
-                while (_uploadRequests.Count == 0)
-                {
-                    yield return new WaitForSeconds(.1f);
-                }
+        //public IEnumerator UploadData()
+        //{
+        //    while (string.IsNullOrWhiteSpace(ErrorMessage))
+        //    {
+        //        while (_uploadRequests.Count == 0)
+        //        {
+        //            yield return new WaitForSeconds(.1f);
+        //        }
 
-                var upLoadRequest = _uploadRequests[0];
-                _uploadRequests.RemoveAt(0);
+        //        var upLoadRequest = _uploadRequests[0];
+        //        _uploadRequests.RemoveAt(0);
 
-                // Create a Web Form
-                WWWForm form = new WWWForm();
-                form.AddBinaryData("fileUpload", upLoadRequest.data);
+        //        // Create a Web Form
+        //        WWWForm form = new WWWForm();
+        //        form.AddBinaryData("fileUpload", upLoadRequest.data);
 
-                var url = upLoadRequest.url + "?action=uploadImageFromApp"
-                    + "&userId=" + SystemInfo.deviceUniqueIdentifier
-                    + "&client=" + _clientApplicationName
-                    + "&bundle=" + _bundle
-                    + "&os=" + _os
-                ;
+        //        var url = upLoadRequest.url + "?action=uploadImageFromApp"
+        //            + "&userId=" + SystemInfo.deviceUniqueIdentifier
+        //            + "&client=" + _clientApplicationName
+        //            + "&bundle=" + _bundle
+        //            + "&os=" + _os
+        //        ;
 
-                //Debug.Log("Loading Url " + url);
-                var request = UnityWebRequest.Post(url, form);
-                request.certificateHandler = new ArpoiseCertificateHandler();
-                request.timeout = 60;
-                //Debug.Log("SendWebRequest " + url);
-                yield return request.SendWebRequest();
-                //Debug.Log("Webrequest sent " + url);
+        //        //Debug.Log("Loading Url " + url);
+        //        var request = UnityWebRequest.Post(url, form);
+        //        request.certificateHandler = new ArpoiseCertificateHandler();
+        //        request.timeout = 60;
+        //        //Debug.Log("SendWebRequest " + url);
+        //        yield return request.SendWebRequest();
+        //        //Debug.Log("Webrequest sent " + url);
 
-                var maxWait = request.timeout * 100;
-                while (!(request.isNetworkError || request.isHttpError) && !request.isDone && maxWait > 0)
-                {
-                    yield return new WaitForSeconds(.01f);
-                    maxWait--;
-                }
+        //        var maxWait = request.timeout * 100;
+        //        while (!(request.isNetworkError || request.isHttpError) && !request.isDone && maxWait > 0)
+        //        {
+        //            yield return new WaitForSeconds(.01f);
+        //            maxWait--;
+        //        }
 
-                if (maxWait < 1)
-                {
-                    ErrorMessage = "Url '" + upLoadRequest.url + "' upload timeout.";
-                    yield break;
-                }
+        //        if (maxWait < 1)
+        //        {
+        //            ErrorMessage = "Url '" + upLoadRequest.url + "' upload timeout.";
+        //            yield break;
+        //        }
 
-                if (request.isNetworkError || request.isHttpError)
-                {
-                    ErrorMessage = "Url '" + upLoadRequest.url + "': " + request.error;
-                    yield break;
-                }
-            }
-        }
+        //        if (request.isNetworkError || request.isHttpError)
+        //        {
+        //            ErrorMessage = "Url '" + upLoadRequest.url + "': " + request.error;
+        //            yield break;
+        //        }
+        //    }
+        //}
         #endregion
 
         #region GetData
@@ -221,7 +224,8 @@ namespace com.arpoise.arpoiseapp
                 yield return new WaitForSeconds(.01f);
             }
 
-            StartCoroutine(nameof(UploadData));
+            // This is unused, it was a try to allow to upload a screenshot
+            // StartCoroutine(nameof(UploadData));
 
             while (string.IsNullOrWhiteSpace(ErrorMessage))
             {
@@ -243,10 +247,10 @@ namespace com.arpoise.arpoiseapp
                 for (; ; )
                 {
                     var url = uri + "?lang=en&version=1&radius=1500&accuracy=100"
-                        + "&lat=" + usedLatitude.ToString("F6")
-                        + "&lon=" + usedLongitude.ToString("F6")
-                        + (filteredLatitude != usedLatitude ? "&latOfDevice=" + filteredLatitude.ToString("F6") : string.Empty)
-                        + (filteredLongitude != usedLongitude ? "&lonOfDevice=" + filteredLongitude.ToString("F6") : string.Empty)
+                        + "&lat=" + usedLatitude.ToString("F6", CultureInfo.InvariantCulture)
+                        + "&lon=" + usedLongitude.ToString("F6", CultureInfo.InvariantCulture)
+                        + (filteredLatitude != usedLatitude ? "&latOfDevice=" + filteredLatitude.ToString("F6", CultureInfo.InvariantCulture) : string.Empty)
+                        + (filteredLongitude != usedLongitude ? "&lonOfDevice=" + filteredLongitude.ToString("F6", CultureInfo.InvariantCulture) : string.Empty)
                         + "&layerName=" + layerName
                         + (!string.IsNullOrWhiteSpace(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier
@@ -502,10 +506,10 @@ namespace com.arpoise.arpoiseapp
                     for (; ; )
                     {
                         var url = uri + "?lang=en&version=1&radius=1500&accuracy=100&innerLayer=true"
-                        + "&lat=" + latitude.ToString("F6")
-                        + "&lon=" + longitude.ToString("F6")
-                        + ((filteredLatitude != latitude) ? "&latOfDevice=" + filteredLatitude.ToString("F6") : string.Empty)
-                        + ((filteredLongitude != longitude) ? "&lonOfDevice=" + filteredLongitude.ToString("F6") : string.Empty)
+                        + "&lat=" + latitude.ToString("F6", CultureInfo.InvariantCulture)
+                        + "&lon=" + longitude.ToString("F6", CultureInfo.InvariantCulture)
+                        + ((filteredLatitude != latitude) ? "&latOfDevice=" + filteredLatitude.ToString("F6", CultureInfo.InvariantCulture) : string.Empty)
+                        + ((filteredLongitude != longitude) ? "&lonOfDevice=" + filteredLongitude.ToString("F6", CultureInfo.InvariantCulture) : string.Empty)
                         + "&layerName=" + innerLayer
                         + (!string.IsNullOrWhiteSpace(nextPageKey) ? "&pageKey=" + nextPageKey : string.Empty)
                         + "&userId=" + SystemInfo.deviceUniqueIdentifier

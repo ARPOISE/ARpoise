@@ -29,6 +29,7 @@ ARpoise, see www.ARpoise.com/
 */
 using com.arpoise.arpoiseapp;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -216,8 +217,8 @@ public class EvolutionOfFish : ArFlock
         {
             InfoText.GetComponent<Text>().text =
                     string.Empty
-                    + " D " + distance.ToString("F3")
-                    + " G " + _garbageDistance.ToString("F3")
+                    + " D " + distance.ToString("F3", CultureInfo.InvariantCulture)
+                    + " G " + _garbageDistance.ToString("F3", CultureInfo.InvariantCulture)
                     ;
         }
     }
