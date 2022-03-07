@@ -27,15 +27,16 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
-Revision 1.55  2021/08/26 18:51:03  peter
-Client specific area values
+Revision 1.63  2022/03/05 20:04:15  peter
+Added Id to trace
+
 
 */
 
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.55 2021/08/26 18:51:03 peter Exp $";
+char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.63 2022/03/05 20:04:15 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -85,13 +86,15 @@ extern char* OperatingSystemiOS;
 extern char* adbGetHttpResponse(char* hostname, int port, char* uri, int timeoutSeconds, char* agent);
 extern char* adbGetStringBetween(char* string, char* start, char* end);
 extern char* adbGetHttpResponseBody(char* response, char** cookiePtr);
+extern void adbGetLatAndLonOfDevice(char* queryString, int* latDifference, int* lonDifference);
 extern char* adbChangeLatAndLon(char* queryString, char* lat, char* lon, int* latDifference, int* lonDifference);
 extern char* adbChangeRedirectionUrl(char* string, char* redirectionUrl);
 extern char* adbChangeLayer(char* string, char* layer);
 extern char* adbChangeRedirectionLayer(char* string, char* redirectionLayer);
 extern char* adbChangeLayerName(char* string, char* layerName);
 extern char* adbChangeShowMenuOption(char* string, char* value);
-extern char* adbHandleDevicePosition(char* deviceId, char* client, char* queryString, int* latDifference, int* lonDifference);
+extern char* adbHandleDevicePosition(char* deviceId, char* queryString, int* latDifference, int* lonDifference);
+extern char* adbHandleBundlePosition(char* bundleId, char* queryString, int* latDifference, int* lonDifference);
 extern void adbTraceDuration();
 extern void adbPrintHeader(char* cookie);
 extern void adbHandleResponse(char* response, int latDifference, int lonDifference);
@@ -127,7 +130,8 @@ static int arpoiseDirectory(int argc, char* argv[])
 
 	char* traceFile = pblCgiConfigValue(PBL_CGI_TRACE_FILE, "/tmp/ArpoiseDirectory.txt");
 	pblCgiInitTrace(&startTime, traceFile);
-	PBL_CGI_TRACE("argc %d argv[0] = %s", argc, argv[0]);
+	PBL_CGI_TRACE("> Argc %d argv[0] = %s", argc, argv[0]);
+	PBL_CGI_TRACE("> Id %s", ArpoiseDirectory_c_id);
 
 	pblCgiParseQuery(argc, argv);
 	char* queryString = pblCgiQueryString;
@@ -161,10 +165,19 @@ static int arpoiseDirectory(int argc, char* argv[])
 	//
 	int latDifference = 0;
 	int lonDifference = 0;
-	char* deviceQueryString = adbHandleDevicePosition(deviceId, clientApplication, queryString, &latDifference, &lonDifference);
+	char* deviceQueryString = adbHandleDevicePosition(deviceId, queryString, &latDifference, &lonDifference);
 	if (deviceQueryString != NULL)
 	{
 		queryString = deviceQueryString;
+	}
+	else
+	{
+		char* bundle = pblCgiQueryValue("bundle");
+		char* bundleQueryString = adbHandleBundlePosition(bundle, queryString, &latDifference, &lonDifference);
+		if (bundleQueryString != NULL)
+		{
+			queryString = bundleQueryString;
+		}
 	}
 
 	char* layerName = pblCgiQueryValue("layerName");
@@ -224,6 +237,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 		if (bundle && isdigit(*bundle))
 		{
 			bundleInteger = atoi(bundle);
+			PBL_CGI_TRACE("-------> BundleInteger=%d\n", bundleInteger);
 		}
 
 		// This is a request for the Arpoise-Directory layer
@@ -233,63 +247,8 @@ static int arpoiseDirectory(int argc, char* argv[])
 		// See what client application it is
 		if (pblCgiStrEquals(ArvosApplicationName, clientApplication))
 		{
-			if (pblCgiStrEquals(OperatingSystemAndroid, os) && bundleInteger < 200101)
-			{
-				// Request the default layer from porpoise and return it to the client
-
-				layerUrl = adbGetAreaConfigValue(area, "ArvosDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
-				layerName = adbGetAreaConfigValue(area, "ArvosDefaultLayerName", "Default-ImageTrigger");
-
-				layerServed = 1;
-				PBL_CGI_TRACE("-------> Arvos Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
-
-				char* ptr = adbChangeLayerName(queryString, layerName);
-
-				int myLatDifference = 0;
-				int myLonDifference = 0;
-				ptr = adbChangeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
-				latDifference += myLatDifference;
-				lonDifference += myLonDifference;
-
-				uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
-				char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-				char* response = adbGetHttpResponse(hostName, port, uri, 16, agent);
-				adbHandleResponse(response, latDifference, lonDifference);
-
-				adbCreateStatisticsHits(layer, layerName, layerServed);
-				return 0;
-			}
-
 			// Request the AR-vos-Directory
-
 			queryString = adbChangeLayerName(queryString, "AR-vos-Directory");
-		}
-		if (pblCgiStrEquals("Arslam", clientApplication))
-		{
-			// Request the default layer from porpoise and return it to the client
-
-			layerUrl = adbGetAreaConfigValue(area, "ArslamDefaultLayerUrl", "/php/porpoise/web/porpoise.php");
-			layerName = adbGetAreaConfigValue(area, "ArslamDefaultLayerName", "Default-Slam");
-
-			layerServed = 1;
-			PBL_CGI_TRACE("-------> Arslam Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
-
-			char* ptr = adbChangeLayerName(queryString, layerName);
-
-			int myLatDifference = 0;
-			int myLonDifference = 0;
-			ptr = adbChangeLatAndLon(ptr, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
-			latDifference += myLatDifference;
-			lonDifference += myLonDifference;
-
-			uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
-			char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
-			char* response = adbGetHttpResponse(hostName, port, uri, 16, agent);
-			response = adbChangeShowMenuOption(response, "false");
-			adbHandleResponse(response, latDifference, lonDifference);
-
-			adbCreateStatisticsHits(layer, layerName, layerServed);
-			return 0;
 		}
 
 		uri = pblCgiSprintf("%s?p=%d&%s", directoryUri, getpid(), queryString);
@@ -309,9 +268,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 
 			if (pblCgiStrEquals(ArvosApplicationName, clientApplication))
 			{
-				if (!pblCgiStrIsNullOrWhiteSpace(arvosDefaultDirectory) &&
-					((pblCgiStrEquals(OperatingSystemAndroid, os) && bundleInteger >= 190208)
-						|| (pblCgiStrEquals(OperatingSystemiOS, os) && bundleInteger >= 20190208)))
+				if (!pblCgiStrIsNullOrWhiteSpace(arvosDefaultDirectory) && !pblCgiStrEquals("_", arvosDefaultDirectory))
 				{
 					char* ptr = adbChangeLayerName(queryString, arvosDefaultDirectory);
 
@@ -369,9 +326,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 					return 0;
 				}
 			}
-			else if (!pblCgiStrIsNullOrWhiteSpace(defaultDirectory) &&
-				((pblCgiStrEquals(OperatingSystemAndroid, os) && bundleInteger >= 190208)
-					|| (pblCgiStrEquals(OperatingSystemiOS, os) && bundleInteger >= 20190208)))
+			else if (!pblCgiStrIsNullOrWhiteSpace(defaultDirectory) && !pblCgiStrEquals("_", defaultDirectory))
 			{
 				char* ptr = adbChangeLayerName(queryString, defaultDirectory);
 
@@ -413,17 +368,6 @@ static int arpoiseDirectory(int argc, char* argv[])
 			layerUrl = adbGetAreaConfigValue(area, "DefaultLayerUrl", "/php/porpoise/web/porpoise.php");
 			layerName = adbGetAreaConfigValue(area, "DefaultLayerName", "Default-Layer-Reign-of-Gold");
 
-			if ((pblCgiStrEquals(OperatingSystemAndroid, os) && bundleInteger >= 190310)
-				|| (pblCgiStrEquals(OperatingSystemiOS, os) && bundleInteger >= 20190310)
-				)
-			{
-				char* layername190310 = adbGetAreaConfigValue(area, "DefaultLayerName190310", "");
-				if (layername190310 && *layername190310)
-				{
-					layerName = layername190310;
-				}
-			}
-
 			layerServed = 1;
 			PBL_CGI_TRACE("-------> Default Layer Request: '%s' '%s'\n", layerUrl, layerName);
 
@@ -455,11 +399,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 				numberOfHotspots = atoi(numberOfHotspotsString);
 			}
 
-			if (numberOfHotspots > 1
-				&& ((pblCgiStrEquals(OperatingSystemAndroid, os) && bundleInteger >= 190208)
-					|| (pblCgiStrEquals(OperatingSystemiOS, os) && bundleInteger >= 20190208)
-					)
-				)
+			if (numberOfHotspots > 1)
 			{
 				PBL_CGI_TRACE("-------> Client response");
 
@@ -553,6 +493,22 @@ static int arpoiseDirectory(int argc, char* argv[])
 				int myLatDifference = 0;
 				int myLonDifference = 0;
 				queryString = adbChangeLatAndLon(queryString, "0.000000", "0.000000", &myLatDifference, &myLonDifference);
+				latDifference += myLatDifference;
+				lonDifference += myLonDifference;
+			}
+			else if (!pblCgiStrIsNullOrWhiteSpace(layerName)
+				&& pblCgiStrEquals("true", pblCgiQueryValue("innerLayer"))
+				&& !strncmp(layerName, defaultStr, strlen(defaultStr))
+				&& !pblCgiStrEquals("0.000000", pblCgiQueryValue("latOfDevice"))
+				&& !pblCgiStrEquals("0.000000", pblCgiQueryValue("lonOfDevice"))
+				&& pblCgiStrEquals("0.000000", pblCgiQueryValue("lat"))
+				&& pblCgiStrEquals("0.000000", pblCgiQueryValue("lon")))
+			{
+				PBL_CGI_TRACE("-------> Default Inner-Layer Request: '%s' '%s'\n", porpoiseUri, layerName);
+
+				int myLatDifference = 0;
+				int myLonDifference = 0;
+				adbGetLatAndLonOfDevice(queryString, &myLatDifference, &myLonDifference);
 				latDifference += myLatDifference;
 				lonDifference += myLonDifference;
 			}

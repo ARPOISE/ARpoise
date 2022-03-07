@@ -27,15 +27,18 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectoryBase.c,v $
-Revision 1.10  2021/08/26 18:51:03  peter
-Client specific area values
+Revision 1.14  2022/03/07 19:47:35  peter
+Improved handling of areas
+
+Revision 1.13  2022/03/05 19:48:15  peter
+Added handling of bundle position
 
 */
 
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.10 2021/08/26 18:51:03 peter Exp $";
+char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.14 2022/03/07 19:47:35 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -573,6 +576,48 @@ static char* changeLon(char* string, int i, int difference)
 	return replacedLon;
 }
 
+void adbGetLatAndLonOfDevice(char* queryString, int* latDifference, int* lonDifference)
+{
+	char* latOfDevice = "latOfDevice=";
+	char* lonOfDevice = "lonOfDevice=";
+	int latPtrInteger = 0;
+	int lonPtrInteger = 0;
+
+	char* latPtr = strstr(queryString, latOfDevice);
+	if (latPtr)
+	{
+		char* ptr = strstr(latPtr, "&");
+		if (ptr)
+		{
+			latPtr = pblCgiStrRangeDup(latPtr, ptr);
+		}
+		else
+		{
+			latPtr = pblCgiStrDup(latPtr);
+		}
+		latPtrInteger = (int)(1000000.0 * strtod(latPtr + strlen(latOfDevice), NULL));
+	}
+	char* lonPtr = strstr(queryString, lonOfDevice);
+	if (lonPtr)
+	{
+		char* ptr = strstr(lonPtr, "&");
+		if (ptr)
+		{
+			lonPtr = pblCgiStrRangeDup(lonPtr, ptr);
+		}
+		else
+		{
+			lonPtr = pblCgiStrDup(lonPtr);
+		}
+		lonPtrInteger = (int)(1000000.0 * strtod(lonPtr + strlen(lonOfDevice), NULL));
+	}
+	if (latDifference && lonDifference && latPtrInteger != 0 && lonPtrInteger != 0)
+	{
+		*latDifference = 0 - latPtrInteger;
+		*lonDifference = 0 - lonPtrInteger;
+	}
+}
+
 char* adbChangeLatAndLon(char* queryString, char* lat, char* lon, int* latDifference, int* lonDifference)
 {
 	if (!pblCgiStrIsNullOrWhiteSpace(lat) && !pblCgiStrIsNullOrWhiteSpace(lon))
@@ -733,7 +778,7 @@ char* adbChangeShowMenuOption(char* string, char* value)
 
 static PblList* devicePositionList = NULL;
 
-char* adbHandleDevicePosition(char* deviceId, char* clientApplication, char* queryString, int* latDifference, int* lonDifference)
+char* adbHandleDevicePosition(char* deviceId, char* queryString, int* latDifference, int* lonDifference)
 {
 	if (pblCgiStrIsNullOrWhiteSpace(deviceId))
 	{
@@ -768,6 +813,51 @@ char* adbHandleDevicePosition(char* deviceId, char* clientApplication, char* que
 		{
 			lat = pblListGet(devicePositionList, i + 1);
 			lon = pblListGet(devicePositionList, i + 2);
+			PBL_CGI_TRACE("Device %s, lat %s, lon %s", deviceId, lat ? lat : "", lon ? lon : "");
+			break;
+		}
+	}
+	return adbChangeLatAndLon(queryString, lat, lon, latDifference, lonDifference);
+}
+
+static PblList* bundlePositionList = NULL;
+
+char* adbHandleBundlePosition(char* bundleId, char* queryString, int* latDifference, int* lonDifference)
+{
+	if (pblCgiStrIsNullOrWhiteSpace(bundleId))
+	{
+		return NULL;
+	}
+
+	char* lat = NULL;
+	char* lon = NULL;
+
+	if (!bundlePositionList)
+	{
+		char* bundlePositionValue = pblCgiConfigValue("BundlePosition", NULL);
+		if (pblCgiStrIsNullOrWhiteSpace(bundlePositionValue))
+		{
+			return NULL;
+		}
+		bundlePositionList = pblCgiStrSplitToList(bundlePositionValue, ",");
+		if (pblListIsEmpty(bundlePositionList))
+		{
+			PBL_CGI_TRACE("BundlePositionList is empty");
+			return NULL;
+		}
+	}
+
+	int listSize = pblListSize(bundlePositionList);
+
+	for (int i = 0; i < listSize - 2; i += 3)
+	{
+		char* bundle = pblListGet(bundlePositionList, i);
+
+		if (pblCgiStrEquals(bundleId, bundle))
+		{
+			lat = pblListGet(bundlePositionList, i + 1);
+			lon = pblListGet(bundlePositionList, i + 2);
+			PBL_CGI_TRACE("Bundle %s, lat %s, lon %s", bundleId, lat ? lat : "", lon ? lon : "");
 			break;
 		}
 	}
@@ -1072,6 +1162,7 @@ char* adbGetArea(char* queryString, char* clientApplication)
 	{
 		char* areaKey = NULL;
 		char* areaValue = NULL;
+		int areaHasValue = 0;
 
 		for (int j = 0; j < 2; j++)
 		{
@@ -1100,9 +1191,13 @@ char* adbGetArea(char* queryString, char* clientApplication)
 				{
 					continue;
 				}
-				PBL_CGI_TRACE("No value for area %s", areaKey);
-				PBL_FREE(areaKey);
-				return NULL;
+				if (!areaHasValue)
+				{
+					PBL_CGI_TRACE("No value for area %s", areaKey);
+					PBL_FREE(areaKey);
+					return NULL;
+				}
+				break;
 			}
 
 			PblList* locationList = pblCgiStrSplitToList(areaValue, ",");
@@ -1114,7 +1209,7 @@ char* adbGetArea(char* queryString, char* clientApplication)
 				freeStringList(locationList);
 				continue;
 			}
-
+			areaHasValue = 1;
 			int list0 = atoi(pblListGet(locationList, 0));
 			int list1 = atoi(pblListGet(locationList, 1));
 			int list2 = atoi(pblListGet(locationList, 2));
