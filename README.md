@@ -68,8 +68,8 @@ See [/php/porpoise](php/porpoise/README.md).
 See [ARpoiseDirectory](ArpoiseDirectory).
 ### ARpoiseDirectory Back End (We manage this for you, unless you set up your own system.)
 See [/php/dir](php/dir/README.md).
-### GitHub repositories for Unity Projects
-Repositories for Unity projects for **ARpoise** and **AR-vos** (We manage the apps for you, unless you set up your own system.)
+### GitHub repositories for Unity Projects (We manage the apps for you, unless you set up your own system.)
+Repositories for Unity projects for **ARpoise** and **AR-vos** on Android and iOS.
 
 [ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2018_4/)
 
