@@ -81,14 +81,6 @@ Repositories for Unity projects for **ARpoise** and **AR-vos**.
 ### Application creation for iOS and Android Client Applications (We manage the apps for you, unless you set up your own system.)
 See [unity](unity/).
 This folder contains Unity projects for the different clients, **ARpoise** and **AR-vos**.
-
-[ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2018_4/)
-
-[ARpoise for iOS](https://github.com/ARPOISE/iOsArpoiseU2018_2/)
-
-[AR-vos for Android](https://github.com/ARPOISE/AndroidArvosU2018_4/)
-
-[AR-vos for iOS](https://github.com/ARPOISE/iOsArvosU2018_4/)
 ## Restrictions
 - Unity behaviour scripts written in C# cannot be included in Unity-created 3D content of ARpoise.
 
