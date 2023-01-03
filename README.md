@@ -71,13 +71,13 @@ See [/php/dir](php/dir/README.md).
 ### GitHub repositories for Unity Projects (We manage the apps for you, unless you set up your own system.)
 Repositories for Unity projects for **ARpoise** and **AR-vos** on Android and iOS.
 
-[ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2018_4/)
+[ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2021_3/)
 
-[ARpoise for iOS](https://github.com/ARPOISE/iOsArpoiseU2018_2/)
+[ARpoise for iOS](https://github.com/ARPOISE/iOsArpoiseU2021_3/)
 
-[AR-vos for Android](https://github.com/ARPOISE/AndroidArvosU2018_4/)
+[AR-vos for Android](https://github.com/ARPOISE/AndroidArvosU2021_3/)
 
-[AR-vos for iOS](https://github.com/ARPOISE/iOsArvosU2018_4/)
+[AR-vos for iOS](https://github.com/ARPOISE/iOsArvosU2021_3/)
 ## Restrictions
 - Unity behaviour scripts written in C# cannot be included in Unity-created 3D content of ARpoise.
 
