@@ -2,10 +2,10 @@
 # ARpoise and AR-vos -Mobile- Apps
 
 ## Overview
-This directory contains the Unity 3D projects used to build the **ARpoise** and **AR-vos** apps for Android and iOS.
+This directory details the Unity 3D projects used to build the **ARpoise** and **AR-vos** apps for Android and iOS.
 
-## Repositories
-GitHub repositories for Unity Projects (We manage the apps for you, unless you set up your own system.)
+**Note:** The sub-directories linked above are obsolete, do not use them. 
+
 Repositories for Unity projects for **ARpoise** and **AR-vos** on Android and iOS.
 
 [ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2021_3/)
