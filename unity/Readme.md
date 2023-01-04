@@ -18,10 +18,10 @@ Repositories for Unity projects for **ARpoise** and **AR-vos** on Android and iO
 
 ## Downloads
 - The **ARpoise** client is a geolocative AR app running on most available phones.
-Download: [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store, Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843). The source code for the apps is available in the folders [AndroidArpoiseU2018_4](AndroidArpoiseU2018_4) and [iOsArpoiseU2018_2](iOsArpoiseU2018_2).
+Download: [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store, Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843).
 
 - The **AR-vos** client is an image trigger, a SLAM and a geolocative AR app using ARKit on iOS and ARCore on Android.
-Download: [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARvos) Store, Apple [App Store](https://apps.apple.com/us/app/ar-vos/id1483218444). The source code for the apps is available in the folders [AndroidArvosU2018_4](AndroidArvosU2018_4) and [iOsArvosU2018_4](iOsArvosU2018_4).
+Download: [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARvos) Store, Apple [App Store](https://apps.apple.com/us/app/ar-vos/id1483218444).
 
 The goal of ARpoise is to provide an open-source, community-supported, location-based AR app as a replacement for the 
 [Layar app](https://www.layar.com/) and other commercial geolocative AR platforms.
