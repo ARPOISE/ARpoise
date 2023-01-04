@@ -4,6 +4,18 @@
 ## Overview
 This directory contains the Unity 3D projects used to build the **ARpoise** and **AR-vos** apps for Android and iOS.
 
+## Repositories
+GitHub repositories for Unity Projects (We manage the apps for you, unless you set up your own system.)
+Repositories for Unity projects for **ARpoise** and **AR-vos** on Android and iOS.
+
+[ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2021_3/)
+
+[ARpoise for iOS](https://github.com/ARPOISE/iOsArpoiseU2021_3/)
+
+[AR-vos for Android](https://github.com/ARPOISE/AndroidArvosU2021_3/)
+
+[AR-vos for iOS](https://github.com/ARPOISE/iOsArvosU2021_3/)
+
 ## Downloads
 - The **ARpoise** client is a geolocative AR app running on most available phones.
 Download: [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARpoise) Store, Apple [App Store](https://itunes.apple.com/de/app/arpoise/id1451460843). The source code for the apps is available in the folders [AndroidArpoiseU2018_4](AndroidArpoiseU2018_4) and [iOsArpoiseU2018_2](iOsArpoiseU2018_2).
