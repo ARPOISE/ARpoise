@@ -71,9 +71,9 @@ See [/php/dir](php/dir/README.md).
 ### GitHub repositories for Unity Projects (We manage the apps for you, unless you set up your own system.)
 Repositories for Unity projects for **ARpoise** and **AR-vos** on Android and iOS.
 
-[ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2021_3/)
+[ARpoise for Android](https://github.com/ARPOISE/AndroidARpoiseU2022_3/)
 
-[ARpoise for iOS](https://github.com/ARPOISE/iOsArpoiseU2021_3/)
+[ARpoise for iOS](https://github.com/ARPOISE/iOsARpoiseU2022_3/)
 
 [AR-vos for Android](https://github.com/ARPOISE/AndroidArvosU2021_3/)
 
