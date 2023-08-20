@@ -108,7 +108,7 @@ class GUI
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <title>ARpoise Porpoise Directory - POI Management Interface for ARpoise Directory</title>
 <link rel="stylesheet" type="text/css" href="styles.css">
-<script type="text/javascript" src="prototype.js"></script>
+
 HTML1;
         $result .= sprintf("\n<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?key=%s&sensor=false\"></script>\n", $GLOBALS["_googleMapsKey"]);
         $result .= <<<HTML2
