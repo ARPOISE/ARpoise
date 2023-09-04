@@ -1,12 +1,21 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
-
+## Version 20230901 - September 2023
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.1 (2023090100)** and **iOS ARpoise 2.0.1 (20230901)**
+- - Added feature **ARpoise is now based on Unity 2022.3.6 LTS**, see [#29](https://github.com/ARPOISE/ARpoise/issues/29).
+  - Added feature **Share events via a multi-user back end**, see [#27](https://github.com/ARPOISE/ARpoise/issues/27).
+  - Added feature **Event type inMinutes**, see [#28](https://github.com/ARPOISE/ARpoise/issues/28).
+  - Added feature **CameraChild-poi**, see [#30](https://github.com/ARPOISE/ARpoise/issues/30).
+  - Added feature **AllowTakeScreenshot**, see [#31](https://github.com/ARPOISE/ARpoise/issues/31).
+  - Added feature **'Relative location' relative to starting direction of device**, see [#32](https://github.com/ARPOISE/ARpoise/issues/32).
+  - Added feature **Animation type 'Volume'**, see [#33](https://github.com/ARPOISE/ARpoise/issues/33).
+    
 ## Version 20220131 - January 2022
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.13 (202200131)** and **iOS ARpoise 1.14 (20220131)**
 - ![AR-vos Logo](/images/arvos_logo_rgb-weiss32.png) **Android AR-vos 1.11 (20220131)** and **iOS AR-vos 1.8 (20220131)**
   - Fixed [Bug #23](https://github.com/ARPOISE/ARpoise/issues/23). Made sure animations run currectly with recorder.
-  - Added feature **Time synchronization between more than one device **, see [#22](https://github.com/ARPOISE/ARpoise/issues/22).
+  - Added feature **Time synchronization between more than one device**, see [#22](https://github.com/ARPOISE/ARpoise/issues/22).
 
 ## Version 20210912 - September 2021
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 1.12 (20210912)** and **iOS ARpoise 1.13 (20210912)**
