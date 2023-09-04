@@ -14,6 +14,7 @@ If you do not have access to a porPOIse server, you will need to set up your own
 - The zip file **Arpoise-master.zip** contains two sub-directories, **ARpoise-master\config** and **ARpoise-master\php\porpoise**, you need to install them onto **your own** web server!
 - Follow the instructions in the file [INSTALL](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/INSTALL)
 - For the Google maps based click-and-drag interface as shown in the screen shots below you need to get **your own** Google-maps ID.
+- The Google maps based click-and-drag interface for us only works when the porpoise site is accessed via http, if accessed via https, the map is not visible.
 
 ## Application
 
@@ -63,6 +64,7 @@ A list of all your layers is shown. In order to add a new layer you will have to
 The following properties of a layer can be edited:
 * **Layer title**: The layer title is optional, if given, it is displayed by the application in the top center of the screen.
 * **Refresh interval**: The refresh interval is optional, if given, it defines the seconds after which the client application will reload the layer information.
+* **Refresh distance**: The refresh distance is optional, if given, it defines the distance in meter after which the client application will reload the layer information. I.e. if a user starts the app and then moves more than **Refresh distance** meters, the layer is reloaded.
 * **Redirect to layer**: The redirection layer is optional, if given, the layer redirected to is displayed by the client instead of the current one.
 * **Visibility in meters**: The range in meters inside which the layer is visible to clients, 1500m is the maximum.
 * **Area size in meters**: The area size is optional, if given, POIs having an absolute geo-location are kept within this area.
@@ -80,6 +82,23 @@ The following properties of a layer can be edited:
 * POI-list-**DEL**: Delete the POI from the layer.
 
 ### Optional Layer Parameters:
+
+**AllowTakeScreenshot**:
+
+An optional layer parameter **AllowTakeScreenshot** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
+
+![LayerAction-PositionUpdateInterval](/images/LayerAction-AllowTakeScreenshot.png)
+
+**Explanation:**
+
+The values set above would enable the Unity Method ScreenCapture.CaptureScreenshot, public static void CaptureScreenshot(string filename, int superSize); with a superSize value of 1. See https://docs.unity3d.com/ScriptReference/ScreenCapture.CaptureScreenshot.html.
+
+**Note:** Use this parameter if you want to create super sized screen captures.
+A screenshot is taken and stored on the user's device **EVERY** time the user tabs the screen, so use this feature with caution. ARpoise also has not way to copy the screenshots from the device to a different computer.
+
+On Android the screebshots are stored in the directory '\Phone\Android\data\com.arpoise.ARpoise\files' and can be accessed once the device is connected to a PC.
+
+For iOS devices an application like iMazing can be used to copy the screenshots, see https://imazing.com/.
 
 **PositionUpdateInterval**:
 
