@@ -87,7 +87,7 @@ The following properties of a layer can be edited:
 
 An optional layer parameter **AllowTakeScreenshot** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
 
-![LayerAction-PositionUpdateInterval](/images/LayerAction-AllowTakeScreenshot.png)
+![LayerAction-AllowTakeScreenshot](/images/LayerAction-AllowTakeScreenshot.png)
 
 **Explanation:**
 
@@ -114,6 +114,20 @@ The GPS coordinates received by the apps sometimes show really wide fluctuations
 As a consequence, all pois with absolute locations move around very often, very quickly and very far.
 This layer parameter allows to restrict the time intervals after which the device position is updated into the app,
 so the movements can be restricted to happen only each time when the interval expires.
+
+**RemoveServerUrl**, **SceneUrl**:
+
+An optional layer parameter **RemoveServerUrl** and **SceneUrl** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
+
+![LayerAction-RemoteServerUrl](/images/LayerAction-LayerAction-RemoteServerUrl.png)
+
+**Explanation:**
+
+ARpoise allows to share porpoise level events via a back-end multi-user server. The parameters **RemoveServerUrl** and **SceneUrl** configure the access of such sharing. Events are shared by connecting to the multi-user back-end specified via **RemoveServerUrl**,
+all events of all layers having the same **SceneUrl** value are shared.
+
+E.g. when an onClick anmation event of a poi is clicked and the name of the animation event contains the string **Remoted** and event sharing is enabled for the layer the poi is in, the event is not handled locally but sent to the back-end. The back-end sends the event back to ARpoise clients currently connected that use the same **SceneUrl** value, including the original sender. When ARRpoise
+receives the forwarded event, it handles the event as if the click happened locally.
 
 ## ARpoise Back-End POI Configuration
 ### Screen Shot:
