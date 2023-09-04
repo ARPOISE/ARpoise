@@ -82,8 +82,8 @@ The following properties of a layer can be edited:
 * POI-list-**DEL**: Delete the POI from the layer.
 
 ### Optional Layer Parameters:
-
-**AllowTakeScreenshot**:
+---
+- **AllowTakeScreenshot**:
 
 An optional layer parameter **AllowTakeScreenshot** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
 
@@ -94,13 +94,30 @@ An optional layer parameter **AllowTakeScreenshot** can be added to a layer by c
 The values set above would enable the Unity Method ScreenCapture.CaptureScreenshot, public static void CaptureScreenshot(string filename, int superSize); with a superSize value of 1. See https://docs.unity3d.com/ScriptReference/ScreenCapture.CaptureScreenshot.html.
 
 **Note:** Use this parameter if you want to create super sized screen captures.
-A screenshot is taken and stored on the user's device **EVERY** time the user tabs the screen, so use this feature with caution. ARpoise also has not way to copy the screenshots from the device to a different computer.
+A screenshot is taken and stored on the user's device **EVERY** time the user tabs the screen, so use this feature with caution. ARpoise also has no way to copy the screenshots from the device to a different computer.
 
-On Android the screebshots are stored in the directory '\Phone\Android\data\com.arpoise.ARpoise\files' and can be accessed once the device is connected to a PC.
+On Android the screenshots are stored in the directory '\Phone\Android\data\com.arpoise.ARpoise\files' and can be accessed once the device is connected to a PC.
 
 For iOS devices an application like iMazing can be used to copy the screenshots, see https://imazing.com/.
 
-**PositionUpdateInterval**:
+---
+- **OcclusionEnvironmentDepthMode**, **OcclusionPreferenceMode**, **OcclusionHumanSegmentationStencilMode**, **OcclusionHumanSegmentationDepthMode**:
+
+These optional layer parameters can be added to a layer by clicking on the **New action** button shown in the screen shot above.
+
+![LayerAction-OcclusionEnvironmentDepthMode](/images/LayerAction-OcclusionEnvironmentDepthMode.png)
+
+**Explanation:**
+
+Most modern iOS devices and some Android devices offer 3D occlusion in AR layers. AR Foundation enables this functionality,
+see https://forum.unity.com/threads/environmental-occlusion-and-depth-in-arfoundation.919076/
+
+The parameters **OcclusionEnvironmentDepthMode**, **OcclusionPreferenceMode**, **OcclusionHumanSegmentationStencilMode**, and **OcclusionHumanSegmentationDepthMode** allow to set the parameters of the **AR Occlusion Manager (Script)**.
+Please refer to the documentation of the **AR Occlusion Manager (Script)**,
+see  https://forum.unity.com/threads/environmental-occlusion-and-depth-in-arfoundation.919076/
+
+---
+- **PositionUpdateInterval**:
 
 An optional layer parameter **PositionUpdateInterval** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
 
@@ -115,19 +132,28 @@ As a consequence, all pois with absolute locations move around very often, very 
 This layer parameter allows to restrict the time intervals after which the device position is updated into the app,
 so the movements can be restricted to happen only each time when the interval expires.
 
-**RemoveServerUrl**, **SceneUrl**:
+---
+- **RemoteServerUrl**, **SceneUrl**:
 
-An optional layer parameter **RemoveServerUrl** and **SceneUrl** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
+An optional layer parameter **RemoteServerUrl** and **SceneUrl** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
 
-![LayerAction-RemoteServerUrl](/images/LayerAction-LayerAction-RemoteServerUrl.png)
+![LayerAction-RemoteServerUrl](/images/LayerAction-RemoteServerUrl.png)
 
 **Explanation:**
 
-ARpoise allows to share porpoise level events via a back-end multi-user server. The parameters **RemoveServerUrl** and **SceneUrl** configure the access of such sharing. Events are shared by connecting to the multi-user back-end specified via **RemoveServerUrl**,
+ARpoise allows to share porpoise level animation events via a back-end multi-user server.
+The parameters **RemoteServerUrl** and **SceneUrl** configure the access of such sharing.
+Events are shared by connecting to the multi-user back-end specified via **RemoteServerUrl**,
 all events of all layers having the same **SceneUrl** value are shared.
 
-E.g. when an onClick anmation event of a poi is clicked and the name of the animation event contains the string **Remoted** and event sharing is enabled for the layer the poi is in, the event is not handled locally but sent to the back-end. The back-end sends the event back to ARpoise clients currently connected that use the same **SceneUrl** value, including the original sender. When ARRpoise
-receives the forwarded event, it handles the event as if the click happened locally.
+E.g. when an onClick anmation event of a poi is clicked
+and the name of the animation event contains the string **Remoted** and event sharing is enabled for the layer the poi is in,
+the event is not handled locally but sent to the back-end.
+The back-end forwards the event to all ARpoise clients currently connected that use the same **SceneUrl** value,
+including the original sender.
+When ARRpoise receives the forwarded event, it handles the event as if the click happened locally.
+
+---
 
 ## ARpoise Back-End POI Configuration
 ### Screen Shot:
@@ -169,18 +195,42 @@ The name of the iOS asset bundle has to be the Android name followed by 'i'.
 * **Save** button: Saves the POI's attributes to the layer's xml file.
 
 The following properties of an animation can be edited:
-* **Name**: The name is optional, it is used when one animation specifies that it should be followed by other animations. The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the name.
+* **Name**: The name is optional, it is used when one animation specifies that it should be followed by other animations.
+  
+   The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the name.
+
+  The **Name** can also be used to make a POI a child of the camera node, so that it alway stays visible.
+  If the **Name** contains the string **CameraCild** and its **Relative location** is set,
+  the relative location is treated relative to the device camera.
+  This can used to display some explanation images when the layer is loaded,
+  which then disappears when the user clicks on it.
+
+  The **Name** can also be used to share an event via the multi-user back-end.
+  See **Optional Layer Parameters** **RemoteServerUrl**, **SceneUrl** above.
+  When the **Name** of the animation event contains the string **Remoted** and event sharing is enabled
+  for the layer the poi is in,
+  the event is not handled locally but sent to the back-end.
+  The back-end forwards the event to all ARpoise clients currently connected that use the same **SceneUrl** value,
+  including the original sender.
+  When ARRpoise receives the forwarded event, it handles the event as if the click happened locally.
+
+  The **Name** can also be used to specify the start and end time of an **inMinutes** animation.
+  For this to work the name should be of the form **Time: hh:mm - hh:mm**, e.g. **Time: 10:00 - 10:01**.
+  This would activate the animation at 10 am.
+  
 * **Event**: 
   * **onCreate** - the animation is started when the POI is loaded.
   * **onFollow** - the animation is started when it's predecessor animation ends.
   * **onClick** - the animation is started when the POI is clicked by the user; In order for the **onClick**, **onFocus**, and **inFocus** animations to work, the POI's Unity game object needs to include a Collider component.
   * **onFocus** - the animation is started when the POI is looked at by the user;
   * **inFocus** - the animation is started when the POI is looked at by the user and is stopped once the POI loses the focus;
+  * **inMinutes** - the animation is started during a given minute interval every day, see **Name** above;
   
 * **Type**: 
   * **rotate**, rotate the POI around an axis.
   * **transform**, transform the POI to another location.
   * **scale**, scale the size of the POI.
+  * **volume**, animate the volume of sound played via the POI.
   * **fade**, fade the POI between full visibility and invisibility, e.g. the animation shown below fades a POI within 10 seconds from 1 (full visibility) to 0 (invisible) and back again.
   
   ![BackEndImg4](/images/BackEnd4.PNG)
@@ -196,6 +246,7 @@ The following properties of an animation can be edited:
   * **cyclic** - the value is changed linearly from **From** to **To** and then back to **From**;
   * **sine** - the value swings between **From** and **To** like a pendulum;
   * **halfsine** - the value is changed from **From** to **To** and then back to **From**.
+  * **smooth** - the value is smoothly changed from **From** to **To** and then back to **From**.
 * **Persist**:
   * **Yes** - at the end of the animation the POI will stay as the animation leaves it;
   * **No** - at the end of the animation the POI will snap back to its original state.
@@ -209,6 +260,7 @@ The following properties of an animation can be edited:
 
 ### Playing a Sound
 If an animation is started and the Unity-prefab of the POI contains an AudioSource component, the audio source is played.
+The volume of the sound can be animated via a animation of type **volume**.
 
 ### Opening a WEB Page
 Animations allow opening a web page in a browser on the user's device. In order to do so, either the **Name** or the **Followed by** value of the animation must be of the form "**openUrl:https://www.apoise.com/**". If an animation with such a **Name** is **started**, or an animation with such a **Followed by** value **ends**, the app will open the URL given after the "**openUrl:**" tag in a web browser. 
