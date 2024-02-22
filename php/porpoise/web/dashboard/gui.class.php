@@ -108,7 +108,7 @@ class GUI
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <title>ARpoise Porpoise Directory - POI Management Interface for ARpoise Directory</title>
 <link rel="stylesheet" type="text/css" href="styles.css">
-
+<script type="text/javascript" src="prototype.js"></script>
 HTML1;
         $result .= sprintf("\n<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?key=%s&sensor=false\"></script>\n", $GLOBALS["_googleMapsKey"]);
         $result .= <<<HTML2
@@ -262,6 +262,7 @@ HTML;
         $result .= sprintf("<table class=\"layer\">\n");
         $result .= sprintf("<tr><td>Layer title</td><td><input type=\"text\" name=\"layerTitle\" value=\"%s\"></td></tr>\n", $layerProperties->layerTitle);
         $result .= sprintf("<tr><td>Refresh interval </td><td><input type=\"text\" name=\"refreshInterval\" value=\"%s\"></td></tr>\n", $layerProperties->refreshInterval);
+        $result .= sprintf("<tr><td>Refresh distance</td><td><input type=\"text\" name=\"refreshDistance\" value=\"%s\"></td></tr>\n", $layerProperties->refreshDistance);
         // $result .= sprintf("<tr><td>Bleaching (0 - 100)</td><td><input type=\"text\" name=\"bleachingValue\" value=\"%s\"></td></tr>\n", $layerProperties->bleachingValue);
         $result .= sprintf("<tr><td>Redirect to url</td><td><input type=\"text\" name=\"redirectionUrl\" value=\"%s\"></td></tr>\n", $layerProperties->redirectionUrl);
         $result .= sprintf("<tr><td>Redirect to layer</td><td><input type=\"text\" name=\"redirectionLayer\" value=\"%s\"></td></tr>\n", $layerProperties->redirectionLayer);
@@ -273,7 +274,6 @@ HTML;
         $result .= sprintf("<tr><td>Is a default layer</td><td>%s</td></tr>\n", self::createCheckbox("isDefaultLayer", $layerProperties->isDefaultLayer));
         $result .= sprintf("<tr><td>No pois message</td><td><input type=\"text\" name=\"noPoisMessage\" value=\"%s\"></td></tr>\n", $layerProperties->noPoisMessage);
 
-        // $result .= sprintf("<tr><td>Refresh distance</td><td><input type=\"text\" name=\"refreshDistance\" value=\"%s\"></td></tr>\n", $layerProperties->refreshDistance);
         // $result .= sprintf("<tr><td>Full refresh</td><td>%s</td></tr>\n", self::createCheckbox("fullRefresh", $layerProperties->fullRefresh));
         foreach ($layerProperties->actions as $key => $action) {
             $result .= sprintf("<tr><td>Action<br><button type=\"button\" onclick=\"GUI.removeLayerAction(%s)\">Remove</button></td><td>%s</td></tr>\n", $key, self::createActionSubtable($key, $action, TRUE));
@@ -319,7 +319,7 @@ HTML;
         $result .= "<table class=\"pois\">\n";
         $result .= sprintf("<input type=\"hidden\" name=\"page\" value=\"layer\"> \n");
 
-        $result .= "<tr><th>Id</th><th>Title</th><th>Lat</th><th>Lon</th></tr>\n";
+        $result .= "<tr><th>Id</th><th>Title</th><th>Lat</th><th>Lon</th><th>Visible</th><th>Range (m)</th></tr>\n";
 
         $index = 0;
 
@@ -335,6 +335,9 @@ HTML;
 
             $result .= sprintf("<td><input type=\"text\" id=\"lat%s\" name=\"lat\" value=\"%s\" size=\"12\"></td>\n", $index, $poi->lat);
             $result .= sprintf("<td><input type=\"text\" id=\"lon%s\" name=\"lon\" value=\"%s\" size=\"12\"></td>\n", $index, $poi->lon);
+            $result .= sprintf("<td>%s</td>\n", $poi->isVisible ? "Yes" : "No");
+            $result .= sprintf("<td>%s</td>\n", $poi->visibilityRange);
+
             $result .= sprintf("<input type=\"hidden\" name=\"showLayer\" value=\"showLayer\"> \n");
             $result .= sprintf("<td><button type=\"submit\">Save</button></td>\n");
 
@@ -570,7 +573,10 @@ HTML;
             "rotate",
             "transform",
             "fade",
-            "destroy"
+            "destroy",
+            "duplicate",
+            "grow",
+            "volume"
         ) as $animationType) {
             $result .= sprintf("<option value=\"%s\"%s>%s</option>", $animationType, ($selected == $animationType ? " selected" : ""), $animationType);
         }
@@ -592,7 +598,8 @@ HTML;
             "linear",
             "cyclic",
             "sine",
-            "halfsine"
+            "halfsine",
+            "smooth"
         ) as $interpolationType) {
             $result .= sprintf("<option value=\"%s\"%s>%s</option>", $interpolationType, ($selected == $interpolationType ? " selected" : ""), $interpolationType);
         }
@@ -615,7 +622,8 @@ HTML;
             "onFocus",
             "inFocus",
             "onClick",
-            "onFollow"
+            "onFollow",
+            "inMinutes",
         ) as $event) {
             $result .= sprintf("<option value=\"%s\"%s>%s</option>", $event, ($selected == $event ? " selected" : ""), $event);
         }
@@ -663,7 +671,7 @@ HTML;
      *
      * @return string
      */
-    public function createNewPOIScreen($layerName)
+    public static function createNewPOIScreen($layerName)
     {
         $result = "";
         $result .= sprintf("<form accept-charset=\"utf-8\" action=\"?action=newPOI&layerName=%s\" method=\"POST\">\n", urlencode($layerName));

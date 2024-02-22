@@ -597,7 +597,8 @@ class XMLPOIConnector extends POIConnector
                     "line1",
                     "line2",
                     "line3",
-                    "line4"
+                    "line4".
+                    "comment"
                 ) as $elementName) {
                     $objectElement->addChild($elementName, str_replace("&", "&amp;", $poi->object->$elementName));
                 }

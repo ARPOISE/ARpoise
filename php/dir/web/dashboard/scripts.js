@@ -398,7 +398,7 @@ function initialize() {
 }
 
 function Redirect(url) {
-    window.location=url;
+    window.location=url;AddDom
  }
 
 // PG 9 May 2016

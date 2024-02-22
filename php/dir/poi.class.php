@@ -413,6 +413,8 @@ abstract class POI extends Arrayable {
 	public $showBiwOnClick = TRUE;
 	/** @var bool Is this poi visible in the scene */
 	public $isVisible = TRUE;
+    /** @var comment */
+	public $comment = NULL;
 	
 	/**
 	 * Constructor

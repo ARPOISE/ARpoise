@@ -134,7 +134,8 @@ class XMLPOIConnector extends POIConnector
                                     "onFollow",
                                     "onFocus",
                                     "inFocus",
-                                    "onClick"
+                                    "onClick",
+                                    "inMinutes"
                                 ) as $event) {
                                     if (strpos($events, $event) !== FALSE) {
                                         $result->animations[$event][] = new Animation($childNode);
@@ -234,7 +235,8 @@ class XMLPOIConnector extends POIConnector
                                 "onFollow",
                                 "onFocus",
                                 "inFocus",
-                                "onClick"
+                                "onClick",
+                                "inMinutes"
                             ) as $event) {
                                 if (strpos($events, $event) !== FALSE) {
                                     $poi->animations[$event][] = new Animation($child);

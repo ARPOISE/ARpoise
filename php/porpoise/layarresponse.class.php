@@ -50,7 +50,7 @@ class LayarResponse
     public $areaWidth = 0;
 
     /** @var int Refresh distance in meters */
-    public $refreshDistance = 100;
+    public $refreshDistance = 0;
 
     /** @var bool Show the menu button, not shown when the default layer is displayed */
     public $showMenuButton = TRUE;
@@ -88,7 +88,8 @@ class LayarResponse
         "onFollow" => array(),
         "onFocus" => array(),
         "inFocus" => array(),
-        "onClick" => array()
+        "onClick" => array(),
+        "inMinutes" => array()
     );
 
     /** @var bool */

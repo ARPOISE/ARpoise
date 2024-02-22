@@ -102,7 +102,7 @@ class GUI
     public static function createHeader()
     {
         $result = <<<HTML1
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "https://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -110,13 +110,13 @@ class GUI
 <link rel="stylesheet" type="text/css" href="styles.css">
 
 HTML1;
-        $result .= sprintf("\n<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?key=%s&sensor=false\"></script>\n", $GLOBALS["_googleMapsKey"]);
+        $result .= sprintf("\n<script type=\"text/javascript\" src=\"https://maps.google.com/maps/api/js?key=%s&sensor=false\"></script>\n", $GLOBALS["_googleMapsKey"]);
         $result .= <<<HTML2
 <script type="text/javascript" src="scripts.js"></script>
 </head>
 <body>
 
-<h1><img src="http://www.arpoise.com/images/arpoise_logo_rgb-1024.png" width=64></img>
+<h1><img src="https://www.arpoise.com/images/arpoise_logo_rgb-1024.png" width=64></img>
 ARpoise Directory Service</h1>
 
 <div class="menu">
@@ -297,7 +297,7 @@ HTML;
         $result .= "<table class=\"pois\">\n";
         $result .= sprintf("<input type=\"hidden\" name=\"page\" value=\"layer\"> \n");
 
-        $result .= "<tr><th>Id</th><th>Layer Name</th><th>Lat</th><th>Lon</th></tr>\n";
+        $result .= "<tr><th>Id</th><th>Layer Name</th><th>Lat</th><th>Lon</th><th>Visible</th><th>Range (m)</th><th>Comment</th></tr>\n";
 
         $index = 0;
 
@@ -313,6 +313,10 @@ HTML;
 
             $result .= sprintf("<td><input type=\"text\" id=\"lat%s\" name=\"lat\" value=\"%s\" size=\"12\"></td>\n", $index, $poi->lat);
             $result .= sprintf("<td><input type=\"text\" id=\"lon%s\" name=\"lon\" value=\"%s\" size=\"12\"></td>\n", $index, $poi->lon);
+            $result .= sprintf("<td>%s</td>\n", $poi->isVisible ? "Yes" : "No");
+            $result .= sprintf("<td>%s</td>\n", $poi->visibilityRange);
+            $result .= sprintf("<td>%s</td>\n", $poi->comment);
+            
             $result .= sprintf("<input type=\"hidden\" name=\"showLayer\" value=\"showLayer\"> \n");
             $result .= sprintf("<td><button type=\"submit\">Save</button></td>\n");
 
@@ -322,6 +326,7 @@ HTML;
             $result .= sprintf("<input type=\"hidden\" name=\"line2\" value=\"%s\" > \n", $poi->line2);
             $result .= sprintf("<input type=\"hidden\" name=\"line3\" value=\"%s\" > \n", $poi->line3);
             $result .= sprintf("<input type=\"hidden\" name=\"line4\" value=\"%s\" > \n", $poi->line4);
+            $result .= sprintf("<input type=\"hidden\" name=\"comment\" value=\"%s\" > \n", $poi->comment);
             
             $result .= sprintf("<input type=\"hidden\" name=\"isVisible\" value=\"%s\" > \n", $poi->isVisible);
             $result .= sprintf("<input type=\"hidden\" name=\"visibilityRange\" value=\"%s\" > \n", $poi->visibilityRange);
@@ -433,6 +438,7 @@ HTML;
         $result .= sprintf("<tr><td>Line 2</td>     <td><input type=\"text\" name=\"line2\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->line2);
         $result .= sprintf("<tr><td>Line 3</td>     <td><input type=\"text\" name=\"line3\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->line3);
         $result .= sprintf("<tr><td>Icon Name</td>  <td><input type=\"text\" name=\"line4\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->line4);
+        $result .= sprintf("<tr><td>Comment</td>  <td><input type=\"text\" name=\"comment\" value=\"%s\" size=\"29\"></td></tr>\n", $poi->comment);
         
         $result .= "<caption><button type=\"submit\">Save</button></caption>\n";
         $result .= "</table>\n";
@@ -577,7 +583,7 @@ HTML;
      *
      * @return string
      */
-    public function createNewPOIScreen($layerName)
+    public static function createNewPOIScreen($layerName)
     {
         $result = "";
         $result .= sprintf("<form accept-charset=\"utf-8\" action=\"?action=newPOI&layerName=%s\" method=\"POST\">\n", urlencode($layerName));
@@ -596,7 +602,7 @@ HTML;
      */
     public static function createLoginScreen()
     {
-        $result = "<h1><img src=\"http://www.arpoise.com/images/arpoise_logo_rgb-1024.png\" width=64></img>";
+        $result = "<h1><img src=\"https://www.arpoise.com/images/arpoise_logo_rgb-1024.png\" width=64></img>";
         $result .= "ARpoise Directory Login</h1>\n";
         
         /* preserve GET parameters */
