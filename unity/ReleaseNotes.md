@@ -1,10 +1,10 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
-## Version 20231029 - October 2023
+## Version 20240207 - February 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.4 (2024020700)** and **iOS ARpoise 2.0.4 (20240207)**
 - - Internal update in preparation of showing Vera Plastica as ARpoise based art work at Museum Ludwing in Budapest, 2024-02-09.
-  - 
+
 ## Version 20231029 - October 2023
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.2 (2023102900)** and **iOS ARpoise 2.0.2 (20231029)**
 - - Added feature **ARpoise is now based on Unity 2022.3.10 LTS**, see [#29](https://github.com/ARPOISE/ARpoise/issues/29).
