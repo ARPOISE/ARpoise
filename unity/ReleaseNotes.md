@@ -1,6 +1,14 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 20240303 - March 2024
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.6 (2024030300)** and **iOS ARpoise 2.0.6 (20240303)**
+- - Fixed [Bug #37](https://github.com/ARPOISE/ARpoise/issues/37). Made sure 'What You Sow' objects are destroyed on layer change.
+    
+## Version 20240224 - February 2024
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.5 (2024022400)** and **iOS ARpoise 2.0.5 (20240224)**
+- - Fixed [Bug #35](https://github.com/ARPOISE/ARpoise/issues/35). Made sure synchroisation works without a label.
+
 ## Version 20240207 - February 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.4 (2024020700)** and **iOS ARpoise 2.0.4 (20240207)**
 - - Internal update in preparation of showing Vera Plastica as ARpoise based art work at Museum Ludwing in Budapest, 2024-02-09.
