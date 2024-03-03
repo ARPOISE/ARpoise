@@ -7,7 +7,7 @@
     
 ## Version 20240224 - February 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.5 (2024022400)** and **iOS ARpoise 2.0.5 (20240224)**
-- - Fixed [Bug #35](https://github.com/ARPOISE/ARpoise/issues/35). Made sure synchroisation works without a label.
+- - Fixed [Bug #35](https://github.com/ARPOISE/ARpoise/issues/35). Made sure synchronisation works without a label.
 
 ## Version 20240207 - February 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.4 (2024020700)** and **iOS ARpoise 2.0.4 (20240207)**
