@@ -151,7 +151,7 @@ and the name of the animation event contains the string **Remoted** and event sh
 the event is not handled locally but sent to the back-end.
 The back-end forwards the event to all ARpoise clients currently connected that use the same **SceneUrl** value,
 including the original sender.
-When ARRpoise receives the forwarded event, it handles the event as if the click happened locally.
+When ARpoise receives the forwarded event, it handles the event as if the click happened locally.
 
 ---
 
