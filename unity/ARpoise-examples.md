@@ -13,7 +13,7 @@ The **ARpoise** app allows to set a fixed device location, if you do so, the dev
 
 In order to use this feature, you will have to
 
-- Start **ARpoise** and let the default layer load. In my case this is currently 'Evolution of Fish', but your screen will look different:
+- Start **ARpoise** and let the default layer load. In my case this is currently 'Evolution of Fish'. Your screen will probably show a list of AR projects.
 
 ![ARpoiseExamples1](/images/ARpoiseExamples1.PNG)
 
