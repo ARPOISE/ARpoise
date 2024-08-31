@@ -6,22 +6,18 @@
 It is part of the [**ARpoise** (**A**ugmented **R**eality **p**oint **o**f **i**nterest **s**ervice **e**nvironment)](https://arpoise.com/) open-source Augmented Reality platform.
 
 Once you download, install and start it on your device, it will use your
-device's GPS coordinates and send a request to the **ARpoise** back end to see whether there are specific art works
-shown at you location. If there are specific artworks at your location, you will see them. If not, a default layer will
-be shown to you. We will change this default layer periodically.
+device's GPS coordinates and send a request to the **ARpoise** back end to see whether there are specific art works shown at you location. If there are specific artworks at your location, you will see them. If not, a default layer will be shown to you. We will change this default layer periodically.
 ## Setting Device Fixed Location
-In order to give you the possibility to look at more examples, we have placed some layers
-at the example location one degree north and one degree east.
-The **ARpoise** app allows to set a fixed device location, if you do so, the device will not use the real GPS coordinates
-but will send the coordinates you entered to the **ARpoise** back end.
+In order to give you the possibility to look at more examples, we have placed some layers at the example location one degree north and one degree east.
+The **ARpoise** app allows to set a fixed device location, if you do so, the device will not use the real GPS coordinates but will send the coordinates you entered to the **ARpoise** back end.
 
 In order to use this feature, you will have to
 
-- Start **ARpoise** and let the default layer load, 'Evolution of Fish' in my case, your screen should look like:
+- Start **ARpoise** and let the default layer load. In my case this is currently 'Evolution of Fish', but your screen will look different:
 
 ![ARpoiseExamples1](/images/ARpoiseExamples1.PNG)
 
-- Double tab on the **ARpoise** logo in the upper left corner of the screen, the input panel should appear, enter 1 for latitude and 1 for longitude and then check the 'Active Fixed Position' check box, your screen should look like:
+- Double tab on the **ARpoise** logo in the upper left corner of the screen and the input panel should appear. IF IT DOESN'T APPEAR: select any of the AR projects in the list, then once it has loaded, try double tapping the **ARpoise** logo. Then enter 1 for latitude and 1 for longitude and then check the 'Active Fixed Position' check box, your screen should look like:
 
 ![ARpoiseExamples2](/images/ARpoiseExamples2.PNG)
 
