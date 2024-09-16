@@ -3,9 +3,9 @@
 
 ## Version 20240915 - September 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.7 (2024091500)** and **iOS ARpoise 2.0.7 (20240915)**
-- - Fixed [Enhancement #41](https://github.com/ARPOISE/ARpoise/issues/41). Rendering should use the Color Space 'Linear'.
-- - Fixed [Enhancement #40](https://github.com/ARPOISE/ARpoise/issues/40). Lights need to be controllable.
-- - Fixed [Enhancement #39](https://github.com/ARPOISE/ARpoise/issues/39). Shared event animations should be able to differentiate between the ARpoise instance that started the animations and others.
+- - Added [Feature #41](https://github.com/ARPOISE/ARpoise/issues/41). Rendering should use the Color Space 'Linear'.
+- - Added [Feature #40](https://github.com/ARPOISE/ARpoise/issues/40). Lights need to be controllable.
+- - Added [Feature #39](https://github.com/ARPOISE/ARpoise/issues/39). Shared event animations should be able to differentiate between the ARpoise instance that started the animations and others.
 
 ## Version 20240303 - March 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.6 (2024030300)** and **iOS ARpoise 2.0.6 (20240303)**
