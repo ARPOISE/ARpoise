@@ -154,6 +154,19 @@ including the original sender.
 When ARpoise receives the forwarded event, it handles the event as if the click happened locally.
 
 ---
+- **DirectionalLightN_Intensity**, **DirectionalLightSEE_Intensity**, **DirectionalLightSWW_Intensity**, **DirectionalLightN_IsActive**, **DirectionalLightSEE_IsActive**, **DirectionalLightSWW_IsActive**:
+
+Theese optional layer parameters **RemoteServerUrl** and **SceneUrl** can be added to a layer by clicking on the **New action**, they allow to control the lights inside ARpoise.
+
+![LayerAction-RemoteServerUrl](/images/LayerAction-LightControl.png)
+
+**Explanation:**
+
+By default ARpoise has three directional lights, 'Directional Light N', 'Directional Light SEE' and 'Directional Light SWW'.
+The intensity of the lights can be set on the Porpoise level via an Action on the layer level with the information message set to a positive value, e.g. '0.5'.
+The IsActive property of the lights can be set on the Porpoise level via an Action on the layer level with the information message set to a 'true' or 'false'.
+
+---
 
 ## ARpoise Back-End POI Configuration
 ### Screen Shot:
