@@ -156,7 +156,7 @@ When ARpoise receives the forwarded event, it handles the event as if the click 
 ---
 - **DirectionalLightN_Intensity**, **DirectionalLightSEE_Intensity**, **DirectionalLightSWW_Intensity**, **DirectionalLightN_IsActive**, **DirectionalLightSEE_IsActive**, **DirectionalLightSWW_IsActive**:
 
-Theese optional layer parameters **RemoteServerUrl** and **SceneUrl** can be added to a layer by clicking on the **New action**, they allow to control the lights inside ARpoise.
+These optional layer parameters can be added to a layer by clicking on the **New action**, they allow to control the lights inside ARpoise.
 
 ![LayerAction-RemoteServerUrl](/images/LayerAction-LightControl.png)
 
