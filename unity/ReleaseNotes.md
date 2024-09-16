@@ -1,10 +1,15 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 20240915 - September 2024
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.7 (2024091500)** and **iOS ARpoise 2.0.7 (20240915)**
+- - Fixed [Enhancement #40](https://github.com/ARPOISE/ARpoise/issues/40). Lights need to be controllable.
+- - Fixed [Enhancement #39](https://github.com/ARPOISE/ARpoise/issues/39). Shared event animations should be able to differentiate between the ARpoise instance that started the animations and others.
+
 ## Version 20240303 - March 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.6 (2024030300)** and **iOS ARpoise 2.0.6 (20240303)**
 - - Fixed [Bug #37](https://github.com/ARPOISE/ARpoise/issues/37). Made sure 'What You Sow' objects are destroyed on layer change.
-    
+  
 ## Version 20240224 - February 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.5 (2024022400)** and **iOS ARpoise 2.0.5 (20240224)**
 - - Fixed [Bug #35](https://github.com/ARPOISE/ARpoise/issues/35). Made sure synchronisation works without a label.
