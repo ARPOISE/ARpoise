@@ -182,7 +182,7 @@ The IsActive property of the lights can be set on the Porpoise level via an Acti
 ![BackEndImg3](/images/BackEnd3.png)
 ### Explanation:
 The following properties of a POI can be edited:
-* **Title**: The title is optional, it can be used to make a POI relative to the camera of the device. If the title of a POI contains the string **CameraChild**, the POI is always displayed relative to the camera of the device. This feature can be used to show a 'Heads up Display' that is alway visible to the user, or to show some introduction text that the user should see. The **Relative location** property of the POI allow to place the object, e.g. **0,0,2** would show it in the middle of the screen, two meters away from the camera.
+* **Title**: The title is optional, it can be used to make a POI relative to the camera of the device. If the title of a POI contains the string **CameraChild**, the POI is always displayed relative to the camera of the device. This feature can be used to show a 'Heads up Display' that is alway visible to the user, or to show some introduction text that the user should see. The **Relative location** property of the POI allows to place the object, e.g. **0,0,2** would show it in the middle of the screen, two meters away from the camera.
 * **Lat/Lon**: Allows to change the latitude and longitude of the POI. The POI's location can also be changed by dragging the POI's marker in the placement map.
 * **Is visible**: This combo box defines whether the POI is visible.
 * **Absolute altitude**: Allows to set the absolute altitude of the POI.
