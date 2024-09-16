@@ -153,6 +153,15 @@ The back-end forwards the event to all ARpoise clients currently connected that 
 including the original sender.
 When ARpoise receives the forwarded event, it handles the event as if the click happened locally.
 
+Two other animations are triggered when they exist and a remote event is received, a **TriggeredLocally** animation and a **TriggeredRemotely** animation.
+
+E.g. If a shared animation called **ButtonClick_Remoted** is triggered in ARpoise, and event sharing is enabled for the layer the poi is in,
+the event is not handled locally but sent to the back-end and forwarded by the back-end to all ARpoise instances connected. 
+
+All ARpoise instances will then activate the animation **ButtonClick_Remoted**. 
+Only the ARpoise instance that initially triggered the animation will activate the animation **ButtonClick_TriggeredLocally**, 
+all other instances will activate the animation **ButtonClick_TriggeredRemotely**.
+
 ---
 - **DirectionalLightN_Intensity**, **DirectionalLightSEE_Intensity**, **DirectionalLightSWW_Intensity**, **DirectionalLightN_IsActive**, **DirectionalLightSEE_IsActive**, **DirectionalLightSWW_IsActive**:
 
