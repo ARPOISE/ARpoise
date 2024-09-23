@@ -112,31 +112,31 @@ These optional layer parameters can be added to a layer by clicking on the **New
 Most modern iOS devices and some Android devices offer 3D occlusion in AR layers. AR Foundation enables this functionality,
 see https://forum.unity.com/threads/environmental-occlusion-and-depth-in-arfoundation.919076/
 
-The parameters **OcclusionEnvironmentDepthMode**, **OcclusionPreferenceMode**, **OcclusionHumanSegmentationStencilMode**, and **OcclusionHumanSegmentationDepthMode** allow to set the parameters of the **AR Occlusion Manager (Script)**.
+The parameters **OcclusionPreferenceMode**, **OcclusionEnvironmentDepthMode**, **OcclusionHumanSegmentationStencilMode**, and **OcclusionHumanSegmentationDepthMode** allow to set the parameters of the **AR Occlusion Manager (Script)**.
 
 Values that can be used are:
 
-OcclusionEnvironmentDepthMode    
-
-    Disabled
-    Fastest
-    Medium
-    Best
-
-OcclusionPreferenceMode                    
+**OcclusionPreferenceMode**                    
 
     NoOcclusion
     PreferHumanOcclusion
     PreferEnvironmentalOcclusion
 
-OcclusionHumanSegmentationDepthMode
+**OcclusionEnvironmentDepthMode**    
 
     Disabled
     Fastest
     Medium
     Best
 
-OcclusionHumanSegmentationDepthMode
+**OcclusionHumanSegmentationDepthMode**
+
+    Disabled
+    Fastest
+    Medium
+    Best
+
+**OcclusionHumanSegmentationDepthMode**
 
     Disabled
     Fastest
