@@ -103,7 +103,7 @@ For iOS devices an application like iMazing can be used to copy the screenshots,
 ---
 - **OcclusionEnvironmentDepthMode**, **OcclusionPreferenceMode**, **OcclusionHumanSegmentationStencilMode**, **OcclusionHumanSegmentationDepthMode**:
 
-These optional layer parameters can be added to a layer by clicking on the **New action** button shown in the screen shot above.
+These optional layer parameters can be added to a layer by clicking on the **New action** button as shown in the screen shot above.
 
 ![LayerAction-OcclusionEnvironmentDepthMode](/images/LayerAction-OcclusionEnvironmentDepthMode.png)
 
@@ -113,7 +113,37 @@ Most modern iOS devices and some Android devices offer 3D occlusion in AR layers
 see https://forum.unity.com/threads/environmental-occlusion-and-depth-in-arfoundation.919076/
 
 The parameters **OcclusionEnvironmentDepthMode**, **OcclusionPreferenceMode**, **OcclusionHumanSegmentationStencilMode**, and **OcclusionHumanSegmentationDepthMode** allow to set the parameters of the **AR Occlusion Manager (Script)**.
-Please refer to the documentation of the **AR Occlusion Manager (Script)**,
+
+Values that can be used are:
+
+OcclusionEnvironmentDepthMode    
+
+    Disabled
+    Fastest
+    Medium
+    Best
+
+OcclusionPreferenceMode                    
+
+    NoOcclusion
+    PreferHumanOcclusion
+    PreferEnvironmentalOcclusion
+
+OcclusionHumanSegmentationDepthMode
+
+    Disabled
+    Fastest
+    Medium
+    Best
+
+OcclusionHumanSegmentationDepthMode
+
+    Disabled
+    Fastest
+    Best
+
+
+For further information, please refer to the documentation of the **AR Occlusion Manager (Script)**,
 see  https://forum.unity.com/threads/environmental-occlusion-and-depth-in-arfoundation.919076/
 
 ---
