@@ -1,6 +1,10 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 20241014 - September 2024
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.8 (2024101400)** and **iOS ARpoise 2.0.8(20241014)**
+- - Added [Feature #41](https://github.com/ARPOISE/ARpoise/issues/41). Rendering should use the Color Space 'Linear'.
+
 ## Version 20240915 - September 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.7 (2024091500)** and **iOS ARpoise 2.0.7 (20240915)**
 - - Added [Feature #41](https://github.com/ARPOISE/ARpoise/issues/41). Rendering should use the Color Space 'Linear'.
