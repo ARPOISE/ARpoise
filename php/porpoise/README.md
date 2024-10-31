@@ -264,7 +264,7 @@ The following properties of an animation can be edited:
   the event is not handled locally but sent to the back-end.
   The back-end forwards the event to all ARpoise clients currently connected that use the same **SceneUrl** value,
   including the original sender.
-  When ARRpoise receives the forwarded event, it handles the event as if the click happened locally.
+  When ARpoise receives the forwarded event, it handles the event as if the click happened locally.
 
   The **Name** can also be used to specify the start and end time of an **inMinutes** animation.
   For this to work the name should be of the form **Time: hh:mm - hh:mm**, e.g. **Time: 10:00 - 10:01**.
