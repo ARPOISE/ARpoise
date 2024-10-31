@@ -4,13 +4,13 @@
 ## Overview
 This directory details the Unity 3D projects used to build the **ARpoise** and **AR-vos** apps for Android and iOS.
 
-**Note:** The sub-directories linked above are obsolete, do not use them. 
+**Note:** !!!!! The sub-directories linked above are obsolete, do not use them !!!!!
 
 Repositories for Unity projects for **ARpoise** and **AR-vos** on Android and iOS.
 
-[ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2022_3/) Release 2.0.1, 20230901.
+[ARpoise for Android](https://github.com/ARPOISE/AndroidArpoiseU2022_3/) Release 2.0.9, 20241029.
 
-[ARpoise for iOS](https://github.com/ARPOISE/iOsArpoiseU2022_3/) Release 2.0.1, 20230901.
+[ARpoise for iOS](https://github.com/ARPOISE/iOsArpoiseU2022_3/) Release 2.0.9, 20241029.
 
 [AR-vos for Android](https://github.com/ARPOISE/AndroidArvosU2021_3/)
 
