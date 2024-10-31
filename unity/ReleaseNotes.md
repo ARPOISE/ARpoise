@@ -3,7 +3,7 @@
 
 ## Version 20241029 - October 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.9 (2024102900)** and **iOS ARpoise 2.0.9 (20241029)**
-- - Fixed [Bug #43](https://github.com/ARPOISE/ARpoise/issues/43). Make device buzz as porpoise level animation..
+- - Added [Feature #43](https://github.com/ARPOISE/ARpoise/issues/43). Make device buzz as porpoise level animation..
 
 ## Version 20241014 - October 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.8 (2024101400)** and **iOS ARpoise 2.0.8 (20241014)**
