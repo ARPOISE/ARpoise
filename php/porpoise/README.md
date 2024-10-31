@@ -252,7 +252,7 @@ The following properties of an animation can be edited:
    The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the name.
 
   The **Name** can also be used to make a POI a child of the camera node, so that it alway stays visible.
-  If the **Name** contains the string **CameraCild** and its **Relative location** is set,
+  If the **Name** contains the string **CameraChild** and its **Relative location** is set,
   the relative location is treated relative to the device camera.
   This can used to display some explanation images when the layer is loaded,
   which then disappears when the user clicks on it.
