@@ -110,13 +110,13 @@ class GUI
 <link rel="stylesheet" type="text/css" href="styles.css">
 <script type="text/javascript" src="prototype.js"></script>
 HTML1;
-        $result .= sprintf("\n<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?key=%s&sensor=false\"></script>\n", $GLOBALS["_googleMapsKey"]);
+        $result .= sprintf("\n<script type=\"text/javascript\" src=\"https://maps.google.com/maps/api/js?key=%s&sensor=false\"></script>\n", $GLOBALS["_googleMapsKey"]);
         $result .= <<<HTML2
 <script type="text/javascript" src="scripts.js"></script>
 </head>
 <body>
 
-<h1><img src="http://www.arpoise.com/images/arpoise_logo_rgb-1024.png" width=64></img>
+<h1><img src="https://www.arpoise.com/images/arpoise_logo_rgb-1024.png" width=64></img>
 ARpoise POI-Service</h1>
 
 <div class="menu">
@@ -576,7 +576,8 @@ HTML;
             "destroy",
             "duplicate",
             "grow",
-            "volume"
+            "volume",
+            "buzz"
         ) as $animationType) {
             $result .= sprintf("<option value=\"%s\"%s>%s</option>", $animationType, ($selected == $animationType ? " selected" : ""), $animationType);
         }
@@ -624,6 +625,7 @@ HTML;
             "onClick",
             "onFollow",
             "inMinutes",
+            "whenActive",
         ) as $event) {
             $result .= sprintf("<option value=\"%s\"%s>%s</option>", $event, ($selected == $event ? " selected" : ""), $event);
         }
@@ -690,7 +692,7 @@ HTML;
      */
     public static function createLoginScreen()
     {
-        $result = "<h1><img src=\"http://www.arpoise.com/images/arpoise_logo_rgb-1024.png\" width=64></img>";
+        $result = "<h1><img src=\"https://www.arpoise.com/images/arpoise_logo_rgb-1024.png\" width=64></img>";
         $result .= "ARpoise POI-Service Login</h1>\n";
 
         /* preserve GET parameters */

@@ -20,5 +20,5 @@
  * is at.
  */
  if (!defined('PORPOISE_CONFIG_PATH')) {
- 	define("PORPOISE_CONFIG_PATH", "/service/vhosts/arpoise.com/config/porpoise");
+ 	define("PORPOISE_CONFIG_PATH", "/var/www/arpoise.com/config/porpoise");
  }

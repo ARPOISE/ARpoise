@@ -20,7 +20,7 @@
  * information (especially config.xml), so you'll want to keep
  * them away from spying eyes!
  */
-chdir("/service/vhosts/arpoise.com/htdocs/php/dir");
+chdir("/var/www/arpoise.com/html/php/dir");
 
 /**
  * Include PorPOISe

@@ -89,7 +89,8 @@ class LayarResponse
         "onFocus" => array(),
         "inFocus" => array(),
         "onClick" => array(),
-        "inMinutes" => array()
+        "inMinutes" => array(),
+        "whenActive" => array()
     );
 
     /** @var bool */

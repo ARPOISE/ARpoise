@@ -96,7 +96,7 @@ class LayarPOIServer
         "visibilityRange" => 1500,
         "areaSize" => 0,
         "areaWidth" => 0,
-        "refreshDistance" => 100,
+        "refreshDistance" => 0,
         "fullRefresh" => TRUE,
         "applyKalmanFilter" => TRUE,
         "isDefaultLayer" => FALSE,
