@@ -316,7 +316,7 @@ If an animation is started and the Unity-prefab of the POI contains an AudioSour
 The volume of the sound can be animated via a animation of type **volume**.
 
 ### Opening a WEB Page
-Animations allow opening a web page in a browser on the user's device. In order to do so, either the **Name** or the **Followed by** value of the animation must be of the form "**openUrl:https://www.apoise.com/**". If an animation with such a **Name** is **started**, or an animation with such a **Followed by** value **ends**, the app will open the URL given after the "**openUrl:**" tag in a web browser. 
+Animations allow opening a web page in a browser on the user's device. In order to do so, either the **Name** or the **Followed by** value of the animation must be of the form "**openUrl:https://www.arpoise.com/**". If an animation with such a **Name** is **started**, or an animation with such a **Followed by** value **ends**, the app will open the URL given after the "**openUrl:**" tag in a web browser. 
 
 ### Setting the Game Object State
 This feature has been implemented as an enhancement with the releases done in August of 2021.
