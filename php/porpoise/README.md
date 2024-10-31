@@ -176,7 +176,7 @@ The parameters **RemoteServerUrl** and **SceneUrl** configure the access of such
 Events are shared by connecting to the multi-user back-end specified via **RemoteServerUrl**,
 all events of all layers having the same **SceneUrl** value are shared.
 
-E.g. when an onClick anmation event of a poi is clicked
+E.g. when an onClick animation event of a poi is clicked
 and the name of the animation event contains the string **Remoted** and event sharing is enabled for the layer the poi is in,
 the event is not handled locally but sent to the back-end.
 The back-end forwards the event to all ARpoise clients currently connected that use the same **SceneUrl** value,
@@ -336,7 +336,7 @@ This feature has been implemented as an enhancement with the releases done in 20
 An optional layer parameter **RemoteServerUrl** and **SceneUrl** can be added as described above.
 ARpoise allows to share porpoise level animation events via a back-end multi-user server. The parameters RemoteServerUrl and SceneUrl configure the access of such sharing. Events are shared by connecting to the multi-user back-end specified via RemoteServerUrl, all events of all layers having the same SceneUrl value are shared.
 
-E.g. when an onClick anmation event of a poi is clicked and the **name** of the animation event contains the string **Remoted** and event sharing is enabled for the layer the poi is in, the event is not handled locally but sent to the back-end. The back-end forwards the event to all ARpoise clients currently connected that use the same SceneUrl value, including the original sender. When ARpoise receives the forwarded event, it handles the event as if the click happened locally.
+E.g. when an onClick animation event of a poi is clicked and the **name** of the animation event contains the string **Remoted** and event sharing is enabled for the layer the poi is in, the event is not handled locally but sent to the back-end. The back-end forwards the event to all ARpoise clients currently connected that use the same SceneUrl value, including the original sender. When ARpoise receives the forwarded event, it handles the event as if the click happened locally.
 
 It is also possible to have different animations for the user that started an animation and the users that are just receiving the animation event from the back-end multi-user server. For this to work you would need three animations on the poi. One to just remote the event, lets call it **MyAnimation_Remoted**, if this animation is triggered locally, the trigger is forwarded to the back-end multi-user server. If there is an animation called **MyAnimation_TriggeredLocally**, it will only be activated for the user that triggered the animation and sent the value to the back-end multi-user server. If there is an animation called **MyAnimation_TriggeredRemotely**, it will be activated for the users that only received the event from the back-end multi-user server. 
 
