@@ -1,5 +1,5 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)
-# *A*ugmented *R*eality *p*oint *o*f *i*nterest *s*ervice *e*nvironment
+# <ins>*A*</ins>ugmented <ins>*R*</ins>eality <ins>*p*</ins>oint <ins>*o*</ins>f <ins>*i*</ins>nterest <ins>*s*</ins>ervice <ins>*e*</ins>nvironment
 
 
 ## Overview
