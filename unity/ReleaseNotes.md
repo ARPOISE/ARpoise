@@ -1,9 +1,15 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 20250127 - January 2025
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.10 (2025012700)** and **iOS ARpoise 2.0.10 (20250127)**
+- - Added [Feature #46](https://github.com/ARPOISE/ARpoise/issues/46). Rendering should use the Color Space 'Gamma'. Render Color Space reverted to V 2.0.6.
+- - Added [Feature #44](https://github.com/ARPOISE/ARpoise/issues/44). 'Lerp' a poi object to the position of the trigger image.
+- - Added [Feature #45](https://github.com/ARPOISE/ARpoise/issues/45). Porpoise level animations triggered when a poi object is placed.
+    
 ## Version 20241029 - October 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.9 (2024102900)** and **iOS ARpoise 2.0.9 (20241029)**
-- - Added [Feature #43](https://github.com/ARPOISE/ARpoise/issues/43). Make device buzz as porpoise level animation..
+- - Added [Feature #43](https://github.com/ARPOISE/ARpoise/issues/43). Make device buzz as porpoise level animation.
 
 ## Version 20241014 - October 2024
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.8 (2024101400)** and **iOS ARpoise 2.0.8 (20241014)**
