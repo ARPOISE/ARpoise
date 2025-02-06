@@ -277,6 +277,8 @@ The following properties of an animation can be edited:
   * **onFocus** - the animation is started when the POI is looked at by the user;
   * **inFocus** - the animation is started when the POI is looked at by the user and is stopped once the POI loses the focus;
   * **inMinutes** - the animation is started during a given minute interval every day, see **Name** above;
+  * **whenActivated** - the animation is started when the POI is placed into the layer because it's trigger image has been found, the first time the image is found also the **onCreate** animations are run.
+  * **whenDeactivated** - the animation is started when the POI is removed from a layer because it's trigger image is no longer visible to the device.
   
 * **Type**: 
   * **rotate**, rotate the POI around an axis.
