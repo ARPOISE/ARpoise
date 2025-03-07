@@ -2,7 +2,7 @@
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
 ## Version 20250203 - February 2025
-- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.11 (2025020300)** and **iOS ARpoise 2.0.10 (20250203)**
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.11 (2025020300)** and **iOS ARpoise 2.0.11 (20250203)**
 - - Added [Feature #47](https://github.com/ARPOISE/ARpoise/issues/47). The ApplicationSleepInterval does not work anymore.
     
 ## Version 20250127 - January 2025
