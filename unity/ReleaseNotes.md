@@ -1,7 +1,7 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
-## Version 25040300 - February 2025
+## Version 25040300 - April 2025
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.12 (2025040300)** and **iOS ARpoise 2.0.12 (25040300)**
 - - Added [Feature #48](https://github.com/ARPOISE/ARpoise/issues/48). The length of a buzz should be different from the length of the animation that starts it.
 - - Added [Feature #49](https://github.com/ARPOISE/ARpoise/issues/49). The asset bundles downloaded should be cached by ARpoise.
