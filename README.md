@@ -16,7 +16,7 @@ The **ARpoise** app can be downloaded from the [Google Play](https://play.google
 The **AR-vos** app can be downloaded from the [Google Play](https://play.google.com/store/apps/details?id=com.arpoise.ARvos) Store and the Apple [App Store](https://apps.apple.com/us/app/ar-vos/id1483218444). The source code of the apps is available [here](unity/).
 
 ## Release Notes
-See [release notes](unity/ReleaseNotes.md).
+See [Release Notes](unity/ReleaseNotes.md).
 
 ## Getting Started
 If you are a content creator wanting to use **ARpoise** or **AR-vos** to deliver your own 3D content, you should start by reading this document. As you also will have to run you own version of the **ARpoise-PorPOISe Back End** you should also read the documentation for it in [/php/porpoise](php/porpoise/README.md).
