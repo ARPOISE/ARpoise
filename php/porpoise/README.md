@@ -101,6 +101,24 @@ On Android the screenshots are stored in the directory '\Phone\Android\data\com.
 For iOS devices an application like iMazing can be used to copy the screenshots, see https://imazing.com/.
 
 ---
+- **ApplicationSleepInterval**:
+This option allows to restrict the energy consumption of ARpoise, contact us to get more details.
+
+---
+- **AssetBundleCacheVersion**:
+
+An optional layer parameter **AssetBundleCacheVersion** can be added to a layer by clicking on the **New action** button.
+
+**Explanation:**
+
+ARpoise caches the asset bundles it downloads in order to speed up loading time of layers and conserve bandwith.
+
+You can influence the caching behavior in two ways.
+
+If you set the **AssetBundleCacheVersion** action value to **0**, caching is turned of.
+If you set it to a value greater than the current ARpoise bundle identifier, caching is turned on again.
+
+---
 - **OcclusionEnvironmentDepthMode**, **OcclusionPreferenceMode**, **OcclusionHumanSegmentationStencilMode**, **OcclusionHumanSegmentationDepthMode**:
 
 These optional layer parameters can be added to a layer by clicking on the **New action** button as shown in the screen shot above.
