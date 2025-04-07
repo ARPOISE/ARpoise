@@ -102,7 +102,13 @@ For iOS devices an application like iMazing can be used to copy the screenshots,
 
 ---
 - **ApplicationSleepInterval**:
-This option allows to restrict the energy consumption of ARpoise, contact us to get more details.
+  
+This option allows to restrict the energy consumption of ARpoise.
+
+**Explanation:**
+This can be used to restrict energy consumption on devices that need to run 24 / 7 in a museum situation.
+
+If this action value is set to time interval like **23:00-6:59**, the ARpoise app will **not** render any 3D objects inside that time interval
 
 ---
 - **AssetBundleCacheVersion**:
