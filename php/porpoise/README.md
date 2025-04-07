@@ -121,8 +121,13 @@ ARpoise caches the asset bundles it downloads in order to speed up loading time 
 
 You can influence the caching behavior in two ways.
 
-If you set the **AssetBundleCacheVersion** action value to **0**, caching is turned of.
-If you set it to a value greater than the current ARpoise bundle identifier, caching is turned on again.
+If you set the **AssetBundleCacheVersion** action value to **0**, caching is turned off.
+
+ARpoise uses its bundle identifier as default version, e.g. Version 2.0.12 uses **25040300**.
+If you update an asset bundle that is already live for ARpoise, you have to make sure that the **AssetBundleCacheVersion** is bigger than the version used by ARpoise, but smaller than the version used by the next release of ARpoise.
+
+Set it to an 8 digit value of the form 'YYMMDDnn' with the current date and nn being your counter, e.g. your first release on Aug. 30th, 2026 should use, **26083001**. This numbering is save because any future version of ARpoise will use a future date and therefore a bigger number.
+
 
 ---
 - **OcclusionEnvironmentDepthMode**, **OcclusionPreferenceMode**, **OcclusionHumanSegmentationStencilMode**, **OcclusionHumanSegmentationDepthMode**:
