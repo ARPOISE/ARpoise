@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectoryBase.c,v $
+Revision 1.15  2023/08/28 20:30:43  peter
+Added handling of old asset bundles on arpoise.com
+
 Revision 1.14  2022/03/07 19:47:35  peter
 Improved handling of areas
 
@@ -38,7 +41,7 @@ Added handling of bundle position
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.14 2022/03/07 19:47:35 peter Exp $";
+char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.15 2023/08/28 20:30:43 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -576,6 +579,29 @@ static char* changeLon(char* string, int i, int difference)
 	return replacedLon;
 }
 
+static char* changeBaseUrl(char* string, char * oldValue, char *newValue)
+{
+	char* baseUrlStart = "\"baseURL\":\"";
+	char* ptr = strstr(string, baseUrlStart);
+	if (!ptr)
+	{
+		return string;
+	}
+
+	char* assetBundleUrl = adbGetStringBetween(ptr, baseUrlStart, "\"");
+	if (!assetBundleUrl || !strstr(assetBundleUrl, oldValue) || strstr(assetBundleUrl, newValue))
+	{
+		return string;
+	}
+	PBL_FREE(assetBundleUrl);
+
+	ptr = pblCgiStrReplace(string, oldValue, newValue);
+	//PBL_CGI_TRACE("baseUrlFrom=%s", string);
+	//PBL_CGI_TRACE("baseUrlTo  =%s", ptr);
+	return ptr;
+}
+
+
 void adbGetLatAndLonOfDevice(char* queryString, int* latDifference, int* lonDifference)
 {
 	char* latOfDevice = "latOfDevice=";
@@ -887,7 +913,7 @@ void adbPrintHeader(char* cookie)
 	fputs("\r\n", stdout);
 }
 
-void adbHandleResponse(char* response, int latDifference, int lonDifference)
+void adbHandleResponse(char* response, int latDifference, int lonDifference, int bundleInteger)
 {
 	static char* tag = "adbHandleResponse";
 	char* cookie = NULL;
@@ -959,6 +985,14 @@ void adbHandleResponse(char* response, int latDifference, int lonDifference)
 			char* replacedLat = changeLat(hotspot, 1, -1 * latDifference);
 			ptr = changeLon(replacedLat, 5, -1 * lonDifference);
 			PBL_CGI_TRACE("Applied latDifference=%d and lonDifference=%d", latDifference, lonDifference);
+		}
+
+		if (bundleInteger > 0 && bundleInteger < 20230828)
+		{
+			char* oldBaseUrl = "arpoise.com\\/AB\\/";
+			char* newBaseUrl = "arpoise.com\\/AB\\/U2018\\/";
+			ptr = changeBaseUrl(ptr, oldBaseUrl, newBaseUrl);
+			//PBL_CGI_TRACE("Applied changeBaseUrl='%s' to '%s'", oldBaseUrl, newBaseUrl);
 		}
 		putString(ptr, stringBuilder);
 		putString("}", stringBuilder);

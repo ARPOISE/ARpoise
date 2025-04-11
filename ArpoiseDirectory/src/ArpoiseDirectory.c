@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.64  2023/08/28 20:30:43  peter
+Added handling of old asset bundles on arpoise.com
+
 Revision 1.63  2022/03/05 20:04:15  peter
 Added Id to trace
 
@@ -36,7 +39,7 @@ Added Id to trace
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.63 2022/03/05 20:04:15 peter Exp $";
+char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.64 2023/08/28 20:30:43 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -97,7 +100,7 @@ extern char* adbHandleDevicePosition(char* deviceId, char* queryString, int* lat
 extern char* adbHandleBundlePosition(char* bundleId, char* queryString, int* latDifference, int* lonDifference);
 extern void adbTraceDuration();
 extern void adbPrintHeader(char* cookie);
-extern void adbHandleResponse(char* response, int latDifference, int lonDifference);
+extern void adbHandleResponse(char* response, int latDifference, int lonDifference, int bundleInteger);
 extern void adbCreateStatisticsHits(int layer, char* layerName, int layerServed);
 extern char* adbGetArea(char* queryString, char* clientApplication);
 extern char* adbGetAreaConfigValue(char* area, char* key, char* defaultValue);
@@ -222,6 +225,14 @@ static int arpoiseDirectory(int argc, char* argv[])
 		pblCgiExitOnError("%s: DirectoryUri must be given.\n", tag);
 	}
 
+	int bundleInteger = 0;
+	char* bundle = pblCgiQueryValue("bundle");
+	if (bundle && isdigit(*bundle))
+	{
+		bundleInteger = atoi(bundle);
+		PBL_CGI_TRACE("-------> BundleInteger=%d\n", bundleInteger);
+	}
+
 	int isDirectoryRequest = pblCgiStrEquals(layerName, "Arpoise-Directory");
 	if (isDirectoryRequest)
 	{
@@ -230,14 +241,6 @@ static int arpoiseDirectory(int argc, char* argv[])
 		if (!os || !*os)
 		{
 			os = "UnknownOperatingSystem";
-		}
-
-		int bundleInteger = 0;
-		char* bundle = pblCgiQueryValue("bundle");
-		if (bundle && isdigit(*bundle))
-		{
-			bundleInteger = atoi(bundle);
-			PBL_CGI_TRACE("-------> BundleInteger=%d\n", bundleInteger);
 		}
 
 		// This is a request for the Arpoise-Directory layer
@@ -320,7 +323,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 					uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
 					char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
 					response = adbGetHttpResponse(hostName, port, uri, 16, agent);
-					adbHandleResponse(response, latDifference, lonDifference);
+					adbHandleResponse(response, latDifference, lonDifference, bundleInteger);
 
 					adbCreateStatisticsHits(layer, layerName, layerServed);
 					return 0;
@@ -382,7 +385,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 			uri = pblCgiSprintf("%s?p=%d&%s", layerUrl, getpid(), ptr);
 			char* agent = pblCgiSprintf("ArpoiseDirectory/%s", getVersion());
 			char* httpResponse = adbGetHttpResponse(hostName, port, uri, 16, agent);
-			adbHandleResponse(httpResponse, latDifference, lonDifference);
+			adbHandleResponse(httpResponse, latDifference, lonDifference, bundleInteger);
 		}
 		else
 		{
@@ -403,7 +406,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 			{
 				PBL_CGI_TRACE("-------> Client response");
 
-				adbHandleResponse(httpResponse, latDifference, lonDifference);
+				adbHandleResponse(httpResponse, latDifference, lonDifference, bundleInteger);
 			}
 			else
 			{
@@ -478,7 +481,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 				{
 					exponent = 10;
 				}
-				adbHandleResponse(exponentiARGrowth(exponent), latDifference, lonDifference);
+				adbHandleResponse(exponentiARGrowth(exponent), latDifference, lonDifference, bundleInteger);
 			}
 		}
 		else
@@ -519,7 +522,7 @@ static int arpoiseDirectory(int argc, char* argv[])
 
 			uri = pblCgiSprintf("%s?p=%d&%s", porpoiseUri, getpid(), queryString);
 			char* agent = pblCgiSprintf("ArpoiseFilter/%s", getVersion());
-			adbHandleResponse(adbGetHttpResponse(hostName, port, uri, 16, agent), latDifference, lonDifference);
+			adbHandleResponse(adbGetHttpResponse(hostName, port, uri, 16, agent), latDifference, lonDifference, bundleInteger);
 		}
 	}
 
