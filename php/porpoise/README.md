@@ -158,7 +158,7 @@ Values that can be used are:
     Medium
     Best
 
-**OcclusionHumanSegmentationDepthMode**
+**OcclusionHumanSegmentationStencilMode**
 
     Disabled
     Fastest
