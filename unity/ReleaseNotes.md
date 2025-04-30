@@ -1,6 +1,10 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 25042701 - April 2025
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.13 (2025042701)** and **iOS ARpoise 2.0.13 (25042701)**
+- - Fixed [Bug #50](https://github.com/ARPOISE/ARpoise/issues/50). ARpoise should not crash if shared event animations are used and the remote server is restarted.
+
 ## Version 25040300 - April 2025
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.12 (2025040300)** and **iOS ARpoise 2.0.12 (25040300)**
 - - Added [Feature #48](https://github.com/ARPOISE/ARpoise/issues/48). The length of a buzz should be different from the length of the animation that starts it.
