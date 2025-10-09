@@ -310,7 +310,7 @@ The following properties of an animation can be edited:
   * **inMinutes** - the animation is started during a given minute interval every day, see **Name** above;
   * **whenActivated** - the animation is started when the POI is placed into the layer because it's trigger image has been found, the first time the image is found also the **onCreate** animations are run.
   * **whenDeactivated** - the animation is started when the POI is removed from a layer because it's trigger image is no longer visible to the device.
-  * **onRandom** - the animation is started at a random time between its last termination and a maximum delay time. The maximum delay time defaults to 120000 milliseconds, i.e. 2 minutes, the maximum delay time an be set by giving the animation a name like **RandomDelay_10000**, which would set it to 10000 milliseconds.
+  * **onRandom** - the animation is started at a random time between its last termination and a maximum delay time. The maximum delay time defaults to 120000 milliseconds, i.e. 2 minutes, the maximum delay time can be set by giving the animation a name like **RandomDelay_10000**, which would set it to 10000 milliseconds.
   
 * **Type**: 
   * **rotate**, rotate the POI around an axis.
