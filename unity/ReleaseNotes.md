@@ -1,6 +1,12 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 25100701 - October 2025
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.14 (2025100700)** and **iOS ARpoise 2.0.14 (2025100700)**
+- - Fixed [Feature #52](https://github.com/ARPOISE/ARpoise/issues/52). There should be a way to start an animation at random time intervals.
+- - Fixed [Feature #53](https://github.com/ARPOISE/ARpoise/issues/53). Layer crystals should be based on pois.
+- - Fixed [Bug #55](https://github.com/ARPOISE/ARpoise/issues/55). ARpoise build needs to be updated to Unity version 2022.3.62.
+     
 ## Version 25042701 - April 2025
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.13 (2025042701)** and **iOS ARpoise 2.0.13 (25042701)**
 - - Fixed [Bug #50](https://github.com/ARPOISE/ARpoise/issues/50). ARpoise should not crash if shared event animations are used and the remote server is restarted.
