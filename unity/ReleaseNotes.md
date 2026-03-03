@@ -1,6 +1,10 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 2026022600 - March 2026
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.15 (2026022600)** and **iOS ARpoise 2.0.15 (2026022600)**
+- - Added [Feature #59](https://github.com/ARPOISE/ARpoise/issues/59). There should be a button allowing to take screen captures.
+    
 ## Version 25100701 - October 2025
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.14 (2025100700)** and **iOS ARpoise 2.0.14 (2025100700)**
 - - Added [Feature #52](https://github.com/ARPOISE/ARpoise/issues/52). There should be a way to start an animation at random time intervals.
