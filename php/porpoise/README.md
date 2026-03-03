@@ -83,9 +83,9 @@ The following properties of a layer can be edited:
 
 ### Optional Layer Parameters:
 ---
-- **AllowTakeScreenshot**:
+- **ShowScreenshotButton**:
 
-An optional layer parameter **AllowTakeScreenshot** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
+An optional layer parameter **ShowScreenshotButton** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
 
 ![LayerAction-AllowTakeScreenshot](/images/LayerAction-AllowTakeScreenshot.png)
 
@@ -93,12 +93,9 @@ An optional layer parameter **AllowTakeScreenshot** can be added to a layer by c
 
 The values set above would enable the Unity Method ScreenCapture.CaptureScreenshot, public static void CaptureScreenshot(string filename, int superSize); with a superSize value of 1. See https://docs.unity3d.com/ScriptReference/ScreenCapture.CaptureScreenshot.html.
 
-**Note:** Use this parameter if you want to create super sized screen captures.
-A screenshot is taken and stored on the user's device **EVERY** time the user tabs the screen, so use this feature with caution. ARpoise also has no way to copy the screenshots from the device to a different computer.
+**Note:** Use the value of this parameter if you want to create super sized screen captures. E.g. use 2 for creating screen shots with twice the resolution of the screen of the device.
 
-On Android the screenshots are stored in the directory '\Phone\Android\data\com.arpoise.ARpoise\files' and can be accessed once the device is connected to a PC.
-
-For iOS devices an application like iMazing can be used to copy the screenshots, see https://imazing.com/.
+A camera icon is displayed in the upper right corner of the screen of the device. When a user tabs that button, a screenshot is taken and stored in the photo library on the user's device.
 
 ---
 - **ApplicationSleepInterval**:
