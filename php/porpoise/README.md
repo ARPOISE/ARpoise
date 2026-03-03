@@ -87,7 +87,7 @@ The following properties of a layer can be edited:
 
 An optional layer parameter **ShowScreenshotButton** can be added to a layer by clicking on the **New action** button shown in the screen shot above.
 
-![LayerAction-AllowTakeScreenshot](/images/LayerAction-AllowTakeScreenshot.png)
+![LayerAction-AllowTakeScreenshot](/images/LayerAction-ShowScreenshotButton.png)
 
 **Explanation:**
 
