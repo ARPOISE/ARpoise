@@ -3,6 +3,7 @@
 
 ## Version 2026022600 - March 2026
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.15 (2026022600)** and **iOS ARpoise 2.0.15 (2026022600)**
+- - Fixed [Bug #56](https://github.com/ARPOISE/ARpoise/issues/56). When a Poi structure like ArpoisePoiCrystal or ArpoisePoiSpiral is activated/deactivated the pois are not created/destroyed but rather just activated/deactivated themselves.
 - - Added [Feature #59](https://github.com/ARPOISE/ARpoise/issues/59). There should be a button allowing to take screen captures.
     
 ## Version 25100701 - October 2025
