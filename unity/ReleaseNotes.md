@@ -1,6 +1,10 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 2026042700 - April 2026
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.16 (2026042700)** and **iOS ARpoise 2.0.16 (2026042700)**
+- - Added [Feature #5](https://github.com/ARPOISE/ARpoise/issues/5). Starting ARpoise with specific parameter.
+    
 ## Version 2026022600 - March 2026
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.15 (2026022600)** and **iOS ARpoise 2.0.15 (2026022600)**
 - - Fixed [Bug #56](https://github.com/ARPOISE/ARpoise/issues/56). When a Poi structure like ArpoisePoiCrystal or ArpoisePoiSpiral is activated/deactivated the pois are not created/destroyed but rather just activated/deactivated themselves.
