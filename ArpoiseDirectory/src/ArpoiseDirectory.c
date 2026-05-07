@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectory.c,v $
+Revision 1.65  2026/04/25 20:29:19  peter
+Updates after using Claude
+
 Revision 1.64  2023/08/28 20:30:43  peter
 Added handling of old asset bundles on arpoise.com
 
@@ -39,7 +42,7 @@ Added Id to trace
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.64 2023/08/28 20:30:43 peter Exp $";
+char* ArpoiseDirectory_c_id = "$Id: ArpoiseDirectory.c,v 1.65 2026/04/25 20:29:19 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -98,6 +101,7 @@ extern char* adbChangeLayerName(char* string, char* layerName);
 extern char* adbChangeShowMenuOption(char* string, char* value);
 extern char* adbHandleDevicePosition(char* deviceId, char* queryString, int* latDifference, int* lonDifference);
 extern char* adbHandleBundlePosition(char* bundleId, char* queryString, int* latDifference, int* lonDifference);
+extern char* adbHandleDeeplinkPosition(char* deeplinkName, char* queryString, int* latDifference, int* lonDifference);
 extern void adbTraceDuration();
 extern void adbPrintHeader(char* cookie);
 extern void adbHandleResponse(char* response, int latDifference, int lonDifference, int bundleInteger);
@@ -181,6 +185,15 @@ static int arpoiseDirectory(int argc, char* argv[])
 		{
 			queryString = bundleQueryString;
 		}
+		else
+		{
+			char* deeplinkName = pblCgiQueryValue("deeplinkName");
+			char* deeplinkQueryString = adbHandleDeeplinkPosition(deeplinkName, queryString, &latDifference, &lonDifference);
+			if (deeplinkQueryString != NULL)
+			{
+				queryString = deeplinkQueryString;
+			}
+		}
 	}
 
 	char* layerName = pblCgiQueryValue("layerName");
@@ -226,10 +239,10 @@ static int arpoiseDirectory(int argc, char* argv[])
 	}
 
 	int bundleInteger = 0;
-	char* bundle = pblCgiQueryValue("bundle");
-	if (bundle && isdigit(*bundle))
+	char* bundleValue = pblCgiQueryValue("bundle");
+	if (bundleValue && isdigit(*bundleValue))
 	{
-		bundleInteger = atoi(bundle);
+		bundleInteger = atoi(bundleValue);
 		PBL_CGI_TRACE("-------> BundleInteger=%d\n", bundleInteger);
 	}
 
@@ -417,7 +430,9 @@ static int arpoiseDirectory(int argc, char* argv[])
 					layerUrl = adbGetStringBetween(ptr, baseUrlStart, "\"");
 					while (strchr(layerUrl, '\\'))
 					{
-						layerUrl = pblCgiStrReplace(layerUrl, "\\", "");
+						char* tmp = layerUrl;
+						layerUrl = pblCgiStrReplace(tmp, "\\", "");
+						free(tmp);
 					}
 				}
 

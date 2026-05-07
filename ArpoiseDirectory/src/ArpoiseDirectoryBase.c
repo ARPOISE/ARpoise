@@ -27,6 +27,9 @@ Peter Graf, see www.mission-base.com/peter/
 ARpoise, see www.ARpoise.com/
 
 $Log: ArpoiseDirectoryBase.c,v $
+Revision 1.16  2026/04/25 20:29:19  peter
+Updates after using Claude
+
 Revision 1.15  2023/08/28 20:30:43  peter
 Added handling of old asset bundles on arpoise.com
 
@@ -41,7 +44,7 @@ Added handling of bundle position
 /*
 * Make sure "strings <exe> | grep Id | sort -u" shows the source file versions
 */
-char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.15 2023/08/28 20:30:43 peter Exp $";
+char* ArpoiseDirectoryBase_c_id = "$Id: ArpoiseDirectoryBase.c,v 1.16 2026/04/25 20:29:19 peter Exp $";
 
 #include <stdio.h>
 #include <memory.h>
@@ -890,6 +893,50 @@ char* adbHandleBundlePosition(char* bundleId, char* queryString, int* latDiffere
 	return adbChangeLatAndLon(queryString, lat, lon, latDifference, lonDifference);
 }
 
+static PblList* deeplinkPositionList = NULL;
+
+char* adbHandleDeeplinkPosition(char* deeplinkName, char* queryString, int* latDifference, int* lonDifference)
+{
+	if (pblCgiStrIsNullOrWhiteSpace(deeplinkName))
+	{
+		return NULL;
+	}
+
+	char* lat = NULL;
+	char* lon = NULL;
+
+	if (!deeplinkPositionList)
+	{
+		char* deeplinkPositionValue = pblCgiConfigValue("DeeplinkPosition", NULL);
+		if (pblCgiStrIsNullOrWhiteSpace(deeplinkPositionValue))
+		{
+			return NULL;
+		}
+		deeplinkPositionList = pblCgiStrSplitToList(deeplinkPositionValue, ",");
+		if (pblListIsEmpty(deeplinkPositionList))
+		{
+			PBL_CGI_TRACE("DeeplinkPositionList is empty");
+			return NULL;
+		}
+	}
+
+	int listSize = pblListSize(deeplinkPositionList);
+
+	for (int i = 0; i < listSize - 2; i += 3)
+	{
+		char* deeplink = pblListGet(deeplinkPositionList, i);
+
+		if (pblCgiStrEquals(deeplinkName, deeplink))
+		{
+			lat = pblListGet(deeplinkPositionList, i + 1);
+			lon = pblListGet(deeplinkPositionList, i + 2);
+			PBL_CGI_TRACE("Deeplink %s, lat %s, lon %s", deeplinkName, lat ? lat : "", lon ? lon : "");
+			break;
+		}
+	}
+	return adbChangeLatAndLon(queryString, lat, lon, latDifference, lonDifference);
+}
+
 void adbTraceDuration()
 {
 	struct timeval now;
@@ -1170,8 +1217,8 @@ static int adbGetIntValue(char* queryString, char* label)
 		{
 			ptr = pblCgiStrDup(start);
 		}
-		double latDouble = strtod(ptr + 4, NULL);
-		value = (int)(1000000.0 * latDouble);
+		double lDouble = strtod(ptr + strlen(label), NULL);
+		value = (int)(1000000.0 * lDouble);
 		PBL_FREE(ptr);
 	}
 	return value;
@@ -1261,6 +1308,7 @@ char* adbGetArea(char* queryString, char* clientApplication)
 			freeStringList(locationList);
 			return areaKey;
 		}
+		PBL_FREE(areaKey);
 	}
 	return NULL;
 }
