@@ -1,17 +1,78 @@
 ## ArpoiseDirectory.txt - Configuration file for arpoise directory service
 #
 HostName				www.arpoise.com
-Port					80
+Port				80
 DirectoryUri			/php/dir/web/porpoise.php
-PorpoiseUri			    /php/porpoise/web/porpoise.php
+PorpoiseUri			/php/porpoise/web/porpoise.php
 
-DefaultLayerUrl         /php/porpoise/web/porpoise.php
-DefaultLayerName        Default-lotus-meditation
+## Default layer for the arpoise app, geo located
+#
+DefaultLayerUrl                         /php/porpoise/web/porpoise.php
+
+DefaultLayerName                        Default-AbEvolutionOfFish
+DefaultLayerName190310                  Default-AbEvolutionOfFish
+DefaultDirectory                        Default-Arpoise-Directory
 
 ## Default layer for the arvos app, image triggered
 #
-ArvosDefaultLayerUrl    /php/porpoise/web/porpoise.php
-ArvosDefaultLayerName   Default-ImageTrigger
+ArvosDefaultLayerUrl                    /php/porpoise/web/porpoise.php
+ArvosDefaultLayerName                   Default-ImageTrigger
+ArvosDefaultDirectory                   Default-Ar-vos-Directory
+
+## Default layer for the arvos app, slam
+#
+ArslamDefaultLayerUrl                   /php/porpoise/web/porpoise.php
+ArslamDefaultLayerName                  Default-Slam
+
+#################################################################################
+# If Area_1 exists, handle it first, then look to see if there is an Area_2, etc.
+#################################################################################
+# Arvos_Area_1 San Jose
+# 
+Arvos_Area_1                    37212467,-122148565,37523239,-121504560
+
+Arvos_Area_1_HostName			www.hiddenhistoriesjtown.org
+Arvos_Area_1_Port				80
+Arvos_Area_1_DirectoryUri			/ArpoiseDirectory/php/web/porpoise.php
+Arvos_Area_1_PorpoiseUri			/artists/TamikoThiel/php/web/porpoise.php
+Arvos_Area_1_DefaultLayerUrl         		/artists/TamikoThiel/php/web/porpoise.php
+Arvos_Area_1_DefaultLayerName            	Default-AbEvolutionOfFish
+Arvos_Area_1_DefaultLayerName190310      	Default-AbEvolutionOfFish
+Arvos_Area_1_ArvosDefaultLayerUrl        	/artists/TamikoThiel/php/web/porpoise.php
+Arvos_Area_1_ArvosDefaultLayerName       	Default-ImageTrigger
+
+########################################################
+
+# Arvos_Area_2 San Bruno Bart
+# 
+Arvos_Area_2                    37631513,-122420411,37641250,-122411610
+
+Arvos_Area_2_HostName			www.hiddenhistoriesjtown.org
+Arvos_Area_2_Port				80
+Arvos_Area_2_DirectoryUri			/ArpoiseDirectory/php/web/porpoise.php
+Arvos_Area_2_PorpoiseUri			/artists/TamikoThiel/php/web/porpoise.php
+Arvos_Area_2_DefaultLayerUrl         		/artists/TamikoThiel/php/web/porpoise.php
+Arvos_Area_2_DefaultLayerName            	Default-AbEvolutionOfFish
+Arvos_Area_2_DefaultLayerName190310      	Default-AbEvolutionOfFish
+Arvos_Area_2_ArvosDefaultLayerUrl        	/artists/TamikoThiel/php/web/porpoise.php
+Arvos_Area_2_ArvosDefaultLayerName       	Default-ImageTrigger
+
+########################################################
+# Arpoise_Area_1 Russia, Ukraine
+# 
+
+Arpoise_Area_1                      44950000,28280000,60440000,179000000
+Arpoise_Area_1_DefaultLayerName     Default-UkraineFlag
+Arpoise_Area_1_DefaultDirectory     _
+
+########################################################
+# Arpoise_Area_2 - Venice deeplink - temporary only
+# 
+
+Arpoise_Area_2                      45422250,12288540,45468760,12373350 # Venice
+#Arpoise_Area_2                      48106210,11507040,48176534,11622490 # Muc Mittlerer Ring
+Arpoise_Area_2_DefaultLayerName     Default-StartDeeplinkVenice
+Arpoise_Area_2_DefaultDirectory     _
 
 ## Traces are only written if the file exists, the file needs to be writable by the cgi program
 #
@@ -19,35 +80,41 @@ TraceFilePath           /arpoise/ArpoiseDirectory.txt
 
 ## Directory to store version files to
 #
-VersionsDirectory       /service/vhosts/arpoise.com/htdocs/ArpoiseDirectory/AppVersions/
+VersionsDirectory       /var/www/arpoise.com/html/ArpoiseDirectory/AppVersions/
+
+## Directory to store location files to
+#
+LocationsDirectory       /var/www/arpoise.com/html/ArpoiseDirectory/Locations/
 
 ## Directory to store the layer name files to
 #
-LayersDirectory         /service/vhosts/arpoise.com/htdocs/ArpoiseDirectory/Layers/
+LayersDirectory         /var/www/arpoise.com/html/ArpoiseDirectory/Layers/
 
 ## Directory to store the served layer name files to
 #
-LayersServedDirectory   /service/vhosts/arpoise.com/htdocs/ArpoiseDirectory/LayersServed/
+LayersServedDirectory   /var/www/arpoise.com/html/ArpoiseDirectory/LayersServed/
 
+########################################################
+#
+## Set fixed position of certain bundles
+#
+#BundlePosition 2025072400, -8.01, -8.01
+
+########################################################
+#
+## Set fixed position for deeplinks
+#
+DeeplinkPosition WhatYouSow,          -5, -5.1
+DeeplinkPosition UkraineFlag,         -5, -5.2
+DeeplinkPosition ShadesPublicVoids,   -5, -5.3
+DeeplinkPosition ShadesOutsideInside, -5, -5.4
+DeeplinkPosition ShadesSchlingensief, -5, -5.5
+
+########################################################
+#
 ## Set fixed position of certain devices
 #
-# Unexpected Growth:
-# S7 - Tamiko           2ec8b480fec1b4c8aa0c558b265c6118
-# Lenovo tango - Peter  1dde3dcdbaccd19c1f972a174a717e84
-# Iphone - SE           2C6079C2-E257-4CD4-B8BA-B59A4FCC017D
-# Iphone - Peter        694B2C29-EDE5-4FFB-B825-213F48622466
-# IPad - Tamiko         CEEA1C1F-89C1-42A8-90F6-8AE56412AAC7
-##
-# Example               unique device id                 lat      lon
-# DevicePosition        9c82fc0b05d30fb39664df9513a286f7,48.158649,11.578720
-#
-# St. Ursula 48.161205, 11.580427
-# Habsburgerplatz 48.158511, 11.580224  - NE end by cars: 48.158814, 11.580656
-# TT Zimmer 48.158468, 11.578702
-# Whitney 40.739540, -74.008522
-# Wing Luke 47.598116,-122.322825
-#
-DevicePosition 2ec8b480fec1b4c8aa0c558b265c6118, 40.739540, -74.008522
-DevicePosition 694B2C29-EDE5-4FFB-B825-213F48622466, 40.739582, -74.008585,  
 
+# Peter's IPad 
+#DevicePosition 6B7E7668-3F0D-42D3-B4F4-8D355515F2E4, 4, 4.25
 
