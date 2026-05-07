@@ -58,6 +58,10 @@ The examples include various image triggered AR objects.
 
 - One or more ARpoise layers can be shown at any location in the world. If there are two or more ARpoise layers located within the range of the client's location, a list of all available layers is shown to the user to allow them to select a layer. If there is exactly one ARpoise layer located within the range, only this layer is shown to the user. If there is no layer within the range of the client's location, a list of default layers is shown.
 
+- ARpoise can be started with a deeplink url, e.g. an url of the form
+  **&lt;a href="arpoisedeeplink://DeeplinkLayer?Default-Test">ARpoise deeplink layer Default-Test</a&gt;**
+  would start ARpoise and directly load the layer 'Default-Test'.
+  
 ## Components
 ### Content creation for iOS and Android Client Application
 See [Creating Asset Bundles.](/documentation/CreatingAssetBundles.md).
