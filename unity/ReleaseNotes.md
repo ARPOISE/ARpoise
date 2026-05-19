@@ -1,6 +1,10 @@
 ![ARpoise Logo](/images/arpoise_logo_rgb-128.png)  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  ![AR-vos Logo](/images/arvos_logo_rgb-weiss128.png)
 # Release Notes for ARpoise and AR-vos -Mobile- Apps
 
+## Version 2026051400 - May 2026
+- ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.17 (2026051400)** and **iOS ARpoise 2.0.17 (2026051400)**
+- - Fixed [Bug #60](https://github.com/ARPOISE/ARpoise/issues/60). Download of trigger images fails.
+
 ## Version 2026042700 - April 2026
 - ![ARpoise Logo](/images/arpoise_logo_rgb-32.png) **Android ARpoise 2.0.16 (2026042700)** and **iOS ARpoise 2.0.16 (2026042700)**
 - - Added [Feature #5](https://github.com/ARPOISE/ARpoise/issues/5). Starting ARpoise with specific parameter.
