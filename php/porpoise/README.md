@@ -344,9 +344,9 @@ The following properties of an animation can be edited:
 
   Animation names are global for all POIs of a layer, the end of an animation of one POI can start an animation of the same POI or of another POI. The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the field.
 
-  If there are two or more animations in this list with a name containing the string "**SelectRandomly**", only one of those animation is randomly selected to start.
+  If there are two or more animations in this list with a name containing the string "**SelectRandomly**", each time the list is evaluated only one of those animations is randomly selected to start.
 
-  If there are two or more animations in this list with a name containing the string "**SelectSequentially**", only one of those animation is started each time the list is evaluated. Each time the next, round-robin, animation in this list is started.
+  If there are two or more animations in this list with a name containing the string "**SelectSequentially**", each time the list is evaluated only one of those animations is started. Each time the round-robin next animation in this list is started.
 
 ### Playing a Sound
 If an animation is started and the Unity-prefab of the POI contains an AudioSource component, the audio source is played.
