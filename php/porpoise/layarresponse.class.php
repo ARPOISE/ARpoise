@@ -90,7 +90,10 @@ class LayarResponse
         "inFocus" => array(),
         "onClick" => array(),
         "inMinutes" => array(),
-        "whenActive" => array()
+        "whenActive" => array(),
+        "whenActivated" => array(),
+        "whenDeactivated" => array(),
+        "onRandom" => array()
     );
 
     /** @var bool */

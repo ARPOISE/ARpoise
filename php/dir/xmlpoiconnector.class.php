@@ -182,11 +182,6 @@ class XMLPOIConnector extends POIConnector
     {
         $libxmlErrorHandlingState = libxml_use_internal_errors(TRUE);
 
-        $lat = $filter->lat;
-        $lon = $filter->lon;
-        $radius = $filter->radius;
-        $accuracy = $filter->accuracy;
-
         $simpleXML = $this->getSimpleXMLFromSource();
 
         $result = array();
@@ -266,6 +261,11 @@ class XMLPOIConnector extends POIConnector
             }
             else
             {
+                $lat = $filter->lat;
+                $lon = $filter->lon;
+                $radius = $filter->radius;
+                $accuracy = $filter->accuracy;
+
                 if (! empty($filter->requestedPoiId) && $filter->requestedPoiId == $poi->id)
                 {
                     // always return the requested POI at the top of the list to
@@ -597,7 +597,7 @@ class XMLPOIConnector extends POIConnector
                     "line1",
                     "line2",
                     "line3",
-                    "line4".
+                    "line4",
                     "comment"
                 ) as $elementName) {
                     $objectElement->addChild($elementName, str_replace("&", "&amp;", $poi->object->$elementName));
