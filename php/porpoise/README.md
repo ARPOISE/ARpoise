@@ -340,7 +340,13 @@ The following properties of an animation can be edited:
 * **From**: Start value of the animation.
 * **To**: End or middle value of the animation, depending on the **Interpolation**.
 * **Axis (x,y,z)**: Axis to apply the animation to. E.g.: A rotation with Axis 1,0,0 is only around the X axis.
-* **Followed by**: If one or more comma separated animation names are given in this field, the animations mentioned are started once this animation ends. Animation names are global for all POIs of a layer, the end of an animation of one POI can start an animation of the same POI or of another POI. The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the field. If there are two or more animations in this list with a name containing the string **SelectRandomly**, only one of those animation is randomly selected to start. If there are two or more animations in this list with a name containing the string **SelectSequentially**, only one of those animation is started each time the list is evaluated. Each time the next, round-robin, animation in this list is started.
+* **Followed by**: If one or more comma separated animation names are given in this field, the animations mentioned are started once this animation ends.
+
+  Animation names are global for all POIs of a layer, the end of an animation of one POI can start an animation of the same POI or of another POI. The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the field.
+
+  If there are two or more animations in this list with a name containing the string "**SelectRandomly**", only one of those animation is randomly selected to start.
+
+  If there are two or more animations in this list with a name containing the string "**SelectSequentially**", only one of those animation is started each time the list is evaluated. Each time the next, round-robin, animation in this list is started.
 
 ### Playing a Sound
 If an animation is started and the Unity-prefab of the POI contains an AudioSource component, the audio source is played.
