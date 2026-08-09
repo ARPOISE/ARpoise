@@ -342,7 +342,9 @@ The following properties of an animation can be edited:
 * **Axis (x,y,z)**: Axis to apply the animation to. E.g.: A rotation with Axis 1,0,0 is only around the X axis.
 * **Followed by**: If one or more comma separated animation names are given in this field, the animations mentioned are started once this animation ends.
 
-  Animation names are global for all POIs of a layer, the end of an animation of one POI can start an animation of the same POI or of another POI. The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the field.
+  Animation names are global for all POIs of a layer, the end of an animation of one POI can start an animation of the same POI or of another POI.
+
+  The animation can also [open a web page](https://github.com/ARPOISE/ARpoise/blob/master/php/porpoise/README.md#opening-a-web-page) in a browser using the field.
 
   If there are two or more animations in this list with a name containing the string "**SelectRandomly**", each time the list is evaluated only one of those animations is randomly selected to start.
 
