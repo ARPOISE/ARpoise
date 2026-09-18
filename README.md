@@ -82,6 +82,8 @@ Repositories for Unity projects for **ARpoise** and **AR-vos** on Android and iO
 [AR-vos for Android](https://github.com/ARPOISE/AndroidArvosU2021_3/)
 
 [AR-vos for iOS](https://github.com/ARPOISE/iOsArvosU2021_3/)
+## ARpoise and ARDUINO
+We have started to work with [ARDUINO](https://www.arduino.cc/) components in order to enhance the user experience of ARpoise, see [ARpoise ARDUINO](https://github.com/ARPOISE/ARDUINO/).
 ## Restrictions
 - Unity behaviour scripts written in C# cannot be included in Unity-created 3D content of ARpoise.
 
